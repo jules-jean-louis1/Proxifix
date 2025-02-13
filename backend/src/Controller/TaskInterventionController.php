@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class TaskInterventionController extends AbstractController
 {
     #[Route('/api/admin/task/intervention', name: 'app_task_intervention', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $em)
+    public function create(Request $request, EntityManagerInterface $em): JsonResponse
     {
         $payload = $request->getPayload();
 
