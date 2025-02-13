@@ -63,7 +63,7 @@ class InterventionController extends AbstractController
             $intervention->setDescription($description);
         }
         $typeInterventionId = $payload->get('type_intervention_id') ?? null;
-        if (isset($payload['type_intervention_id'])) {
+        if (isset($typeInterventionId)) {
             $typeIntervention = $entityManager->getRepository(TypeIntervention::class)->find($typeInterventionId);
             $intervention->setType($typeIntervention);
         }

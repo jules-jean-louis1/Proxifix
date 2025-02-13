@@ -16,20 +16,20 @@ class CustomerController extends AbstractController
     #[Route('/create', name: 'app_customer_create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManagerInterface, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
-        $payload        = json_decode($request->getContent(), true);
+        $payload = $request->getPayload();
         $customer       = new Customer();
         $hashedPassword = $passwordHasher->hashPassword(
             $customer,
-            $payload['password']
+            $payload->get('password')
         );
 
-        $customer->setFirstName($payload['first_name'])
-            ->setLastName($payload['last_name'])
-            ->setEmail($payload['email'])
-            ->setAddress($payload['address'] ?? '')
-            ->setCity($payload['city'] ?? '')
-            ->setZipCode($payload['zip_code'] ?? '')
-            ->setMobile($payload['mobile'] ?? '')
+        $customer->setFirstName($payload->get('first_name'))
+            ->setLastName($payload->get('last_name'))
+            ->setEmail($payload->get('email'))
+            ->setAddress($payload->get('address') ?? '')
+            ->setCity($payload->get('city') ?? '')
+            ->setZipCode($payload->get('zip_code') ?? '')
+            ->setMobile($payload->get('mobile' )?? '')
             ->setPassword($hashedPassword)
             ->setCreatedAt(new \DateTimeImmutable())
             ->setUpdatedAt(new \DateTimeImmutable());
@@ -49,48 +49,48 @@ class CustomerController extends AbstractController
         if (! $customer) {
             return $this->json(['error' => 'Customer not found'], Response::HTTP_NOT_FOUND);
         }
-
-        if (isset($payload['email'])) {
-            $customerByEmail = $entityManagerInterface->getRepository(Customer::class)->findOneBy(['email' => $payload->get('email')]);
+        $email = $payload->get('email');
+        if (isset($email)) {
+            $customerByEmail = $entityManagerInterface->getRepository(Customer::class)->findOneBy(['email' => $email]);
             if ($customerByEmail && $customerByEmail->getId() !== $id) {
                 return $this->json(['error' => 'Email already exists'], Response::HTTP_CONFLICT);
             }
         }
-
-        if (isset($payload['password'])) {
+        $password = $payload->get('password');
+        if (isset($password)) {
             $hashedPassword = $passwordHasher->hashPassword(
                 $customer,
-                $payload->get('password')
+                $password
             );
             $customer->setPassword($hashedPassword);
         }
-
-        if (isset($payload['first_name'])) {
-            $customer->setFirstName($payload->get('first_name'));
+        $firstName = $payload->get('first_name');
+        if (isset($firstName)) {
+            $customer->setFirstName($firstName);
         }
-
-        if (isset($payload['last_name'])) {
-            $customer->setLastName($payload->get('last_name'));
+        $lastName = $payload->get('last_name');
+        if (isset($lastName)) {
+            $customer->setLastName($lastName);
         }
-
-        if (isset($payload['email'])) {
-            $customer->setEmail($payload->get('email'));
+        $email = $payload->get('email');
+        if (isset($email)) {
+            $customer->setEmail($email);
         }
-
-        if (isset($payload['address'])) {
-            $customer->setAddress($payload->get('address'));
+        $address = $payload->get('address');
+        if (isset($address)) {
+            $customer->setAddress($address);
         }
-
-        if (isset($payload['city'])) {
-            $customer->setCity($payload->get('city'));
+        $city = $payload->get('city');
+        if (isset($city)) {
+            $customer->setCity($city);
         }
-
-        if (isset($payload['zip_code'])) {
-            $customer->setZipCode($payload->get('zip_code'));
+        $zipCode = $payload->get('zip_code');
+        if (isset($zipCode)) {
+            $customer->setZipCode($zipCode);
         }
-
-        if (isset($payload['mobile'])) {
-            $customer->setMobile($payload->get('mobile'));
+        $mobile = $payload->get('mobile');
+        if (isset($mobile)) {
+            $customer->setMobile($mobile);
         }
 
         $customer->setUpdatedAt(new \DateTimeImmutable());

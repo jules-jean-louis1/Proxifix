@@ -44,30 +44,30 @@ final class CompanyController extends AbstractController
         if (! $company) {
             return $this->json(['error' => 'Company not found'], 404);
         }
-
-        if (isset($payload['name'])) {
-            $company->setName($payload->get('name'));
+        $name = $payload->get('name');
+        if (isset($name)) {
+            $company->setName($name);
         }
 
         $type = $payload->get('type');
         if (isset($type)) {
-            $company->setType($payload->get('type'));
+            $company->setType($type);
         }
         $address = $payload->get('address');
         if (isset($address)) {
-            $company->setAddress($payload->get('address'));
+            $company->setAddress($address);
         }
-
-        if (isset($payload['city'])) {
-            $company->setCity($payload->get('city'));
+        $city = $payload->get('city');
+        if (isset($city)) {
+            $company->setCity($city);
         }
-
-        if (isset($payload['zip_code'])) {
-            $company->setZipCode($payload->get('zip_code'));
+        $zipCode = $payload->get('zip_code');
+        if (isset($zipCode)) {
+            $company->setZipCode($zipCode);
         }
-
-        if (isset($payload['website'])) {
-            $company->setWebsite($payload->get('website'));
+        $website = $payload->get('website');
+        if (isset($website)) {
+            $company->setWebsite($website);
         }
 
         $entityManager->flush();
