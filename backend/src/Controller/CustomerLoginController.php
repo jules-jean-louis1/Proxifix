@@ -16,16 +16,18 @@ final class CustomerLoginController extends AbstractController
         CustomerRepository $customerRepository,
         UserPasswordHasherInterface $passwordHasher,
         JWTTokenManagerInterface $tokenManager): JsonResponse {
-        $payload = json_decode($request->getContent(), true);
-        dd($payload['password']);
+        $payload = $request->getPayload();
 
-        if (! isset($payload['email']) || ! isset($payload['password'])) {
+        $email = $payload->get('email');
+        $password = $payload->get('password');
+
+        if (! isset($email) || ! isset($password)) {
             return new JsonResponse(['error' => 'Missing credentials'], 400);
         }
 
-        $customer = $customerRepository->findOneBy(['email' => $payload['email']]);
+        $customer = $customerRepository->findOneBy(['email' => $email]);
 
-        if (! $customer || ! $passwordHasher->isPasswordValid($customer, $payload['password'])) {
+        if (! $customer || ! $passwordHasher->isPasswordValid($customer, $password)) {
             return new JsonResponse(['error' => 'Invalid credentials'], 400);
         }
 

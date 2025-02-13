@@ -18,10 +18,10 @@ final class BrandController extends AbstractController
     #[IsGranted('ROLE_TECHNICIAN')]
     public function create(Request $request, EntityManagerInterface $entityManagerInterface): JsonResponse
     {
-        $payload = json_decode($request->getContent(), true);
+        $payload = $request->getPayload();
 
         $brand = new Brand();
-        $brand->setName($payload['name']);
+        $brand->setName($payload->get('name'));
 
         $entityManagerInterface->persist($brand);
         $entityManagerInterface->flush();
@@ -33,14 +33,14 @@ final class BrandController extends AbstractController
     #[IsGranted('ROLE_TECHNICIAN')]
     public function update(Request $request, EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
-        $payload = json_decode($request->getContent(), true);
+        $payload = $request->getPayload();
         $brand = $entityManagerInterface->getRepository(Brand::class)->find($id);
 
         if (!$brand) {
             return $this->json(['error' => 'Brand not found'], Response::HTTP_NOT_FOUND);
         }
 
-        $brand->setName($payload['name']);
+        $brand->setName($payload->get('name'));
 
         $entityManagerInterface->flush();
 

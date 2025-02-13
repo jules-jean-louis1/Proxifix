@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class RegistrationController extends AbstractController
 {
@@ -17,13 +17,13 @@ class RegistrationController extends AbstractController
                              EntityManagerInterface $entityManager,
                              UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
+        $payload = $request->getPayload();
 
         $user = new User();
-        $user->setEmail($data['email']);
-        $user->setFirstName($data['firstname']);
-        $user->setLastName($data['lastname']);
-        $plaintextPassword = $data['password'];
+        $user->setEmail($payload->get('email'));
+        $user->setFirstName($payload->get('first_name'));
+        $user->setLastName($payload->get('last_name'));
+        $plaintextPassword = $payload->get('password');
         $hashedPassword = $passwordHasher->hashPassword(
             $user,
             $plaintextPassword

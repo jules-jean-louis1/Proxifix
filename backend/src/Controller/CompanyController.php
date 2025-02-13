@@ -16,15 +16,15 @@ final class CompanyController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $payload = json_decode($request->getContent(), true);
+        $payload = $request->getPayload();
 
         $company = new Company();
-        $company->setName($payload['name']);
-        $company->setType($payload['type']);
-        $company->setAddress($payload['address']);
-        $company->setCity($payload['city']);
-        $company->setZipCode($payload['zip_code']);
-        $company->setWebsite($payload['website']);
+        $company->setName($payload->get('name'));
+        $company->setType($payload->get('type'));
+        $company->setAddress($payload->get('address'));
+        $company->setCity($payload->get('city'));
+        $company->setZipCode($payload->get('zip_code'));
+        $company->setWebsite($payload->get('website'));
         $company->setCreatedAt(new \DateTimeImmutable());
         $company->setUpdatedAt(new \DateTimeImmutable());
 
@@ -38,7 +38,7 @@ final class CompanyController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function update(Request $request, EntityManagerInterface $entityManager, int $id): JsonResponse
     {
-        $payload = json_decode($request->getContent(), true);
+        $payload = $request->getPayload();
         $company = $entityManager->getRepository(Company::class)->find($id);
 
         if (! $company) {
@@ -46,27 +46,28 @@ final class CompanyController extends AbstractController
         }
 
         if (isset($payload['name'])) {
-            $company->setName($payload['name']);
+            $company->setName($payload->get('name'));
         }
 
-        if (isset($payload['type'])) {
-            $company->setType($payload['type']);
+        $type = $payload->get('type');
+        if (isset($type)) {
+            $company->setType($payload->get('type'));
         }
-
-        if (isset($payload['address'])) {
-            $company->setAddress($payload['address']);
+        $address = $payload->get('address');
+        if (isset($address)) {
+            $company->setAddress($payload->get('address'));
         }
 
         if (isset($payload['city'])) {
-            $company->setCity($payload['city']);
+            $company->setCity($payload->get('city'));
         }
 
         if (isset($payload['zip_code'])) {
-            $company->setZipCode($payload['zip_code']);
+            $company->setZipCode($payload->get('zip_code'));
         }
 
         if (isset($payload['website'])) {
-            $company->setWebsite($payload['website']);
+            $company->setWebsite($payload->get('website'));
         }
 
         $entityManager->flush();

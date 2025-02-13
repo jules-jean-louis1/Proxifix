@@ -21,15 +21,15 @@ class EquipmentController extends AbstractController
     #[IsGranted('ROLE_TECHNICIAN')]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
+        $payload = $request->getPayload();
 
-        $customer        = $entityManager->getRepository(Customer::class)->find($data['customer_id']);
-        $typeEquipment   = $entityManager->getRepository(TypeEquipment::class)->find($data['type_equipment_id']);
-        $operatingSystem = $entityManager->getRepository(OperatingSystem::class)->find($data['operating_system_id']);
-        $brand           = $entityManager->getRepository(Brand::class)->find($data['brand_id']);
+        $customer        = $entityManager->getRepository(Customer::class)->find($payload->get('customer_id'));
+        $typeEquipment   = $entityManager->getRepository(TypeEquipment::class)->find($payload->get('type_equipment_id'));
+        $operatingSystem = $entityManager->getRepository(OperatingSystem::class)->find($payload->get('operating_system_id'));
+        $brand           = $entityManager->getRepository(Brand::class)->find($payload->get('brand_id'));
 
         $equipment = new Equipment();
-        $equipment->setName($data['name'] ?? '');
+        $equipment->setName($payload->get('name') ?? '');
         $equipment->setCustomer($customer ?? null);
         $equipment->setTypeEquipment($typeEquipment);
         $equipment->setOperatingSystem($operatingSystem);
@@ -45,9 +45,9 @@ class EquipmentController extends AbstractController
 
     #[Route('/{id}', name: 'app_equipment_edit', methods: ['PUT'])]
     #[IsGranted('ROLE_TECHNICIAN')]
-    public function edit(Request $request, EntityManagerInterface $entityManagerInterface, SerializerInterface $serializer, int $id): JsonResponse
+    public function edit(Request $request, EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
-        $payload = json_decode($request->getContent(), true);
+        $payload = $request->getPayload();
 
         $equipment = $entityManagerInterface->getRepository(Equipment::class)->find($id);
 
@@ -55,27 +55,28 @@ class EquipmentController extends AbstractController
             return new JsonResponse(['error' => 'Equipment not found'], 404);
         }
 
-        if (isset($payload['name'])) {
-            $equipment->setName($payload['name']);
+        $name = $payload->get('name') ?? null;
+        if (isset($name)) {
+            $equipment->setName($payload->get('name'));
         }
-
-        if (isset($payload['customer_id'])) {
-            $customer = $entityManagerInterface->getRepository(Customer::class)->find($payload['customer_id']);
+        $customerId = $payload->get('customer_id') ?? null;
+        if (isset($customerId)) {
+            $customer = $entityManagerInterface->getRepository(Customer::class)->find($customerId);
             $equipment->setCustomer($customer);
         }
-
-        if (isset($payload['type_equipment_id'])) {
-            $typeEquipment = $entityManagerInterface->getRepository(TypeEquipment::class)->find($payload['type_equipment_id']);
+        $typeEquipmentId = $payload->get('type_equipment_id') ?? null;
+        if (isset($typeEquipmentId)) {
+            $typeEquipment = $entityManagerInterface->getRepository(TypeEquipment::class)->find($typeEquipmentId);
             $equipment->setTypeEquipment($typeEquipment);
         }
-
-        if (isset($payload['operating_system_id'])) {
-            $operatingSystem = $entityManagerInterface->getRepository(OperatingSystem::class)->find($payload['operating_system_id']);
+        $operatingSystemId = $payload->get('operating_system_id') ?? null;
+        if (isset($operatingSystemId)) {
+            $operatingSystem = $entityManagerInterface->getRepository(OperatingSystem::class)->find($operatingSystemId);
             $equipment->setOperatingSystem($operatingSystem);
         }
-
-        if (isset($payload['brand_id'])) {
-            $brand = $entityManagerInterface->getRepository(Brand::class)->find($payload['brand_id']);
+        $brandId = $payload->get('brand_id') ?? null;
+        if (isset($brandId)) {
+            $brand = $entityManagerInterface->getRepository(Brand::class)->find($brandId);
             $equipment->setBrand($brand);
         }
 

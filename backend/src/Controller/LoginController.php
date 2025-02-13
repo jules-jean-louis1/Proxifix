@@ -18,15 +18,17 @@ class LoginController extends AbstractController
                           UserPasswordHasherInterface $passwordHasher,
                           JWTTokenManagerInterface $tokenManager): JsonResponse
     {
-        $payload = json_decode($request->getContent(), true);
-
-        if (!isset($payload['email']) || !isset($payload['password'])) {
+        $payload = $request->getPayload();
+        $email = $payload->get('email');
+        $password = $payload->get('password');
+        
+        if (!isset($email) || !isset($password)) {
             return new JsonResponse(['error' => 'Missing credentials'], 400);
         }
 
-        $user = $userRepository->findOneBy(['email' => $payload['email']]);
+        $user = $userRepository->findOneBy(['email' => $email]);
 
-        if (!$user || !$passwordHasher->isPasswordValid($user, $payload['password'])) {
+        if (!$user || !$passwordHasher->isPasswordValid($user, $password)) {
             return new JsonResponse(['error' => 'Invalid credentials'], 400);
         }
 

@@ -2,6 +2,8 @@ gesdinet_jwt_refresh_token:
     refresh_token_class: App\Entity\RefreshToken # Scaffolded by the bundle recipe
     ttl: 7200 # 2h in seconds
     single_use: true
+    firewall: admin,api
+    token_parameter_name: refresh_token
 
 #    # Use cookies for the refresh token
 #    cookie:

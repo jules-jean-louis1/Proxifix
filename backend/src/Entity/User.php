@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource()]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -22,18 +23,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9_]+$/',
+        message: 'The username can only contain letters, numbers and underscores'
+    )]
     private ?string $email = null;
 
     /**
      * @var <string> The user roles
      */
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: [self::ROLE_ADMIN, self::ROLE_TECHNICIAN], message: 'Choose a valid role.')]
     private string $roles = '';
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\Length(min: 6, max: 255)]
+    // #[Assert\Regex(
+    //     pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/',
+    //     message: 'Password must be at least 6 characters long and contain at least one digit, one upper case letter and one lower case letter'
+    // )]
     private ?string $password = null;
 
     /**
@@ -42,9 +54,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups("user:write")]
     private ?string $plainPassword = null;
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 255)]
     private ?string $first_name = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(min: 2, max: 255)]
     private ?string $last_name = null;
 
     #[ORM\Column]

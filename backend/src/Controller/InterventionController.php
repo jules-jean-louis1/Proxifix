@@ -20,15 +20,15 @@ class InterventionController extends AbstractController
     #[IsGranted('ROLE_TECHNICIAN')]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $payload = json_decode($request->getContent(), true);
+        $payload = $request->getPayload();
 
-        $typeIntervention = $entityManager->getRepository(TypeIntervention::class)->find($payload['type_intervention_id']);
-        $status = $entityManager->getRepository(Status::class)->find($payload['status_id']);
-        $customer = $entityManager->getRepository(Customer::class)->find($payload['customer_id']);
+        $typeIntervention = $entityManager->getRepository(TypeIntervention::class)->find($payload->get('type_intervention_id'));
+        $status = $entityManager->getRepository(Status::class)->find($payload->get('status_id'));
+        $customer = $entityManager->getRepository(Customer::class)->find($payload->get('customer_id'));
 
         $intervention = new Intervention();
-        $intervention->setTitle($payload['title']);
-        $intervention->setDescription($payload['description']);
+        $intervention->setTitle($payload->get('title'));
+        $intervention->setDescription($payload->get('description'));
         $intervention->setType($typeIntervention);
         $intervention->setStatus($status);
         $intervention->setCustomer($customer);
@@ -47,24 +47,24 @@ class InterventionController extends AbstractController
     #[IsGranted('ROLE_TECHNICIAN')]
     public function edit(Request $request, EntityManagerInterface $entityManager, int $id): JsonResponse
     {
-        $payload = json_decode($request->getContent(), true);
+        $payload = $request->getPayload();
 
         $intervention = $entityManager->getRepository(Intervention::class)->find($id);
 
         if (! $intervention) {
             return $this->json(['error' => 'Intervention not found'], 404);
         }
-
-        if (isset($payload['title'])) {
-            $intervention->setTitle($payload['title']);
+        $title = $payload->get('title') ?? null;
+        if (isset($title)) {
+            $intervention->setTitle($title);
         }
-
-        if (isset($payload['description'])) {
-            $intervention->setDescription($payload['description']);
+        $description = $payload->get('description') ?? null;
+        if (isset($description)) {
+            $intervention->setDescription($description);
         }
-
+        $typeInterventionId = $payload->get('type_intervention_id') ?? null;
         if (isset($payload['type_intervention_id'])) {
-            $typeIntervention = $entityManager->getRepository(TypeIntervention::class)->find($payload['type_intervention_id']);
+            $typeIntervention = $entityManager->getRepository(TypeIntervention::class)->find($typeInterventionId);
             $intervention->setType($typeIntervention);
         }
 

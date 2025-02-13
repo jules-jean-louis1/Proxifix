@@ -49,22 +49,28 @@ security:
             stateless: true
             lazy: true
             entry_point: jwt
-            jwt: 
+            jwt:
                 provider: app_user_provider
             refresh_jwt:
                 provider: app_user_provider
+                check_path: /api/admin/auth/refresh
+
         api:
             pattern: ^/api
             stateless: true
             lazy: true
             entry_point: jwt
-            jwt: 
+            jwt:
                 provider: app_customer_provider
             refresh_jwt:
                 provider: app_customer_provider
-
+                check_path: /api/customer/auth/refresh
 
     access_control:
+        - { path: ^/api/admin/auth/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/api/customer/auth/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
+        - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs
         - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/customer/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/customer, roles: IS_AUTHENTICATED_FULLY }
@@ -75,6 +81,8 @@ security:
         - { path: ^/api/admin/equipment, roles: ROLE_TECHNICIAN }
         - { path: ^/api/admin/intervention, roles: ROLE_TECHNICIAN }
         - { path: ^/api/admin/company, roles: ROLE_ADMIN }
+        - { path: ^/api/admin/operating_system, roles: ROLE_TECHNICIAN }
+
 
 
 when@test:
