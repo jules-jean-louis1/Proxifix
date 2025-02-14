@@ -2,35 +2,32 @@
 namespace App\Controller;
 
 use App\Entity\Brand;
-use App\Entity\Customer;
 use App\Entity\Equipment;
 use App\Entity\OperatingSystem;
 use App\Entity\TypeEquipment;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\SerializerInterface;
 
-#[Route('/api/admin/equipment')]
+#[Route('/api/equipment')]
 class EquipmentController extends AbstractController
 {
     #[Route('/create', name: 'app_equipment_create', methods: ['POST'])]
-    #[IsGranted('ROLE_TECHNICIAN')]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $payload = $request->getPayload();
 
-        $customer        = $entityManager->getRepository(Customer::class)->find($payload->get('customer_id'));
+        $user        = $entityManager->getRepository(User::class)->find($payload->get('user_id'));
         $typeEquipment   = $entityManager->getRepository(TypeEquipment::class)->find($payload->get('type_equipment_id'));
         $operatingSystem = $entityManager->getRepository(OperatingSystem::class)->find($payload->get('operating_system_id'));
         $brand           = $entityManager->getRepository(Brand::class)->find($payload->get('brand_id'));
 
         $equipment = new Equipment();
         $equipment->setName($payload->get('name') ?? '');
-        $equipment->setCustomer($customer ?? null);
+        $equipment->setUser($user ?? null);
         $equipment->setTypeEquipment($typeEquipment);
         $equipment->setOperatingSystem($operatingSystem);
         $equipment->setBrand($brand);
@@ -44,7 +41,6 @@ class EquipmentController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_equipment_edit', methods: ['PUT'])]
-    #[IsGranted('ROLE_TECHNICIAN')]
     public function edit(Request $request, EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
         $payload = $request->getPayload();
@@ -59,10 +55,10 @@ class EquipmentController extends AbstractController
         if (isset($name)) {
             $equipment->setName($payload->get('name'));
         }
-        $customerId = $payload->get('customer_id') ?? null;
+        $userId = $payload->get('user_id') ?? null;
         if (isset($customerId)) {
-            $customer = $entityManagerInterface->getRepository(Customer::class)->find($customerId);
-            $equipment->setCustomer($customer);
+            $user = $entityManagerInterface->getRepository(User::class)->find($userId);
+            $equipment->setUser($user);
         }
         $typeEquipmentId = $payload->get('type_equipment_id') ?? null;
         if (isset($typeEquipmentId)) {
@@ -88,7 +84,6 @@ class EquipmentController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_equipment_delete', methods: ['DELETE'])]
-    #[IsGranted('ROLE_TECHNICIAN')]
     public function delete(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
         $equipment = $entityManagerInterface->getRepository(Equipment::class)->find($id);

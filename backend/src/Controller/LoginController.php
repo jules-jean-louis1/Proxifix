@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class LoginController extends AbstractController
 {
-    #[Route('/api/admin/login', name: 'app_login', methods: ['POST'])]
+    #[Route('/api/login', name: 'app_login', methods: ['POST'])]
     public function login(Request $request,
                           UserRepository $userRepository,
                           UserPasswordHasherInterface $passwordHasher,

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -22,32 +21,46 @@ class Intervention
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
-    
+
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
-    
+
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable : false)]
     private ?TypeIntervention $type = null;
 
-    #[ORM\ManyToOne(inversedBy: 'interventions')]
+    #[ORM\ManyToOne(inversedBy : 'interventions')]
     private ?Company $company = null;
 
     #[ORM\ManyToOne]
     private ?Status $status = null;
 
     #[ORM\ManyToOne]
-    private ?Customer $customer = null;
+    private ?User $user = null;
 
     #[ORM\OneToMany(mappedBy: 'intervention', targetEntity: TaskIntervention::class)]
     private Collection $taskInterventions;
 
+    /**
+     * @var Collection<int, Booking>
+     */
+    #[ORM\OneToMany(targetEntity: Booking::class, mappedBy: 'intervention', orphanRemoval: true)]
+    private Collection $bookings;
+
+    /**
+     * @var Collection<int, Equipment>
+     */
+    #[ORM\ManyToMany(targetEntity: Equipment::class, inversedBy: 'interventions')]
+    private Collection $equipment;
+
     public function __construct()
     {
         $this->taskInterventions = new ArrayCollection();
+        $this->bookings = new ArrayCollection();
+        $this->equipment = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -139,14 +152,14 @@ class Intervention
         return $this;
     }
 
-    public function getCustomer(): ?Customer
+    public function getUser(): ?User
     {
-        return $this->customer;
+        return $this->user;
     }
 
-    public function setCustomer(?Customer $customer): static
+    public function setUser(?User $user): static
     {
-        $this->customer = $customer;
+        $this->user = $user;
 
         return $this;
     }
@@ -167,6 +180,60 @@ class Intervention
     public function removeTaskIntervention(TaskIntervention $taskIntervention): self
     {
         $this->taskInterventions->removeElement($taskIntervention);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Booking>
+     */
+    public function getBookings(): Collection
+    {
+        return $this->bookings;
+    }
+
+    public function addBooking(Booking $booking): static
+    {
+        if (!$this->bookings->contains($booking)) {
+            $this->bookings->add($booking);
+            $booking->setIntervention($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBooking(Booking $booking): static
+    {
+        if ($this->bookings->removeElement($booking)) {
+            // set the owning side to null (unless already changed)
+            if ($booking->getIntervention() === $this) {
+                $booking->setIntervention(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Equipment>
+     */
+    public function getequipment(): Collection
+    {
+        return $this->equipment;
+    }
+
+    public function addequipment(Equipment $equipment): static
+    {
+        if (!$this->equipment->contains($equipment)) {
+            $this->equipment->add($equipment);
+        }
+
+        return $this;
+    }
+
+    public function removeequipment(Equipment $equipment): static
+    {
+        $this->equipment->removeElement($equipment);
 
         return $this;
     }

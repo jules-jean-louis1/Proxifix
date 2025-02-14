@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class TaskInterventionController extends AbstractController
 {
-    #[Route('/api/admin/task/intervention', name: 'app_task_intervention', methods: ['POST'])]
+    #[Route('/api/task/intervention', name: 'app_task_intervention', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $em): JsonResponse
     {
         $payload = $request->getPayload();
@@ -40,7 +40,7 @@ final class TaskInterventionController extends AbstractController
         ], 201);
     }
 
-    #[Route('/api/admin/task/intervention/{id}', name: 'app_task_intervention_update', methods: ['PUT'])]
+    #[Route('/api/task/intervention/{id}', name: 'app_task_intervention_update', methods: ['PUT'])]
     public function update(Request $request, EntityManagerInterface $em, int $id): JsonResponse
     {
         $payload          = $request->getPayload();
@@ -71,7 +71,7 @@ final class TaskInterventionController extends AbstractController
         ], 200);
     }
 
-    #[Route('/api/admin/task/intervention/{id}', name: 'app_task_intervention_delete', methods: ['DELETE'])]
+    #[Route('/api/task/intervention/{id}', name: 'app_task_intervention_delete', methods: ['DELETE'])]
     public function delete(EntityManagerInterface $em, int $id): JsonResponse
     {
         $taskIntervention = $em->getRepository(TaskIntervention::class)->find($id);

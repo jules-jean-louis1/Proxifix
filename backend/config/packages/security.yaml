@@ -5,16 +5,12 @@ security:
     role_hierarchy:
         ROLE_CUSTOMER: ['ROLE_CUSTOMER']
         ROLE_TECHNICIAN: ['ROLE_TECHNICIAN']
-        ROLE_ADMIN: ['ROLE_ADMIN']
+        ROLE_ADMIN: ['ROLE_ADMIN', 'ROLE_TECHNICIAN']
 
     providers:
         app_user_provider:
             entity:
                 class: App\Entity\User
-                property: email
-        app_customer_provider:
-            entity:
-                class: App\Entity\Customer
                 property: email
 
     firewalls:
@@ -22,38 +18,16 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        admin_login:
-            pattern: ^/api/admin/login
+        auth:
+            pattern: ^/api/login
             stateless: true
             json_login:
-                check_path: /api/admin/login
+                check_path: /api/login
                 username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             provider: app_user_provider
-
-        customer_login:
-            pattern: ^/api/customer/login
-            stateless: true
-            json_login:
-                check_path: /api/customer/login
-                username_path: email
-                password_path: password
-                success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
-            provider: app_customer_provider
-
-        admin:
-            pattern: ^/api/admin
-            stateless: true
-            lazy: true
-            entry_point: jwt
-            jwt:
-                provider: app_user_provider
-            refresh_jwt:
-                provider: app_user_provider
-                check_path: /api/admin/auth/refresh
 
         api:
             pattern: ^/api
@@ -61,28 +35,28 @@ security:
             lazy: true
             entry_point: jwt
             jwt:
-                provider: app_customer_provider
+                provider: app_user_provider
             refresh_jwt:
-                provider: app_customer_provider
-                check_path: /api/customer/auth/refresh
+                provider: app_user_provider
+                check_path: /api/auth/refresh
 
     access_control:
-        - { path: ^/api/admin/auth/refresh, roles: PUBLIC_ACCESS }
-        - { path: ^/api/customer/auth/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
         - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs
-        - { path: ^/api/customer/login, roles: PUBLIC_ACCESS }
-        - { path: ^/api/admin/login, roles: PUBLIC_ACCESS }
-        - { path: ^/api/admin/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        # TODO: Only authenticated admin can create new admin and technician accounts
+        #- { path: ^/api/register, roles: ROLE_ADMIN }
         - { path: ^/api/customer, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/api/admin/customer, roles: ROLE_TECHNICIAN }
-        - { path: ^/api/admin/brands, roles: ROLE_TECHNICIAN }
-        - { path: ^/api/admin/equipment, roles: ROLE_TECHNICIAN }
-        - { path: ^/api/admin/intervention, roles: ROLE_TECHNICIAN }
-        - { path: ^/api/admin/operating_system, roles: ROLE_TECHNICIAN }
-        - { path: ^/api/admin/company, roles: ROLE_ADMIN }
-        - { path: ^/api/admin/task, roles: ROLE_ADMIN }
-        - { path: ^/api/admin/task/intervention, roles: ROLE_ADMIN }
+        - { path: ^/api/customer, roles: ROLE_TECHNICIAN }
+        - { path: ^/api/brands, roles: ROLE_TECHNICIAN }
+        - { path: ^/api/equipment, roles: ROLE_TECHNICIAN }
+        - { path: ^/api/intervention, roles: ROLE_TECHNICIAN }
+        - { path: ^/api/operating_system, roles: ROLE_TECHNICIAN }
+        - { path: ^/api/company, roles: ROLE_ADMIN }
+        - { path: ^/api/task, roles: ROLE_ADMIN }
+        - { path: ^/api/task/intervention, roles: ROLE_ADMIN }
 
 when@test:
     doctrine:

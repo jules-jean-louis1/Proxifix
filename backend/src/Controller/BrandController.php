@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/api/admin')]
+#[Route('/api')]
 final class BrandController extends AbstractController
 {
     #[Route('/brand/create', name: 'app_brand_create', methods: ['POST'])]

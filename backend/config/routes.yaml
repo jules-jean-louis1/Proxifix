@@ -4,12 +4,8 @@ controllers:
         namespace: App\Controller
     type: attribute
 
-admin_refresh_token:
-    path: /api/admin/auth/refresh
+refresh_token:
+    path: /api/auth/refresh
     controller: gesdinet.jwtrefreshtoken.refresh_token_controller::refresh
     methods: ['POST']
 
-customer_refresh_token:
-    path: /api/customer/auth/refresh
-    controller: gesdinet.jwtrefreshtoken.refresh_token_controller::refresh
-    methods: ['POST']

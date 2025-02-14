@@ -1,50 +1,68 @@
 <?php
-
 namespace App\Controller;
 
-use App\Entity\Customer;
+use App\Entity\Equipment;
 use App\Entity\Intervention;
 use App\Entity\Status;
 use App\Entity\TypeIntervention;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/api/admin/intervention')]
+#[Route('/api/intervention')]
 class InterventionController extends AbstractController
 {
     #[Route('/create', name: 'app_intervention_create', methods: ['POST'])]
-    #[IsGranted('ROLE_TECHNICIAN')]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $payload = $request->getPayload();
+        try {
+            $entityManager->beginTransaction();
 
-        $typeIntervention = $entityManager->getRepository(TypeIntervention::class)->find($payload->get('type_intervention_id'));
-        $status = $entityManager->getRepository(Status::class)->find($payload->get('status_id'));
-        $customer = $entityManager->getRepository(Customer::class)->find($payload->get('customer_id'));
+            $payload = $request->getPayload()->all();
 
-        $intervention = new Intervention();
-        $intervention->setTitle($payload->get('title'));
-        $intervention->setDescription($payload->get('description'));
-        $intervention->setType($typeIntervention);
-        $intervention->setStatus($status);
-        $intervention->setCustomer($customer);
-        $intervention->setCreatedAt(new \DateTimeImmutable());
-        $intervention->setUpdatedAt(new \DateTimeImmutable());
+            $intervention = new Intervention();
+            $intervention->setTitle($payload['title']);
+            $intervention->setDescription($payload['description']);
 
-        $entityManager->persist($intervention);
+            $typeIntervention = $entityManager->getRepository(TypeIntervention::class)->find($payload['type_intervention_id']);
+            $status           = $entityManager->getRepository(Status::class)->find($payload['status_id']);
+            $user             = $entityManager->getRepository(User::class)->find($payload['user_id']);
 
-        $entityManager->flush();
+            $intervention->setType($typeIntervention);
+            $intervention->setStatus($status);
+            $intervention->setUser($user);
+            $intervention->setCreatedAt(new \DateTimeImmutable());
+            $intervention->setUpdatedAt(new \DateTimeImmutable());
 
-        return $this->json($intervention, 201);
+            foreach ($payload['equipment'] as $equipmentId) {
+                $equipment = $entityManager->getRepository(Equipment::class)->find($equipmentId);
+                if ($equipment) {
+                    $intervention->addEquipment($equipment);
+                }
+            }
 
+            $entityManager->persist($intervention);
+            $entityManager->flush();
+            $entityManager->commit();
+
+            return new JsonResponse([
+                'id'          => $intervention->getId(),
+                'title'       => $intervention->getTitle(),
+                'description' => $intervention->getDescription(),
+            ], 201);
+
+        } catch (\Exception $e) {
+            $entityManager->rollback();
+            return new JsonResponse([
+                'error' => $e->getMessage(),
+            ], 400);
+        }
     }
 
     #[Route('/{id}', name: 'app_intervention_update', methods: ['PUT'])]
-    #[IsGranted('ROLE_TECHNICIAN')]
     public function edit(Request $request, EntityManagerInterface $entityManager, int $id): JsonResponse
     {
         $payload = $request->getPayload();
@@ -76,7 +94,6 @@ class InterventionController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_intervention_delete', methods: ['DELETE'])]
-    #[IsGranted('ROLE_TECHNICIAN')]
     public function delete(EntityManagerInterface $entityManager, int $id): JsonResponse
     {
         $intervention = $entityManager->getRepository(Intervention::class)->find($id);

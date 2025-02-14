@@ -3,6 +3,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -17,6 +19,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public const ROLE_ADMIN      = 'ROLE_ADMIN';
     public const ROLE_TECHNICIAN = 'ROLE_TECHNICIAN';
+    public const ROLE_CUSTOMER   = 'ROLE_CUSTOMER';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -34,8 +37,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Assert\Choice(choices: [self::ROLE_ADMIN, self::ROLE_TECHNICIAN], message: 'Choose a valid role.')]
-    private string $roles = '';
+    #[Assert\Choice(choices: [self::ROLE_ADMIN, self::ROLE_TECHNICIAN, self::ROLE_TECHNICIAN], message: 'Choose a valid role.')]
+    private array $roles = [];
 
     /**
      * @var string The hashed password
@@ -68,8 +71,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\ManyToOne(inversedBy : 'users')]
+    #[ORM\ManyToOne(targetEntity : Company::class, inversedBy : 'users')]
     private ?Company $company = null;
+
+    /**
+     * @var Collection<int, Equipment>
+     */
+    #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'customer', cascade: ['remove'])]
+    private Collection $equipment;
 
     public function getId(): ?int
     {
@@ -80,6 +89,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
+        $this->equipment  = new ArrayCollection();
     }
 
     #[ORM\PreUpdate]
@@ -112,24 +122,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see UserInterface
      *
-     * @return string
+     * @return list<string>
      */
     public function getRoles(): array
     {
-        return [$this->roles, 'ROLE_TECHNICIAN'];
+        $roles = $this->roles;
+
+        return array_unique($roles);
     }
-    
-    public function setRoles(string $role): self
+
+    /**
+     * @param list<string> $roles
+     */
+    public function setRoles(array $roles): static
     {
-        $this->roles = $role;
+        $this->roles = $roles;
+
         return $this;
     }
-    
-    public function getRole(): string
-    {
-        return $this->roles;
-    }
-    
+
     public function hasRole(string $role): bool
     {
         return $this->roles === $role;
@@ -215,6 +226,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Equipment>
+     */
+    public function getEquipment(): Collection
+    {
+        return $this->equipment;
+    }
+
+    public function addEquipment(Equipment $equipment): static
+    {
+        if (! $this->equipment->contains($equipment)) {
+            $this->equipment->add($equipment);
+            $equipment->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEquipment(Equipment $equipment): static
+    {
+        if ($this->equipment->removeElement($equipment)) {
+            // set the owning side to null (unless already changed)
+            if ($equipment->getUser() === $this) {
+                $equipment->setUser(null);
+            }
+        }
 
         return $this;
     }

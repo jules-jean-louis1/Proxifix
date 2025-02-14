@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/admin')]
+#[Route('/api')]
 final class OperatingSystemController extends AbstractController
 {
     #[Route('/operating_system/create', name: 'app_operating_system_create', methods: ['POST'])]

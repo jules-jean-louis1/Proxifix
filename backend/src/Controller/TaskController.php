@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class TaskController extends AbstractController
 {
-    #[Route('/api/admin/task', name: 'app_task')]
+    #[Route('/api/task', name: 'app_task')]
     public function create(Request $request, EntityManagerInterface $em): JsonResponse
     {
         $payload = $request->getPayload();
@@ -42,7 +42,7 @@ final class TaskController extends AbstractController
 
     }
 
-    #[Route('/api/admin/task/{id}', name: 'app_task_update', methods: ['PUT'])]
+    #[Route('/api/task/{id}', name: 'app_task_update', methods: ['PUT'])]
     public function update(Request $request, EntityManagerInterface $em, int $id): JsonResponse
     {
         $payload = $request->getPayload();
@@ -66,7 +66,7 @@ final class TaskController extends AbstractController
         ], 200);
     }
 
-    #[Route('/api/admin/task/{id}', name: 'app_task_delete', methods: ['DELETE'])]
+    #[Route('/api/task/{id}', name: 'app_task_delete', methods: ['DELETE'])]
     public function delete(EntityManagerInterface $em, int $id): JsonResponse
     {
         $task = $em->getRepository(Task::class)->find($id);
@@ -81,7 +81,7 @@ final class TaskController extends AbstractController
         return new JsonResponse(null, 204);
     }
 
-    #[Route('/api/admin/task/{id}', name: 'app_task_show', methods: ['GET'])]
+    #[Route('/api/task/{id}', name: 'app_task_show', methods: ['GET'])]
     public function show(EntityManagerInterface $em, int $id): JsonResponse
     {
         $task = $em->getRepository(Task::class)->find($id);
