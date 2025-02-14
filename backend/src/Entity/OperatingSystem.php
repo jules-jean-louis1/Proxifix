@@ -7,8 +7,12 @@ use App\Repository\OperatingSystemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OperatingSystemRepository::class)]
+#[UniqueEntity('name')]
 #[ApiResource]
 class OperatingSystem
 {
@@ -18,6 +22,9 @@ class OperatingSystem
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(min: 3, max: 255)]
+    #[Assert\Regex(pattern: '/^[a-zA-Z0-9_]+$/', message: 'The name can only contain letters, numbers and underscores')]
+    #[Groups(['operatingSystem.create'])]
     private ?string $name = null;
 
     /**

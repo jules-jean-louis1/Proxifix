@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\TypeInterventionRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TypeInterventionRepository::class)]
@@ -21,6 +21,9 @@ class TypeIntervention
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
+
+    #[ORM\ManyToMany(targetEntity: Intervention::class, mappedBy: 'typeInterventions')]
+    private Collection $interventions;
 
     public function getId(): ?int
     {
@@ -59,6 +62,24 @@ class TypeIntervention
     public function setUpdatedAt(\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+    public function addIntervention(Intervention $intervention): self
+    {
+        if (!$this->interventions->contains($intervention)) {
+            $this->interventions->add($intervention);
+            $intervention->addTypeIntervention($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIntervention(Intervention $intervention): self
+    {
+        if ($this->interventions->removeElement($intervention)) {
+            $intervention->removeTypeIntervention($this);
+        }
 
         return $this;
     }

@@ -1,13 +1,15 @@
 <?php
-
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource()]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -15,24 +17,38 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const ROLE_ADMIN      = 'ROLE_ADMIN';
+    public const ROLE_TECHNICIAN = 'ROLE_TECHNICIAN';
+    public const ROLE_CUSTOMER   = 'ROLE_CUSTOMER';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9_]+$/',
+        message: 'The username can only contain letters, numbers and underscores'
+    )]
     private ?string $email = null;
 
     /**
-     * @var list<string> The user roles
+     * @var <string> The user roles
      */
-    #[ORM\Column]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: [self::ROLE_ADMIN, self::ROLE_TECHNICIAN, self::ROLE_TECHNICIAN], message: 'Choose a valid role.')]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\Length(min: 6, max: 255)]
+    // #[Assert\Regex(
+    //     pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/',
+    //     message: 'Password must be at least 6 characters long and contain at least one digit, one upper case letter and one lower case letter'
+    // )]
     private ?string $password = null;
 
     /**
@@ -41,9 +57,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups("user:write")]
     private ?string $plainPassword = null;
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 255)]
     private ?string $first_name = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(min: 2, max: 255)]
     private ?string $last_name = null;
 
     #[ORM\Column]
@@ -52,8 +71,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\ManyToOne(targetEntity : Company::class, inversedBy : 'users')]
     private ?Company $company = null;
+
+    /**
+     * @var Collection<int, Equipment>
+     */
+    #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'customer', cascade: ['remove'])]
+    private Collection $equipment;
 
     public function getId(): ?int
     {
@@ -64,6 +89,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
+        $this->equipment  = new ArrayCollection();
     }
 
     #[ORM\PreUpdate]
@@ -101,8 +127,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
@@ -115,6 +139,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = $roles;
 
         return $this;
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->roles === $role;
     }
 
     /**
@@ -197,6 +226,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Equipment>
+     */
+    public function getEquipment(): Collection
+    {
+        return $this->equipment;
+    }
+
+    public function addEquipment(Equipment $equipment): static
+    {
+        if (! $this->equipment->contains($equipment)) {
+            $this->equipment->add($equipment);
+            $equipment->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEquipment(Equipment $equipment): static
+    {
+        if ($this->equipment->removeElement($equipment)) {
+            // set the owning side to null (unless already changed)
+            if ($equipment->getUser() === $this) {
+                $equipment->setUser(null);
+            }
+        }
 
         return $this;
     }

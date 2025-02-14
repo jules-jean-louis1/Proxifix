@@ -25,6 +25,9 @@ class Task
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
+    #[ORM\OneToMany(mappedBy: 'task', targetEntity: TaskIntervention::class)]
+    private $taskInterventions;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -62,6 +65,26 @@ class Task
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getTaskInterventions()
+    {
+        return $this->taskInterventions;
+    }
+
+    public function addTaskIntervention(TaskIntervention $taskIntervention): self
+    {
+        $this->taskInterventions[] = $taskIntervention;
+        $taskIntervention->setTask($this);
+
+        return $this;
+    }
+
+    public function removeTaskIntervention(TaskIntervention $taskIntervention): self
+    {
+        $this->taskInterventions->removeElement($taskIntervention);
 
         return $this;
     }

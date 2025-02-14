@@ -3,7 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\EquipmentRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: EquipmentRepository::class)]
 class Equipment
@@ -11,25 +14,48 @@ class Equipment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['equipment'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['equipment'])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(['equipment'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
+    #[Groups(['equipment'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
-    private ?Customer $customer = null;
+    #[Groups(['equipment'])]
+    private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
+    #[Groups(['equipment'])]
     private ?TypeEquipment $type_equipment = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['equipment'])]
     private ?OperatingSystem $operating_system = null;
+
+    #[ORM\ManyToOne(inversedBy: 'equipment')]
+    #[Groups(['equipment'])]
+    private ?Brand $brand = null;
+
+    /**
+     * @var Collection<int, Intervention>
+     */
+    #[ORM\ManyToMany(targetEntity: Intervention::class, mappedBy: 'equipment')]
+    private Collection $interventions;
+
+    public function __construct()
+    {
+        $this->interventions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -72,14 +98,14 @@ class Equipment
         return $this;
     }
 
-    public function getCustomer(): ?Customer
+    public function getUser(): ?User
     {
-        return $this->customer;
+        return $this->user;
     }
 
-    public function setCustomer(?Customer $customer): static
+    public function setUser(?User $user): static
     {
-        $this->customer = $customer;
+        $this->user = $user;
 
         return $this;
     }
@@ -104,6 +130,45 @@ class Equipment
     public function setOperatingSystem(?OperatingSystem $operating_system): static
     {
         $this->operating_system = $operating_system;
+
+        return $this;
+    }
+
+    public function setBrand(?Brand $brand): static
+    {
+        $this->brand = $brand;
+
+        return $this;
+    }
+
+    public function getBrand(): ?Brand
+    {
+        return $this->brand;
+    }
+
+    /**
+     * @return Collection<int, Intervention>
+     */
+    public function getInterventions(): Collection
+    {
+        return $this->interventions;
+    }
+
+    public function addIntervention(Intervention $intervention): static
+    {
+        if (!$this->interventions->contains($intervention)) {
+            $this->interventions->add($intervention);
+            $intervention->addEquipment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIntervention(Intervention $intervention): static
+    {
+        if ($this->interventions->removeElement($intervention)) {
+            $intervention->removeEquipment($this);
+        }
 
         return $this;
     }

@@ -12,12 +12,13 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class RegistrationController extends AbstractController
 {
-    #[Route('/api/register', name: 'app_register')]
+    #[Route('/api/register', name: 'app_register', methods: ['POST'])]
     public function register(Request $request,
                              EntityManagerInterface $entityManager,
                              UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         $payload = $request->getPayload();
+
         $user = new User();
         $user->setEmail($payload->get('email'));
         $user->setFirstName($payload->get('first_name'));
@@ -29,9 +30,11 @@ class RegistrationController extends AbstractController
             $plaintextPassword
         );
         $user->setPassword($hashedPassword);
+        $role = $payload->get('roles') ?? User::ROLE_TECHNICIAN;
+        $user->setRoles([$role]);
         $entityManager->persist($user);
         $entityManager->flush();
 
-        return new JsonResponse(["success" => "User registred successfully"], 201);
+        return new JsonResponse(["success" => "User registered successfully"], 201);
     }
 }

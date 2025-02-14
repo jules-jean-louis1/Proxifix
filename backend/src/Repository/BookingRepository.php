@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Brand;
+use App\Entity\Booking;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Brand>
+ * @extends ServiceEntityRepository<Booking>
  */
-class BrandRepository extends ServiceEntityRepository
+class BookingRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Brand::class);
+        parent::__construct($registry, Booking::class);
     }
 
     //    /**
-    //     * @return Brand[] Returns an array of Brand objects
+    //     * @return Booking[] Returns an array of Booking objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class BrandRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Brand
+    //    public function findOneBySomeField($value): ?Booking
     //    {
     //        return $this->createQueryBuilder('b')
     //            ->andWhere('b.exampleField = :val')
@@ -40,10 +40,4 @@ class BrandRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-    public function checkBrandName(string $name): bool
-    {
-        $brand = $this->findOneBy(['name' => $name]);
-
-        return $brand !== null;
-    }
 }

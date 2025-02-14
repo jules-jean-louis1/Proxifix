@@ -9,18 +9,13 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
+#[ORM\DiscriminatorMap(["customer" => Customer::class, "user" => User::class])]
 class Customer
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $first_name = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $last_name = null;
 
     #[ORM\Column(length: 255)]
     private ?string $address = null;
@@ -34,57 +29,29 @@ class Customer
     #[ORM\Column(length: 255)]
     private ?string $mobile = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $email = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
-    /**
-     * @var Collection<int, Equipment>
-     */
-    #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'customer')]
-    private Collection $equipment;
+    #[ORM\OneToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $user = null;
 
     #[ORM\Column(type: Types::ARRAY)]
     private array $roles = [];
 
     public function __construct()
     {
-        $this->equipment = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
 
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getFirstName(): ?string
-    {
-        return $this->first_name;
-    }
-
-    public function setFirstName(string $first_name): static
-    {
-        $this->first_name = $first_name;
-
-        return $this;
-    }
-
-    public function getLastName(): ?string
-    {
-        return $this->last_name;
-    }
-
-    public function setLastName(string $last_name): static
-    {
-        $this->last_name = $last_name;
-
-        return $this;
     }
 
     public function getAddress(): ?string
@@ -135,16 +102,22 @@ class Customer
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getRoles(): array
     {
-        return $this->email;
+        // Return the roles granted to the user
+        return ['ROLE_CUSTOMER'];
     }
 
-    public function setEmail(string $email): static
+    public function getSalt(): ?string
     {
-        $this->email = $email;
+        // Not needed for modern algorithms (e.g. bcrypt, sodium)
+        return null;
+    }
 
-        return $this;
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
@@ -171,32 +144,14 @@ class Customer
         return $this;
     }
 
-    /**
-     * @return Collection<int, Equipment>
-     */
-    public function getEquipment(): Collection
+    public function getUser(): ?User
     {
-        return $this->equipment;
+        return $this->user;
     }
 
-    public function addEquipment(Equipment $equipment): static
+    public function setUser(?User $user): static
     {
-        if (!$this->equipment->contains($equipment)) {
-            $this->equipment->add($equipment);
-            $equipment->setCustomer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEquipment(Equipment $equipment): static
-    {
-        if ($this->equipment->removeElement($equipment)) {
-            // set the owning side to null (unless already changed)
-            if ($equipment->getCustomer() === $this) {
-                $equipment->setCustomer(null);
-            }
-        }
+        $this->user = $user;
 
         return $this;
     }
