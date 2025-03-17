@@ -39,18 +39,6 @@ class CustomerRegistrationController extends AbstractController
                 ->setUpdatedAt(new \DateTimeImmutable());
 
             $entityManager->persist($user);
-
-            $customer = new Customer();
-            $customer->setAddress($payload->get('address') ?? '')
-                ->setCity($payload->get('city') ?? '')
-                ->setZipCode($payload->get('zip_code') ?? '')
-                ->setMobile($payload->get('mobile') ?? '')
-                ->setCreatedAt(new \DateTimeImmutable())
-                ->setUpdatedAt(new \DateTimeImmutable())
-                ->setUser($user);
-
-            $entityManager->persist($customer);
-
             $entityManager->flush();
             $entityManager->commit();
 

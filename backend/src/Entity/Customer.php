@@ -39,9 +39,6 @@ class Customer
     #[ORM\JoinColumn(nullable: true)]
     private ?User $user = null;
 
-    #[ORM\Column(type: Types::ARRAY)]
-    private array $roles = [];
-
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
@@ -146,23 +143,6 @@ class Customer
     public function setUser(?User $user): static
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    public function getRoles(): array
-    {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
-
-    }
-
-    public function setRoles(array $roles): static
-    {
-        $this->roles = $roles;
 
         return $this;
     }
