@@ -96,12 +96,6 @@ class Customer
         return $this;
     }
 
-    public function getRoles(): array
-    {
-        // Return the roles granted to the user
-        return ['ROLE_CUSTOMER'];
-    }
-
     public function getSalt(): ?string
     {
         // Not needed for modern algorithms (e.g. bcrypt, sodium)
