@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -11,25 +12,27 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource()]
+#[ApiResource]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
-#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\Table(name: "`user`")]
+#[ORM\UniqueConstraint(name: "UNIQ_IDENTIFIER_EMAIL", fields: ["email"])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    public const ROLE_ADMIN      = 'ROLE_ADMIN';
-    public const ROLE_TECHNICIAN = 'ROLE_TECHNICIAN';
-    public const ROLE_CUSTOMER   = 'ROLE_CUSTOMER';
+    public const ROLE_ADMIN = "ROLE_ADMIN";
+    public const ROLE_TECHNICIAN = "ROLE_TECHNICIAN";
+    public const ROLE_CUSTOMER = "ROLE_CUSTOMER";
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Assert\Regex(
-        pattern: '/^[a-zA-Z0-9_]+$/',
-        message: 'The username can only contain letters, numbers and underscores'
-    )]
+    #[
+        Assert\Regex(
+            pattern: '/^[a-zA-Z0-9_]+$/',
+            message: "The username can only contain letters, numbers and underscores"
+        )
+    ]
     private ?string $email = null;
 
     /**
@@ -37,18 +40,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Assert\Choice(choices: [self::ROLE_ADMIN, self::ROLE_TECHNICIAN, self::ROLE_TECHNICIAN], message: 'Choose a valid role.')]
+    #[
+        Assert\Choice(
+            choices: [
+                self::ROLE_ADMIN,
+                self::ROLE_TECHNICIAN,
+                self::ROLE_TECHNICIAN,
+            ],
+            message: "Choose a valid role."
+        )
+    ]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
-    #[ORM\Column]
-    #[Assert\Length(min: 6, max: 255)]
     // #[Assert\Regex(
     //     pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/',
     //     message: 'Password must be at least 6 characters long and contain at least one digit, one upper case letter and one lower case letter'
     // )]
+    #[ORM\Column]
+    #[Assert\Length(min: 6, max: 255)]
     private ?string $password = null;
 
     /**
@@ -71,14 +83,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\ManyToOne(targetEntity : Company::class, inversedBy : 'users')]
+    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: "users")]
     private ?Company $company = null;
 
     /**
      * @var Collection<int, Equipment>
      */
-    #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'customer', cascade: ['remove'])]
+    #[
+        ORM\OneToMany(
+            targetEntity: Equipment::class,
+            mappedBy: "customer",
+            cascade: ["remove"]
+        )
+    ]
     private Collection $equipment;
+
+    /**
+     * @var Collection<int, AppointmentRequest>
+     */
+    #[
+        ORM\OneToMany(
+            targetEntity: AppointmentRequest::class,
+            mappedBy: "user_id",
+            orphanRemoval: true
+        )
+    ]
+    private Collection $appointmentRequests;
 
     public function getId(): ?int
     {
@@ -89,14 +119,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
-        $this->equipment  = new ArrayCollection();
+        $this->equipment = new ArrayCollection();
+        $this->appointmentRequests = new ArrayCollection();
     }
 
     #[ORM\PreUpdate]
-    public function onPreUpdate()
+    public function onPreUpdate(): void
     {
         $this->updated_at = new \DateTimeImmutable();
     }
+
     public function getEmail(): ?string
     {
         return $this->email;
@@ -116,13 +148,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
+     * @return list<string>
      * @see UserInterface
      *
-     * @return list<string>
      */
     public function getRoles(): array
     {
@@ -240,7 +272,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addEquipment(Equipment $equipment): static
     {
-        if (! $this->equipment->contains($equipment)) {
+        if (!$this->equipment->contains($equipment)) {
             $this->equipment->add($equipment);
             $equipment->setUser($this);
         }
@@ -254,6 +286,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($equipment->getUser() === $this) {
                 $equipment->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AppointmentRequest>
+     */
+    public function getAppointmentRequests(): Collection
+    {
+        return $this->appointmentRequests;
+    }
+
+    public function addAppointmentRequest(
+        AppointmentRequest $appointmentRequest
+    ): static
+    {
+        if (!$this->appointmentRequests->contains($appointmentRequest)) {
+            $this->appointmentRequests->add($appointmentRequest);
+            $appointmentRequest->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAppointmentRequest(
+        AppointmentRequest $appointmentRequest
+    ): static
+    {
+        if ($this->appointmentRequests->removeElement($appointmentRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($appointmentRequest->getUserId() === $this) {
+                $appointmentRequest->setUserId(null);
             }
         }
 
