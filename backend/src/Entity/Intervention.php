@@ -29,10 +29,10 @@ class Intervention
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable : false)]
+    #[ORM\JoinColumn(nullable: false)]
     private ?TypeIntervention $type = null;
 
-    #[ORM\ManyToOne(inversedBy : 'interventions')]
+    #[ORM\ManyToOne(inversedBy: "interventions")]
     private ?Company $company = null;
 
     #[ORM\ManyToOne]
@@ -41,19 +41,35 @@ class Intervention
     #[ORM\ManyToOne]
     private ?User $user = null;
 
-    #[ORM\OneToMany(mappedBy: 'intervention', targetEntity: TaskIntervention::class)]
+    #[
+        ORM\OneToMany(
+            mappedBy: "intervention",
+            targetEntity: TaskIntervention::class
+        )
+    ]
     private Collection $taskInterventions;
 
     /**
      * @var Collection<int, Booking>
      */
-    #[ORM\OneToMany(targetEntity: Booking::class, mappedBy: 'intervention', orphanRemoval: true)]
+    #[
+        ORM\OneToMany(
+            targetEntity: Booking::class,
+            mappedBy: "intervention",
+            orphanRemoval: true
+        )
+    ]
     private Collection $bookings;
 
     /**
      * @var Collection<int, Equipment>
      */
-    #[ORM\ManyToMany(targetEntity: Equipment::class, inversedBy: 'interventions')]
+    #[
+        ORM\ManyToMany(
+            targetEntity: Equipment::class,
+            inversedBy: "interventions"
+        )
+    ]
     private Collection $equipment;
 
     public function __construct()
@@ -169,16 +185,18 @@ class Intervention
         return $this->taskInterventions;
     }
 
-    public function addTaskIntervention(TaskIntervention $taskIntervention): self
-    {
+    public function addTaskIntervention(
+        TaskIntervention $taskIntervention
+    ): self {
         $this->taskInterventions[] = $taskIntervention;
         $taskIntervention->setIntervention($this);
 
         return $this;
     }
 
-    public function removeTaskIntervention(TaskIntervention $taskIntervention): self
-    {
+    public function removeTaskIntervention(
+        TaskIntervention $taskIntervention
+    ): self {
         $this->taskInterventions->removeElement($taskIntervention);
 
         return $this;
@@ -222,7 +240,7 @@ class Intervention
         return $this->equipment;
     }
 
-    public function addequipment(Equipment $equipment): static
+    public function addEquipment(Equipment $equipment): static
     {
         if (!$this->equipment->contains($equipment)) {
             $this->equipment->add($equipment);
