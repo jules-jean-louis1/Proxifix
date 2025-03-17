@@ -81,6 +81,10 @@ const Profile = () => {
 
     return (
         <View style={styles.container}>
+            <View style={styles.navigation}>
+                <Text style={styles.navigationText}>Compte</Text>
+                <Text style={styles.navigationText}>Adresse</Text>
+            </View>
             <View style={styles.form}>
                 <Text style={styles.subtitle}>Informations de votre compte utilisateur</Text>
                 <Text style={styles.text}>Mettre à jour vos informations</Text>
@@ -113,6 +117,17 @@ const Profile = () => {
                         onChangeText={(value) => handleInputChange('firstName', value)}
                         value={userData.firstName}
                     />
+                </View>
+
+                <View style={styles.fieldSet}>
+                    <Text style={styles.legend}>Téléphone</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Téléphone"
+                        onChangeText={(value) => handleInputChange('phoneNumber', value)}
+                        value={"a changer"}
+                    >
+                    </TextInput>
                 </View>
 
                 <CancelButton>Annuler</CancelButton>
@@ -181,6 +196,18 @@ const styles = StyleSheet.create({
         fontWeight: 'regular',
         backgroundColor: '#fff',
         paddingHorizontal: 5,
+    },
+    navigation: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+    },
+
+    navigationText: {
+        fontFamily: 'Rubik-Bold.ttf',
+        fontWeight: 'bold',
+        marginBottom: 20,
+        color: '#5B6880',
     },
     error: {
         color: 'red',
