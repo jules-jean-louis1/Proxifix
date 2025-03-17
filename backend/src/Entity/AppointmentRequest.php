@@ -30,7 +30,10 @@ class AppointmentRequest
 
     #[ORM\ManyToOne(inversedBy: 'appointmentRequests')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user_id = null;
+    private ?User $user = null;
+
+    #[ORM\OneToOne(mappedBy: 'AppointmentRequest', cascade: ['persist', 'remove'])]
+    private ?Booking $booking = null;
 
     public function getId(): ?int
     {
@@ -87,12 +90,34 @@ class AppointmentRequest
 
     public function getUserId(): ?User
     {
-        return $this->user_id;
+        return $this->user;
     }
 
-    public function setUserId(?User $user_id): static
+    public function setUserId(?User $user): static
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getBooking(): ?Booking
+    {
+        return $this->booking;
+    }
+
+    public function setBooking(?Booking $booking): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($booking === null && $this->booking !== null) {
+            $this->booking->setAppointmentRequest(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($booking !== null && $booking->getAppointmentRequest() !== $this) {
+            $booking->setAppointmentRequest($this);
+        }
+
+        $this->booking = $booking;
 
         return $this;
     }

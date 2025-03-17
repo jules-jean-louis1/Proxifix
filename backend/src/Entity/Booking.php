@@ -43,6 +43,9 @@ class Booking
     #[ORM\JoinColumn(nullable: true)]
     private ?User $approved_by = null;
 
+    #[ORM\OneToOne(inversedBy: 'booking', cascade: ['persist', 'remove'])]
+    private ?AppointmentRequest $AppointmentRequest = null;
+
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
@@ -158,6 +161,18 @@ class Booking
     public function setApprovedBy(?User $approved_by): static
     {
         $this->approved_by = $approved_by;
+
+        return $this;
+    }
+
+    public function getAppointmentRequest(): ?AppointmentRequest
+    {
+        return $this->AppointmentRequest;
+    }
+
+    public function setAppointmentRequest(?AppointmentRequest $AppointmentRequest): static
+    {
+        $this->AppointmentRequest = $AppointmentRequest;
 
         return $this;
     }
