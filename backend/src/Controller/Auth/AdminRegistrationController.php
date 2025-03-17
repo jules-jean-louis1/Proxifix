@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Auth;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,9 +10,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-class RegistrationController extends AbstractController
+class AdminRegistrationController extends AbstractController
 {
-    #[Route('/api/register', name: 'app_register', methods: ['POST'])]
+    #[Route('/api/auth/admin/register', name: 'app_register', methods: ['POST'])]
     public function register(Request $request,
                              EntityManagerInterface $entityManager,
                              UserPasswordHasherInterface $passwordHasher): JsonResponse
