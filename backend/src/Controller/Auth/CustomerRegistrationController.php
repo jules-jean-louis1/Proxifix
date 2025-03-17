@@ -1,5 +1,5 @@
 <?php
-namespace App\Controller;
+namespace App\Controller\Auth;
 
 use App\Entity\Customer;
 use App\Entity\User;
@@ -11,10 +11,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route("/api/customer")]
-class CustomerController extends AbstractController
+#[Route("/api/auth/customer")]
+class CustomerRegistrationController extends AbstractController
 {
-    #[Route('/create', name: 'app_customer_create', methods: ['POST'])]
+    #[Route('/register', name: 'app_customer_create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         try {
