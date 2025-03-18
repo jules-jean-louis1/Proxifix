@@ -34,6 +34,7 @@ export default function TabLayout() {
                 options={{
                     title: 'Inscription',
                     tabBarIcon: ({ color }) => <FontAwesome size={28} name="registered" color={color} />,
+                    tabBarStyle: { display: 'none' }
                 }}
             />
 

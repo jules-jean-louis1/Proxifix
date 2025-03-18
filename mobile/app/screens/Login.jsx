@@ -33,7 +33,7 @@ export default function LoginForm() {
                 <Text style={styles.title}>Connexion à votre espace client en ligne</Text>
                 {/* Fieldset pour l'input Mot de passe */}
                 <View style={styles.fieldSet}>
-                    <Text style={styles.legend}>Identifiant ou adresse email</Text>
+                    <Text style={styles.legend}>Adresse email</Text>
                     <TextInput
                         style={styles.input}
                         placeholder="Entrez votre identifiant ou adresse email"
@@ -44,7 +44,7 @@ export default function LoginForm() {
 
                 {/* Fieldset pour l'input Email */}
                 <View style={styles.fieldSet}>
-                    <Text style={styles.legend}>Votre mot de passe</Text>
+                    <Text style={styles.legend}>Mot de passe</Text>
                     <TextInput
                         style={styles.input}
                         placeholder="Entrez votre mot de passe"
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 10,
+        marginBottom: 20,
     },
     subtitle: {
         textAlign: 'center',
