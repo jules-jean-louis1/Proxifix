@@ -71,7 +71,7 @@ export default function HomeScreen() {
                         Espace Client
                     </RedButtonHome>
 
-                    <BlueButtonHome onPress={() => router.push('/espace-technicien')}>
+                    <BlueButtonHome onPress={() => router.push('/technicien')}>
                         Espace Technicien
                     </BlueButtonHome>
                 </>
