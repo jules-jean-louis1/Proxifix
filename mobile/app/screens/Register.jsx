@@ -15,7 +15,7 @@ export default function RegisterForm() {
 
     const handleRegister = async () => {
         try {
-            const response = await axios.post('http://10.0.2.2:8000/api/register', {
+            const response = await axios.post('http://10.0.2.2:8000/api/auth/customer/register', {
                 email,
                 first_name: firstName,
                 last_name: lastName,
