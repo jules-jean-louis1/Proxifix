@@ -1,5 +1,5 @@
 // app/screens/Login.jsx
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image} from 'react-native';
 import axios from 'axios';
 import logo from '../assets/images/logo_proaxive2.png';
@@ -14,11 +14,11 @@ export default function LoginForm() {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://10.0.2.2:8000/api/login', { email, password });
+            const response = await axios.post('http://10.0.2.2:8000/api/login', {email, password});
             if (response.status === 200) {
                 await AsyncStorage.setItem('userToken', response.data.token);
                 Alert.alert('Login réussi', 'Vous êtes connecté.');
-                router.push('/profile'); 
+                router.push('/profile');
             }
         } catch (error) {
             Alert.alert('Erreur', 'Problème de connexion. Veuillez réessayer.');
@@ -28,11 +28,9 @@ export default function LoginForm() {
 
     return (
         <View style={styles.container}>
-            <Image source={logo} style={styles.image} />
+            <Image source={logo} style={styles.image}/>
             <View style={styles.form}>
                 <Text style={styles.title}>Connexion à votre espace client en ligne</Text>
-                <Text style={styles.subtitle}>Pour vous connecter, utilisez votre adresse email fournie au technicien.</Text>
-
                 {/* Fieldset pour l'input Mot de passe */}
                 <View style={styles.fieldSet}>
                     <Text style={styles.legend}>Identifiant ou adresse email</Text>
@@ -63,13 +61,25 @@ export default function LoginForm() {
                 <Text style={styles.buttonText}>Se connecter</Text>
             </TouchableOpacity>
 
+            <View style={styles.containerBar}>
+                <View style={styles.horizontalBar}/>
+                <Text style={styles.text}>ou</Text>
+                <View style={styles.horizontalBar}/>
+            </View>
+
+            <View style={styles.registerContainer}>
+                <Text style={styles.registerText}>Si vous n’avez pas de compte</Text>
+                <TouchableOpacity onPress={() => router.push('/register')}>
+                    <Text style={styles.register}>INSCRIVEZ-VOUS</Text>
+                </TouchableOpacity>
+            </View>
+
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#F0F3F4',
@@ -131,11 +141,43 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         paddingVertical: 20,
         borderRadius: 10,
-        marginTop: 40,
+        marginTop: 30,
         width: '79%',
     },
     buttonText: {
         color: '#fff',
         textAlign: 'center',
     },
+    containerBar: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        marginTop: 30,
+    },
+    horizontalBar: {
+        backgroundColor: '#637381',
+        height: 1,
+        width: '30%',
+        marginHorizontal: 20,
+    },
+    text: {
+        fontSize: 16,
+        color: '#637381',
+    },
+    registerContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+    },
+    registerText: {
+        fontSize: 14,
+        color: '#637381',
+        marginBottom: 10,
+    },
+    register: {
+        fontSize: 13,
+        fontWeight: 'bold',
+        textDecorationLine: 'underline',
+        color: '#01358D',
+    }
 });

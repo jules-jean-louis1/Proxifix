@@ -42,6 +42,8 @@ export default function TabLayout() {
                 options={{
                     title: 'Connexion',
                     tabBarIcon: ({ color }) => <FontAwesome size={28} name="registered" color={color} />,
+                    tabBarStyle: { display: 'none' }
+
                 }}
             />
         </Tabs>
