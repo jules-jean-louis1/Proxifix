@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image } from 'react-native';
 import axios from 'axios';
+import {useRouter} from "expo-router";
 import logo from "../assets/images/logo_proaxive2.png";
 
 export default function RegisterForm() {
@@ -9,10 +10,12 @@ export default function RegisterForm() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [password, setPassword] = useState('');
+    const router = useRouter();
+
 
     const handleRegister = async () => {
         try {
-            const response = await axios.post('http://10.0.2.2:8000/api/register', {
+            const response = await axios.post('http://10.0.2.2:8000/api/auth/customer/register', {
                 email,
                 first_name: firstName,
                 last_name: lastName,
@@ -30,14 +33,14 @@ export default function RegisterForm() {
         <View style={styles.container}>
             <Image source={logo} style={styles.image} />
             <View style={styles.form}>
-                <Text style={styles.title}>Enregistrer un compte client en ligne</Text>
+                <Text style={styles.title}>Créer votre espace client</Text>
 
                 <View style={styles.fieldSet}>
                     <Text style={styles.legend}>Adresse email</Text>
                     <TextInput
                         style={styles.input}
                         placeholderTextColor="#344260"
-                        placeholder="adresse email"
+                        placeholder="Entrez votre adresse email"
                         value={email}
                         onChangeText={setEmail}
                     />
@@ -47,7 +50,7 @@ export default function RegisterForm() {
                     <TextInput
                         style={styles.input}
                         placeholderTextColor="#344260"
-                        placeholder="Prénom"
+                        placeholder="Entrez votre prénom"
                         value={firstName}
                         onChangeText={setFirstName}
                     />
@@ -57,7 +60,7 @@ export default function RegisterForm() {
                     <TextInput
                         style={styles.input}
                         placeholderTextColor="#344260"
-                        placeholder="Nom"
+                        placeholder="Entrez votre nom"
                         value={lastName}
                         onChangeText={setLastName}
                     />
@@ -68,27 +71,41 @@ export default function RegisterForm() {
                     <TextInput
                         style={styles.input}
                         placeholderTextColor="#344260"
-                        placeholder="Mot de passe"
+                        placeholder="Entrez votre mot de passe"
                         secureTextEntry={true}
                         value={password}
                         onChangeText={setPassword}
                     />
                 </View>
+            </View>
 
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={handleRegister}
-                >
-                    <Text style={styles.buttonText}>S'inscrire</Text>
+            <TouchableOpacity
+                style={styles.button}
+                onPress={handleRegister}
+            >
+                <Text style={styles.buttonText}>S'inscrire</Text>
+            </TouchableOpacity>
+
+            <View style={styles.containerBar}>
+                <View style={styles.horizontalBar}/>
+                <Text style={styles.text}>ou</Text>
+                <View style={styles.horizontalBar}/>
+            </View>
+
+            <View style={styles.loginContainer}>
+                <Text style={styles.loginText}>Si vous avez déjà un compte</Text>
+                <TouchableOpacity onPress={() => router.push('/login')}>
+                    <Text style={styles.login}>CONNECTEZ-VOUS</Text>
                 </TouchableOpacity>
             </View>
         </View>
+
+
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#F0F3F4',
@@ -124,7 +141,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 10,
+        marginBottom: 20,
     },
     input: {
         height: 40,
@@ -138,11 +155,44 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         paddingVertical: 20,
         borderRadius: 10,
-        marginTop: 40,
+        marginTop: 30,
         width: '79%',
     },
     buttonText: {
         color: '#fff',
         textAlign: 'center',
     },
+
+    containerBar: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        marginTop: 30,
+    },
+    horizontalBar: {
+        backgroundColor: '#637381',
+        height: 1,
+        width: '30%',
+        marginHorizontal: 20,
+    },
+    text: {
+        fontSize: 16,
+        color: '#637381',
+    },
+    loginContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+    },
+    loginText: {
+        fontSize: 14,
+        color: '#637381',
+        marginBottom: 10,
+    },
+    login: {
+        fontSize: 13,
+        fontWeight: 'bold',
+        textDecorationLine: 'underline',
+        color: '#01358D',
+    }
 });
