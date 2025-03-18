@@ -47,6 +47,26 @@ export default function TabLayout() {
 
                 }}
             />
+
+            <Tabs.Screen
+                name="technicien"
+                options={{
+                    title: 'Connexion Technicien',
+                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="registered" color={color} />,
+                    tabBarStyle: { display: 'none' }
+
+                }}
+            />
+
+            <Tabs.Screen
+                name="registertechnicien"
+                options={{
+                    title: 'Inscription Technicien',
+                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="registered" color={color} />,
+                    tabBarStyle: { display: 'none' }
+
+                }}
+            />
         </Tabs>
     );
 }
