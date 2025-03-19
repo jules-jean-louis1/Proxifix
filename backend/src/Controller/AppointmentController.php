@@ -113,7 +113,7 @@ final class AppointmentController extends AbstractController
 
         return $this->json($data, Response::HTTP_OK);
     }
-    #[Route('/appointment', name: 'patch_appointment', methods: ['PATCH'])]
+    #[Route('/', name: 'patch_appointment', methods: ['PATCH'])]
     #[IsGranted(User::ROLE_TECHNICIAN)]
     #[IsGranted(User::ROLE_ADMIN)]
     public function insertAppointmentToBooking(Request $request, EntityManagerInterface $em): JsonResponse
