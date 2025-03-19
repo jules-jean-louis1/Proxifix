@@ -306,7 +306,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->appointmentRequests->contains($appointmentRequest)) {
             $this->appointmentRequests->add($appointmentRequest);
-            $appointmentRequest->setUserId($this);
+            $appointmentRequest->setUser($this);
         }
 
         return $this;
@@ -318,8 +318,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->appointmentRequests->removeElement($appointmentRequest)) {
             // set the owning side to null (unless already changed)
-            if ($appointmentRequest->getUserId() === $this) {
-                $appointmentRequest->setUserId(null);
+            if ($appointmentRequest->getUser() === $this) {
+                $appointmentRequest->setUser(null);
             }
         }
 

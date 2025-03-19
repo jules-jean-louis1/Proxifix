@@ -16,6 +16,23 @@ class BookingRepository extends ServiceEntityRepository
         parent::__construct($registry, Booking::class);
     }
 
+    public function getFreeSlots(\DateTime $date, ?int $companyId = null, ?int $interval_min = null): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+    
+        $query = <<<SQL
+            SELECT * 
+            FROM get_free_slots(:date, :company_id, :interval)
+        SQL;
+    
+        $result = $conn->executeQuery($query, [
+            'date' => $date->format('Y-m-d'),
+            'company_id' => $companyId ?? 0,
+            'interval' => $interval_min ?? 60,
+        ]);
+    
+        return $result->fetchAllAssociative();
+    }
     //    /**
     //     * @return Booking[] Returns an array of Booking objects
     //     */

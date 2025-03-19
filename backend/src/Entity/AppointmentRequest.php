@@ -1,9 +1,10 @@
 <?php
-
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\AppointmentRequestRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -11,29 +12,46 @@ use Doctrine\ORM\Mapping as ORM;
 #[ApiResource]
 class AppointmentRequest
 {
+    public const PENDING  = "pending";
+    public const ACCEPTED = "accepted";
+    public const REJECTED = "rejected";
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $date = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length : 255)]
     private ?string $status = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type : Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\ManyToOne(inversedBy: 'appointmentRequests')]
+    #[ORM\ManyToOne(inversedBy : 'appointmentRequests')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
     #[ORM\OneToOne(mappedBy: 'AppointmentRequest', cascade: ['persist', 'remove'])]
     private ?Booking $booking = null;
+
+    #[ORM\ManyToOne]
+    private ?Company $company = null;
+
+    /**
+     * @var Collection<int, AppointmentEquipment>
+     */
+    #[ORM\OneToMany(targetEntity: AppointmentEquipment::class, mappedBy: 'appointment')]
+    private Collection $appointmentEquipment;
+
+    public function __construct()
+    {
+        $this->appointmentEquipment = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -88,12 +106,12 @@ class AppointmentRequest
         return $this;
     }
 
-    public function getUserId(): ?User
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUserId(?User $user): static
+    public function setUser(?User $user): static
     {
         $this->user = $user;
 
@@ -121,4 +139,58 @@ class AppointmentRequest
 
         return $this;
     }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): static
+    {
+        $this->company = $company;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AppointmentEquipment>
+     */
+    public function getAppointmentEquipment(): Collection
+    {
+        return $this->appointmentEquipment;
+    }
+
+    public function addAppointmentEquipment(AppointmentEquipment $appointmentEquipment): static
+    {
+        if (! $this->appointmentEquipment->contains($appointmentEquipment)) {
+            $this->appointmentEquipment->add($appointmentEquipment);
+            $appointmentEquipment->setAppointment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAppointmentEquipment(AppointmentEquipment $appointmentEquipment): static
+    {
+        if ($this->appointmentEquipment->removeElement($appointmentEquipment)) {
+            // set the owning side to null (unless already changed)
+            if ($appointmentEquipment->getAppointment() === $this) {
+                $appointmentEquipment->setAppointment(null);
+            }
+        }
+
+        return $this;
+    }
+    public function getEquipments(): array
+    {
+        return $this->appointmentEquipment->map(function (AppointmentEquipment $appointmentEquipment) {
+            return $appointmentEquipment->getEquipment();
+        })->toArray();
+    }
+    public function getEquipmentIds(): array
+{
+    return $this->appointmentEquipment->map(function (AppointmentEquipment $appointmentEquipment) {
+        return $appointmentEquipment->getEquipment()->getId();
+    })->toArray();
+}
 }
