@@ -94,7 +94,7 @@ export default function RegisterForm() {
 
             <View style={styles.loginContainer}>
                 <Text style={styles.loginText}>Si vous avez déjà un compte</Text>
-                <TouchableOpacity onPress={() => router.push('/login')}>
+                <TouchableOpacity onPress={() => router.push('/auth/login')}>
                     <Text style={styles.login}>CONNECTEZ-VOUS</Text>
                 </TouchableOpacity>
             </View>

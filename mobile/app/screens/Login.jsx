@@ -14,7 +14,7 @@ export default function LoginForm() {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://10.0.2.2:8000/api/auth/customerlogin', {email, password});
+            const response = await axios.post('http://10.0.2.2:8000/api/auth/customer/login', {email, password});
             if (response.status === 200) {
                 await AsyncStorage.setItem('userToken', response.data.token);
                 Alert.alert('Login réussi', 'Vous êtes connecté.');
@@ -69,7 +69,7 @@ export default function LoginForm() {
 
             <View style={styles.registerContainer}>
                 <Text style={styles.registerText}>Si vous n’avez pas de compte</Text>
-                <TouchableOpacity onPress={() => router.push('/register')}>
+                <TouchableOpacity onPress={() => router.push('/auth/register')}>
                     <Text style={styles.register}>INSCRIVEZ-VOUS</Text>
                 </TouchableOpacity>
             </View>
