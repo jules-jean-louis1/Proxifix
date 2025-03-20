@@ -67,12 +67,12 @@ export default function HomeScreen() {
             {/* Registration and Login Buttons */}
             {!isLoggedIn && (
                 <>
-                    <RedButtonHome onPress={() => router.push('/register')}>
-                        Inscription
+                    <RedButtonHome onPress={() => router.push('/login')}>
+                        Espace Client
                     </RedButtonHome>
 
-                    <BlueButtonHome onPress={() => router.push('/login')}>
-                        Connexion
+                    <BlueButtonHome onPress={() => router.push('/technicien')}>
+                        Espace Technicien
                     </BlueButtonHome>
                 </>
             )}

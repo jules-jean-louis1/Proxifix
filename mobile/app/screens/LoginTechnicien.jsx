@@ -7,14 +7,14 @@ import {useRouter} from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
-export default function LoginForm() {
+export default function LoginTechnicienForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://10.0.2.2:8000/api/auth/customerlogin', {email, password});
+            const response = await axios.post('http://10.0.2.2:8000/api/auth/admin/login', {email, password});
             if (response.status === 200) {
                 await AsyncStorage.setItem('userToken', response.data.token);
                 Alert.alert('Login réussi', 'Vous êtes connecté.');
@@ -30,7 +30,7 @@ export default function LoginForm() {
         <View style={styles.container}>
             <Image source={logo} style={styles.image}/>
             <View style={styles.form}>
-                <Text style={styles.title}>Connexion à votre espace client en ligne</Text>
+                <Text style={styles.title}>Connexion à votre espace technicien en ligne</Text>
                 {/* Fieldset pour l'input Mot de passe */}
                 <View style={styles.fieldSet}>
                     <Text style={styles.legend}>Adresse email</Text>
@@ -69,7 +69,7 @@ export default function LoginForm() {
 
             <View style={styles.registerContainer}>
                 <Text style={styles.registerText}>Si vous n’avez pas de compte</Text>
-                <TouchableOpacity onPress={() => router.push('/register')}>
+                <TouchableOpacity onPress={() => router.push('/registertechnicien')}>
                     <Text style={styles.register}>INSCRIVEZ-VOUS</Text>
                 </TouchableOpacity>
             </View>

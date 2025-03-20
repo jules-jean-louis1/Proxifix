@@ -1,64 +1,89 @@
-// app/screens/Login.jsx
-import React, {useState} from 'react';
-import {View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image} from 'react-native';
+// app/screens/Register.jsx
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image } from 'react-native';
 import axios from 'axios';
-import logo from '../assets/images/logo_proaxive2.png';
 import {useRouter} from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import logo from "../assets/images/logo_proaxive2.png";
 
-
-export default function LoginForm() {
+export default function RegisterTechnicienForm() {
     const [email, setEmail] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
 
-    const handleLogin = async () => {
+
+    const handleRegister = async () => {
         try {
-            const response = await axios.post('http://10.0.2.2:8000/api/auth/customerlogin', {email, password});
-            if (response.status === 200) {
-                await AsyncStorage.setItem('userToken', response.data.token);
-                Alert.alert('Login réussi', 'Vous êtes connecté.');
-                router.push('/profile');
+            const response = await axios.post('http://10.0.2.2:8000/api/auth/admin/register', {
+                email,
+                first_name: firstName,
+                last_name: lastName,
+                password
+            });
+            if (response.status === 201) {
+                Alert.alert('Inscription réussie', 'Votre compte a été créé.');
             }
         } catch (error) {
-            Alert.alert('Erreur', 'Problème de connexion. Veuillez réessayer.');
+            Alert.alert('Erreur', 'Problème lors de l\'inscription.');
         }
     };
 
-
     return (
         <View style={styles.container}>
-            <Image source={logo} style={styles.image}/>
+            <Image source={logo} style={styles.image} />
             <View style={styles.form}>
-                <Text style={styles.title}>Connexion à votre espace client en ligne</Text>
-                {/* Fieldset pour l'input Mot de passe */}
+                <Text style={styles.title}>Créer votre espace technicien</Text>
+
                 <View style={styles.fieldSet}>
                     <Text style={styles.legend}>Adresse email</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="Entrez votre identifiant ou adresse email"
+                        placeholderTextColor="#344260"
+                        placeholder="Entrez votre adresse email"
                         value={email}
                         onChangeText={setEmail}
                     />
                 </View>
+                <View style={styles.fieldSet}>
+                    <Text style={styles.legend}>Prénom</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholderTextColor="#344260"
+                        placeholder="Entrez votre prénom"
+                        value={firstName}
+                        onChangeText={setFirstName}
+                    />
+                </View>
+                <View style={styles.fieldSet}>
+                    <Text style={styles.legend}>Nom</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholderTextColor="#344260"
+                        placeholder="Entrez votre nom"
+                        value={lastName}
+                        onChangeText={setLastName}
+                    />
+                </View>
 
-                {/* Fieldset pour l'input Email */}
                 <View style={styles.fieldSet}>
                     <Text style={styles.legend}>Mot de passe</Text>
                     <TextInput
                         style={styles.input}
+                        placeholderTextColor="#344260"
                         placeholder="Entrez votre mot de passe"
                         secureTextEntry={true}
                         value={password}
                         onChangeText={setPassword}
                     />
                 </View>
-
-                <Text style={styles.inline}>Votre accès est confidentiel, ne le communiquez jamais à autrui.</Text>
             </View>
 
-            <TouchableOpacity onPress={handleLogin} style={styles.button}>
-                <Text style={styles.buttonText}>Se connecter</Text>
+            <TouchableOpacity
+                style={styles.button}
+                onPress={handleRegister}
+            >
+                <Text style={styles.buttonText}>S'inscrire</Text>
             </TouchableOpacity>
 
             <View style={styles.containerBar}>
@@ -67,14 +92,15 @@ export default function LoginForm() {
                 <View style={styles.horizontalBar}/>
             </View>
 
-            <View style={styles.registerContainer}>
-                <Text style={styles.registerText}>Si vous n’avez pas de compte</Text>
-                <TouchableOpacity onPress={() => router.push('/register')}>
-                    <Text style={styles.register}>INSCRIVEZ-VOUS</Text>
+            <View style={styles.loginContainer}>
+                <Text style={styles.loginText}>Si vous avez déjà un compte</Text>
+                <TouchableOpacity onPress={() => router.push('/technicien')}>
+                    <Text style={styles.login}>CONNECTEZ-VOUS</Text>
                 </TouchableOpacity>
             </View>
-
         </View>
+
+
     );
 }
 
@@ -117,24 +143,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
     },
-    subtitle: {
-        textAlign: 'center',
-        fontSize: 16,
-        marginTop: 20,
-        marginBottom: 40,
-    },
-    inline: {
-        textAlign: 'center',
-        color: '#5B6880',
-        fontSize: 14,
-        marginVertical: 20,
-    },
     input: {
-        marginTop: 10,
-        height: 40, // Less or equal 40 = doesnt show text android 💩
+        height: 40,
         borderWidth: 0,
         paddingLeft: 10,
         width: '100%',
+        color: '#000',
     },
     button: {
         backgroundColor: '#F9556D',
@@ -148,6 +162,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         textAlign: 'center',
     },
+
     containerBar: {
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -164,17 +179,17 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#637381',
     },
-    registerContainer: {
+    loginContainer: {
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 10,
     },
-    registerText: {
+    loginText: {
         fontSize: 14,
         color: '#637381',
         marginBottom: 10,
     },
-    register: {
+    login: {
         fontSize: 13,
         fontWeight: 'bold',
         textDecorationLine: 'underline',

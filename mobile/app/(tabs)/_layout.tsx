@@ -34,6 +34,7 @@ export default function TabLayout() {
                 options={{
                     title: 'Inscription',
                     tabBarIcon: ({ color }) => <FontAwesome size={28} name="registered" color={color} />,
+                    tabBarStyle: { display: 'none' }
                 }}
             />
 
@@ -42,6 +43,28 @@ export default function TabLayout() {
                 options={{
                     title: 'Connexion',
                     tabBarIcon: ({ color }) => <FontAwesome size={28} name="registered" color={color} />,
+                    tabBarStyle: { display: 'none' }
+
+                }}
+            />
+
+            <Tabs.Screen
+                name="technicien"
+                options={{
+                    title: 'Connexion Technicien',
+                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="registered" color={color} />,
+                    tabBarStyle: { display: 'none' }
+
+                }}
+            />
+
+            <Tabs.Screen
+                name="registertechnicien"
+                options={{
+                    title: 'Inscription Technicien',
+                    tabBarIcon: ({ color }) => <FontAwesome size={28} name="registered" color={color} />,
+                    tabBarStyle: { display: 'none' }
+
                 }}
             />
         </Tabs>
