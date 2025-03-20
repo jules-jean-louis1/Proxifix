@@ -61,7 +61,8 @@ security:
         - { path: ^/api/task/intervention, roles: ROLE_ADMIN }
         - { path: ^/api/appointment/free-slots, roles: IS_AUTHENTICATED_FULLY}
         - { path: ^/api/appointment, roles : IS_AUTHENTICATED_FULLY}
-        - { path: ^/api/customer/appointment/new, roles: IS_AUTHENTICATED_FULLY}
+        - { path: ^/api/customer/appointment, roles: IS_AUTHENTICATED_FULLY}
+        - { path: ^/api/admin/appointment, roles: ROLE_TECHNICIAN}
 
 when@test:
     doctrine:
