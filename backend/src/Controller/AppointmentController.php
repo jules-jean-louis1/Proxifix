@@ -10,6 +10,7 @@ use App\Entity\Intervention;
 use App\Entity\Status;
 use App\Entity\TypeIntervention;
 use App\Entity\User;
+use App\Repository\AppointmentEquipmentRepository;
 use App\Repository\AppointmentRequestRepository;
 use App\Repository\BookingRepository;
 use DateInterval;
@@ -118,7 +119,7 @@ final class AppointmentController extends AbstractController
     #[Route('/admin/appointment', name: 'patch_appointment', methods: ['PATCH'])]
     #[IsGranted(User::ROLE_TECHNICIAN)]
     #[IsGranted(User::ROLE_ADMIN)]
-    public function insertAppointmentToBooking(Request $request, EntityManagerInterface $em, BookingRepository $bookingRepository): JsonResponse
+    public function insertAppointmentToBooking(Request $request, EntityManagerInterface $em, BookingRepository $bookingRepository, AppointmentEquipmentRepository $ae): JsonResponse
     {
         try {
             $em->beginTransaction();
@@ -190,8 +191,9 @@ final class AppointmentController extends AbstractController
                 $intervention->setCreatedAt(new DateTimeImmutable());
                 $intervention->setUpdatedAt(new DateTimeImmutable());
 
-                if (! empty($payload['equipment_ids'])) {
-                    foreach ($payload['equipment_ids'] as $equipmentId) {
+                $equipmentIds = $ae->findEquipmentsByAppointmentId($appointmentId);
+                if (!empty($equipmentIds)) {
+                    foreach ($equipmentIds as $equipmentId) {
                         $equipment = $em->getRepository(Equipment::class)->find($equipmentId);
                         if ($equipment) {
                             $intervention->addEquipment($equipment);

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Repository;
 
 use App\Entity\AppointmentEquipment;
@@ -14,6 +13,17 @@ class AppointmentEquipmentRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, AppointmentEquipment::class);
+    }
+    public function findEquipmentsByAppointmentId(int $appointmentId): array
+    {
+        return $this->createQueryBuilder('ae')
+            ->select('e.id')
+            ->innerJoin('ae.equipment', 'e')
+            ->innerJoin('ae.appointment', 'a')
+            ->where('a.id = :appointmentId')
+            ->setParameter('appointmentId', $appointmentId)
+            ->getQuery()
+            ->getResult();
     }
 
     //    /**

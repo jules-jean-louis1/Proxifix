@@ -49,7 +49,7 @@ class Equipment
     /**
      * @var Collection<int, Intervention>
      */
-    #[ORM\ManyToMany(targetEntity: Intervention::class, mappedBy: 'equipment')]
+    #[ORM\ManyToMany(targetEntity: Intervention::class, mappedBy: "equipment")]
     private Collection $interventions;
 
     /**
