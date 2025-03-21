@@ -27,10 +27,10 @@ class Company
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable:true)]
     private ?string $about = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable:true)]
     private ?string $type = null;
 
     #[ORM\Column(length: 255)]
@@ -42,7 +42,7 @@ class Company
     #[ORM\Column(length: 255)]
     private ?string $zip_code = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable:true)]
     private ?string $website = null;
 
     #[ORM\Column]
