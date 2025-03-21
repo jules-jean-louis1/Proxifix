@@ -1,12 +1,13 @@
 import React from 'react';
 import {StyleSheet, View, Text, Pressable, Image} from "react-native";
 import UserIcon from "@/app/assets/icons/user-blank.svg";
+import {Feather} from "@expo/vector-icons";
 
 const BlueButtonHome = ({children, onPress}) => {
     return (
         <Pressable onPress={onPress} style={({pressed}) => [styles.container, pressed && styles.pressed]}>
             <View style={styles.buttonContent}>
-                <Image style={styles.icon} source={UserIcon}/>
+                <Feather name="briefcase" size={24} color="#fff" style={styles.icon} />
                 <Text style={styles.text}>{children}</Text>
             </View>
         </Pressable>

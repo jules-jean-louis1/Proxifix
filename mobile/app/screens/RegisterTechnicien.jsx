@@ -4,6 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image } fro
 import axios from 'axios';
 import {useRouter} from "expo-router";
 import logo from "../assets/images/logo_proaxive2.png";
+import RegisterButton from "@/app/components/Buttons/RegisterButton";
 
 export default function RegisterTechnicienForm() {
     const [email, setEmail] = useState('');
@@ -13,20 +14,12 @@ export default function RegisterTechnicienForm() {
     const router = useRouter();
 
 
-    const handleRegister = async () => {
-        try {
-            const response = await axios.post('http://10.0.2.2:8000/api/auth/admin/register', {
-                email,
-                first_name: firstName,
-                last_name: lastName,
-                password
-            });
-            if (response.status === 201) {
-                Alert.alert('Inscription réussie', 'Votre compte a été créé.');
-            }
-        } catch (error) {
-            Alert.alert('Erreur', 'Problème lors de l\'inscription.');
-        }
+    const handleSuccess = (response) => {
+        Alert.alert('Inscription réussie', 'Votre compte a été créé.');
+    };
+
+    const handleError = (error) => {
+        Alert.alert('Erreur', 'Problème lors de l\'inscription.');
     };
 
     return (
@@ -79,12 +72,12 @@ export default function RegisterTechnicienForm() {
                 </View>
             </View>
 
-            <TouchableOpacity
-                style={styles.button}
-                onPress={handleRegister}
-            >
-                <Text style={styles.buttonText}>S'inscrire</Text>
-            </TouchableOpacity>
+            <RegisterButton
+                url='http://10.0.2.2:8000/api/auth/admin/register'
+                data={{ email, first_name: firstName, last_name: lastName, password }}
+                successCallback={handleSuccess}
+                errorCallback={handleError}
+            />
 
             <View style={styles.containerBar}>
                 <View style={styles.horizontalBar}/>
@@ -150,19 +143,6 @@ const styles = StyleSheet.create({
         width: '100%',
         color: '#000',
     },
-    button: {
-        backgroundColor: '#F9556D',
-        fontWeight: 'bold',
-        paddingVertical: 20,
-        borderRadius: 10,
-        marginTop: 30,
-        width: '79%',
-    },
-    buttonText: {
-        color: '#fff',
-        textAlign: 'center',
-    },
-
     containerBar: {
         flexDirection: 'row',
         justifyContent: 'space-around',
