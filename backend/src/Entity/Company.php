@@ -10,6 +10,15 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company
 {
+    public const SARL = "SARL";
+    public const SASU = "SASU";
+    public const EI = "EI";
+    public const EURL = "EURL";
+    public const SA = "SA";
+    public const SC = "SC";
+    public const SNC = "SNC";
+    public const MICRO_ENTERPRISE = "Micro-entreprise";
+    public const SAS = "SAS";
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -18,10 +27,10 @@ class Company
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable:true)]
     private ?string $about = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable:true)]
     private ?string $type = null;
 
     #[ORM\Column(length: 255)]
@@ -33,7 +42,7 @@ class Company
     #[ORM\Column(length: 255)]
     private ?string $zip_code = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable:true)]
     private ?string $website = null;
 
     #[ORM\Column]
@@ -54,10 +63,17 @@ class Company
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'company')]
     private Collection $users;
 
+    /**
+     * @var Collection<int, AppointmentRequest>
+     */
+    #[ORM\OneToMany(targetEntity: AppointmentRequest::class, mappedBy: 'company')]
+    private Collection $appointmentRequests;
+
     public function __construct()
     {
         $this->interventions = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->appointmentRequests = new ArrayCollection();
     }
 
 
@@ -228,6 +244,36 @@ class Company
             // set the owning side to null (unless already changed)
             if ($user->getCompany() === $this) {
                 $user->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AppointmentRequest>
+     */
+    public function getAppointmentRequests(): Collection
+    {
+        return $this->appointmentRequests;
+    }
+
+    public function addAppointmentRequest(AppointmentRequest $appointmentRequest): static
+    {
+        if (!$this->appointmentRequests->contains($appointmentRequest)) {
+            $this->appointmentRequests->add($appointmentRequest);
+            $appointmentRequest->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAppointmentRequest(AppointmentRequest $appointmentRequest): static
+    {
+        if ($this->appointmentRequests->removeElement($appointmentRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($appointmentRequest->getCompany() === $this) {
+                $appointmentRequest->setCompany(null);
             }
         }
 

@@ -14,11 +14,11 @@ class Booking
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $start_date = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $start_date = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $end_date = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $end_date = null;
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
@@ -33,29 +33,48 @@ class Booking
     #[ORM\JoinColumn(nullable: false)]
     private ?Intervention $intervention = null;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $updated_at = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'bookings')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $approved_by = null;
+
+    #[ORM\OneToOne(inversedBy: 'booking', cascade: ['persist', 'remove'])]
+    private ?AppointmentRequest $AppointmentRequest = null;
+
+    public function __construct()
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    public function getStartDate(): ?\DateTimeImmutable
     {
         return $this->start_date;
     }
 
-    public function setStartDate(?\DateTimeInterface $start_date): static
+    public function setStartDate(?\DateTimeImmutable $start_date): static
     {
         $this->start_date = $start_date;
 
         return $this;
     }
 
-    public function getEndDate(): ?\DateTimeInterface
+    public function getEndDate(): ?\DateTimeImmutable
     {
         return $this->end_date;
     }
 
-    public function setEndDate(?\DateTimeInterface $end_date): static
+    public function setEndDate(?\DateTimeImmutable $end_date): static
     {
         $this->end_date = $end_date;
 
@@ -106,6 +125,54 @@ class Booking
     public function setIntervention(?Intervention $intervention): static
     {
         $this->intervention = $intervention;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    {
+        $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getApprovedBy(): ?User
+    {
+        return $this->approved_by;
+    }
+
+    public function setApprovedBy(?User $approved_by): static
+    {
+        $this->approved_by = $approved_by;
+
+        return $this;
+    }
+
+    public function getAppointmentRequest(): ?AppointmentRequest
+    {
+        return $this->AppointmentRequest;
+    }
+
+    public function setAppointmentRequest(?AppointmentRequest $AppointmentRequest): static
+    {
+        $this->AppointmentRequest = $AppointmentRequest;
 
         return $this;
     }

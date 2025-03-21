@@ -49,12 +49,19 @@ class Equipment
     /**
      * @var Collection<int, Intervention>
      */
-    #[ORM\ManyToMany(targetEntity: Intervention::class, mappedBy: 'equipment')]
+    #[ORM\ManyToMany(targetEntity: Intervention::class, mappedBy: "equipment")]
     private Collection $interventions;
+
+    /**
+     * @var Collection<int, AppointmentEquipment>
+     */
+    #[ORM\OneToMany(targetEntity: AppointmentEquipment::class, mappedBy: 'equipment')]
+    private Collection $appointmentEquipment;
 
     public function __construct()
     {
         $this->interventions = new ArrayCollection();
+        $this->appointmentEquipment = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -168,6 +175,36 @@ class Equipment
     {
         if ($this->interventions->removeElement($intervention)) {
             $intervention->removeEquipment($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AppointmentEquipment>
+     */
+    public function getAppointmentEquipment(): Collection
+    {
+        return $this->appointmentEquipment;
+    }
+
+    public function addAppointmentEquipment(AppointmentEquipment $appointmentEquipment): static
+    {
+        if (!$this->appointmentEquipment->contains($appointmentEquipment)) {
+            $this->appointmentEquipment->add($appointmentEquipment);
+            $appointmentEquipment->setEquipment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAppointmentEquipment(AppointmentEquipment $appointmentEquipment): static
+    {
+        if ($this->appointmentEquipment->removeElement($appointmentEquipment)) {
+            // set the owning side to null (unless already changed)
+            if ($appointmentEquipment->getEquipment() === $this) {
+                $appointmentEquipment->setEquipment(null);
+            }
         }
 
         return $this;

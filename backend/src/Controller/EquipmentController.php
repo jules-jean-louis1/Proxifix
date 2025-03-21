@@ -37,7 +37,7 @@ class EquipmentController extends AbstractController
         $entityManager->persist($equipment);
         $entityManager->flush();
 
-        return new JsonResponse($equipment, 201);
+        return $this->json([$equipment], 201);
     }
 
     #[Route('/{id}', name: 'app_equipment_edit', methods: ['PUT'])]

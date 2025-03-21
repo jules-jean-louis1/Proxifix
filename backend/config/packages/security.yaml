@@ -44,21 +44,24 @@ security:
         - { path: ^/api/auth/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
         - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs
-        - { path: ^/api/auth/customer/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/auth/customer/register, roles: PUBLIC_ACCESS }
-        - { path: ^/api/auth/admin/login, roles: PUBLIC_ACCESS }
-        - { path: ^/api/auth/admin/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/admin/register, roles: IS_AUTHENTICATED_FULLY }
         # TODO: Only authenticated admin can create new admin and technician accounts
         #- { path: ^/api/register, roles: ROLE_ADMIN }
         - { path: ^/api/customer, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/customer, roles: ROLE_TECHNICIAN }
         - { path: ^/api/brands, roles: ROLE_TECHNICIAN }
-        - { path: ^/api/equipment, roles: ROLE_TECHNICIAN }
+        - { path: ^/api/equipment, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/intervention, roles: ROLE_TECHNICIAN }
         - { path: ^/api/operating_system, roles: ROLE_TECHNICIAN }
         - { path: ^/api/company, roles: ROLE_ADMIN }
         - { path: ^/api/task, roles: ROLE_ADMIN }
         - { path: ^/api/task/intervention, roles: ROLE_ADMIN }
+        - { path: ^/api/appointment/free-slots, roles: IS_AUTHENTICATED_FULLY}
+        - { path: ^/api/appointment, roles : IS_AUTHENTICATED_FULLY}
+        - { path: ^/api/customer/appointment, roles: IS_AUTHENTICATED_FULLY}
+        - { path: ^/api/admin/appointment, roles: ROLE_TECHNICIAN}
 
 when@test:
     doctrine:
