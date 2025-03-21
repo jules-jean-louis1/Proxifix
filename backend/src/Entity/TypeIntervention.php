@@ -1,10 +1,12 @@
 <?php
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\TypeInterventionRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource]
 #[ORM\Entity(repositoryClass: TypeInterventionRepository::class)]
 class TypeIntervention
 {
