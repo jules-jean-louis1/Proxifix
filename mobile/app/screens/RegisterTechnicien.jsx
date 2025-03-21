@@ -94,7 +94,7 @@ export default function RegisterTechnicienForm() {
 
             <View style={styles.loginContainer}>
                 <Text style={styles.loginText}>Si vous avez déjà un compte</Text>
-                <TouchableOpacity onPress={() => router.push('/technicien')}>
+                <TouchableOpacity onPress={() => router.push('/auth/technicien')}>
                     <Text style={styles.login}>CONNECTEZ-VOUS</Text>
                 </TouchableOpacity>
             </View>
