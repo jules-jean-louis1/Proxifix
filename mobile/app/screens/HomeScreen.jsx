@@ -1,5 +1,4 @@
-// app/screens/HomeScreen.jsx
-import React, { useState, useCallback } from 'react';  // Import useCallback
+import React, { useState, useCallback } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import logo from '../assets/images/logo.png';
@@ -7,14 +6,14 @@ import { colors } from "../../styles/globalStyles";
 import RedButtonHome from "@/app/components/Buttons/RedButtonHome";
 import BlueButtonHome from "@/app/components/Buttons/BlueButtonHome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect } from '@react-navigation/native';  // Import useFocusEffect
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function HomeScreen() {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useFocusEffect(
-        useCallback(() => {  // Wrap in useCallback
+        useCallback(() => {
             const checkLoginStatus = async () => {
                 try {
                     const token = await AsyncStorage.getItem('userToken');
@@ -67,11 +66,11 @@ export default function HomeScreen() {
             {/* Registration and Login Buttons */}
             {!isLoggedIn && (
                 <>
-                    <RedButtonHome onPress={() => router.push('/login')}>
+                    <RedButtonHome onPress={() => router.push('/auth/login')}>
                         Espace Client
                     </RedButtonHome>
 
-                    <BlueButtonHome onPress={() => router.push('/technicien')}>
+                    <BlueButtonHome onPress={() => router.push('/auth/technicien')}>
                         Espace Technicien
                     </BlueButtonHome>
                 </>

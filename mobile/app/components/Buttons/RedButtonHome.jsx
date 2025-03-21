@@ -1,12 +1,13 @@
 import React from 'react';
 import {StyleSheet, View, Text, Pressable, Image} from "react-native";
 import Flame from "@/app/assets/icons/flame.svg";
+import {Feather} from "@expo/vector-icons";
 
 const RedButtonHome = ({children, onPress}) => {
     return (
         <Pressable onPress={onPress} style={({pressed}) => [styles.container, pressed && styles.pressed]}>
             <View style={styles.buttonContent}>
-                <Image style={styles.icon} source={Flame}/>
+                <Feather name="user" size={24} color="#fff" style={styles.icon} />
                 <Text style={styles.text}>{children}</Text>
             </View>
         </Pressable>

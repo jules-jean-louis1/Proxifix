@@ -1,31 +1,25 @@
 // app/screens/Login.jsx
 import React, {useState} from 'react';
-import {View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image} from 'react-native';
-import axios from 'axios';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert} from 'react-native';
 import logo from '../assets/images/logo_proaxive2.png';
 import {useRouter} from "expo-router";
+import ConnectButton from "@/app/components/Buttons/ConnectButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 
 export default function LoginForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
 
-    const handleLogin = async () => {
-        try {
-            const response = await axios.post('http://10.0.2.2:8000/api/auth/customerlogin', {email, password});
-            if (response.status === 200) {
-                await AsyncStorage.setItem('userToken', response.data.token);
-                Alert.alert('Login réussi', 'Vous êtes connecté.');
-                router.push('/profile');
-            }
-        } catch (error) {
-            Alert.alert('Erreur', 'Problème de connexion. Veuillez réessayer.');
-        }
-    };
+    const handleSuccess = async (response) => {
+        await AsyncStorage.setItem('userToken', response.data.token);
+        Alert.alert('Login réussi', 'Vous êtes connecté.e.');
+        router.push('/profile');
+    }
 
-
+    const handleError = (error) => {
+        Alert.alert('Erreur', 'Problème de connexion. Veuillez réessayer.');
+    }
     return (
         <View style={styles.container}>
             <Image source={logo} style={styles.image}/>
@@ -57,9 +51,12 @@ export default function LoginForm() {
                 <Text style={styles.inline}>Votre accès est confidentiel, ne le communiquez jamais à autrui.</Text>
             </View>
 
-            <TouchableOpacity onPress={handleLogin} style={styles.button}>
-                <Text style={styles.buttonText}>Se connecter</Text>
-            </TouchableOpacity>
+            <ConnectButton
+            url='http://10.0.2.2:8000/api/auth/customer/login'
+            data={{email, password}}
+            successCallback={handleSuccess}
+            errorCallback={handleError}
+            />
 
             <View style={styles.containerBar}>
                 <View style={styles.horizontalBar}/>
@@ -69,7 +66,7 @@ export default function LoginForm() {
 
             <View style={styles.registerContainer}>
                 <Text style={styles.registerText}>Si vous n’avez pas de compte</Text>
-                <TouchableOpacity onPress={() => router.push('/register')}>
+                <TouchableOpacity onPress={() => router.push('/auth/register')}>
                     <Text style={styles.register}>INSCRIVEZ-VOUS</Text>
                 </TouchableOpacity>
             </View>
@@ -136,18 +133,6 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         width: '100%',
     },
-    button: {
-        backgroundColor: '#F9556D',
-        fontWeight: 'bold',
-        paddingVertical: 20,
-        borderRadius: 10,
-        marginTop: 30,
-        width: '79%',
-    },
-    buttonText: {
-        color: '#fff',
-        textAlign: 'center',
-    },
     containerBar: {
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -179,5 +164,5 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textDecorationLine: 'underline',
         color: '#01358D',
-    }
+    },
 });

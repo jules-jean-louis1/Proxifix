@@ -5,6 +5,7 @@ import axios from 'axios';
 import logo from '../assets/images/logo_proaxive2.png';
 import {useRouter} from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ConnectButton from "@/app/components/Buttons/ConnectButton";
 
 
 export default function LoginTechnicienForm() {
@@ -12,18 +13,15 @@ export default function LoginTechnicienForm() {
     const [password, setPassword] = useState('');
     const router = useRouter();
 
-    const handleLogin = async () => {
-        try {
-            const response = await axios.post('http://10.0.2.2:8000/api/auth/admin/login', {email, password});
-            if (response.status === 200) {
-                await AsyncStorage.setItem('userToken', response.data.token);
-                Alert.alert('Login réussi', 'Vous êtes connecté.');
-                router.push('/profile');
-            }
-        } catch (error) {
-            Alert.alert('Erreur', 'Problème de connexion. Veuillez réessayer.');
-        }
-    };
+    const handleSuccess = async (response) => {
+        await AsyncStorage.setItem('userToken', response.data.token);
+        Alert.alert('Login réussi', 'Vous êtes connecté.e.');
+        router.push('/profile');
+    }
+
+    const handleError = (error) => {
+        Alert.alert('Erreur', 'Problème de connexion. Veuillez réessayer.');
+    }
 
 
     return (
@@ -57,9 +55,12 @@ export default function LoginTechnicienForm() {
                 <Text style={styles.inline}>Votre accès est confidentiel, ne le communiquez jamais à autrui.</Text>
             </View>
 
-            <TouchableOpacity onPress={handleLogin} style={styles.button}>
-                <Text style={styles.buttonText}>Se connecter</Text>
-            </TouchableOpacity>
+            <ConnectButton
+                url='http://10.0.2.2:8000/api/auth/admin/login'
+                data={{email, password}}
+                successCallback={handleSuccess}
+                errorCallback={handleError}
+            />
 
             <View style={styles.containerBar}>
                 <View style={styles.horizontalBar}/>
@@ -69,7 +70,7 @@ export default function LoginTechnicienForm() {
 
             <View style={styles.registerContainer}>
                 <Text style={styles.registerText}>Si vous n’avez pas de compte</Text>
-                <TouchableOpacity onPress={() => router.push('/registertechnicien')}>
+                <TouchableOpacity onPress={() => router.push('/auth/registertechnicien')}>
                     <Text style={styles.register}>INSCRIVEZ-VOUS</Text>
                 </TouchableOpacity>
             </View>
