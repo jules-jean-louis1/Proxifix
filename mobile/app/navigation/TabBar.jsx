@@ -15,6 +15,7 @@ export function TabBar({state, descriptors, navigation}) {
     }
 
     // stock current route name
+    const initialRouteName = 'index'; // set HomeScreen as initial route
     const currentRoute = state.routes[state.index].name;
 
     // we don't want tabbar on index/home page

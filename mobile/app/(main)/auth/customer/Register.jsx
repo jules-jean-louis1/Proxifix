@@ -1,17 +1,19 @@
-// app/screens/Register.jsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image } from 'react-native';
 import axios from 'axios';
 import {useRouter} from "expo-router";
-import logo from "../assets/images/logo_proaxive2.png";
+// import logo from "../assets/images/logo_proaxive2.png";
+import {Feather} from "@expo/vector-icons";
 import RegisterButton from "@/app/components/Buttons/RegisterButton";
+import Constants from 'expo-constants';
 
-export default function RegisterTechnicienForm() {
+export default function RegisterForm() {
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
+    const API_ENDPOINT = Constants.expoConfig?.extra?.API_ENDPOINT;
 
 
     const handleSuccess = (response) => {
@@ -24,9 +26,9 @@ export default function RegisterTechnicienForm() {
 
     return (
         <View style={styles.container}>
-            <Image source={logo} style={styles.image} />
+            {/* <Image source={logo} style={styles.image} /> */}
             <View style={styles.form}>
-                <Text style={styles.title}>Créer votre espace technicien</Text>
+                <Text style={styles.title}>Créer votre espace client</Text>
 
                 <View style={styles.fieldSet}>
                     <Text style={styles.legend}>Adresse email</Text>
@@ -73,7 +75,7 @@ export default function RegisterTechnicienForm() {
             </View>
 
             <RegisterButton
-                url='http://10.0.2.2:8000/api/auth/admin/register'
+                url={`${API_ENDPOINT}/auth/customer/register`}
                 data={{ email, first_name: firstName, last_name: lastName, password }}
                 successCallback={handleSuccess}
                 errorCallback={handleError}
@@ -87,7 +89,7 @@ export default function RegisterTechnicienForm() {
 
             <View style={styles.loginContainer}>
                 <Text style={styles.loginText}>Si vous avez déjà un compte</Text>
-                <TouchableOpacity onPress={() => router.push('/auth/technicien')}>
+                <TouchableOpacity onPress={() => router.push('/auth/login')}>
                     <Text style={styles.login}>CONNECTEZ-VOUS</Text>
                 </TouchableOpacity>
             </View>
@@ -174,5 +176,5 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textDecorationLine: 'underline',
         color: '#01358D',
-    }
+    },
 });

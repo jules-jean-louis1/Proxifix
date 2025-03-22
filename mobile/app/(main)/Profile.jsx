@@ -4,11 +4,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import SaveButton from "../components/Buttons/SaveButton";
 import CancelButton from "../components/Buttons/CancelButton";
 import axios from "axios";
+import Constants from 'expo-constants';
 
 const Profile = () => {
     const [userData, setUserData] = useState({ email: "", firstName: "", lastName: "", password: "" });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const API_ENDPOINT = Constants.expoConfig?.extra?.API_ENDPOINT;
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -18,7 +20,7 @@ const Profile = () => {
                     throw new Error('Token non trouvé');
                 }
 
-                const response = await axios.get('http://10.0.2.2:8000/api/profile', {
+                const response = await axios.get(`${API_ENDPOINT}/profile`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -48,7 +50,7 @@ const Profile = () => {
                 throw new Error('Token non trouvé');
             }
 
-            const response = await axios.put('http://10.0.2.2:8000/api/profile', userData, {
+            const response = await axios.put(`${API_ENDPOINT}/profile`, userData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

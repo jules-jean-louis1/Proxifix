@@ -1,15 +1,17 @@
-// app/screens/Login.jsx
 import React, {useState} from 'react';
 import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert} from 'react-native';
-import logo from '../assets/images/logo_proaxive2.png';
+// import logo from '../assets/images/logo_proaxive2.png';
 import {useRouter} from "expo-router";
 import ConnectButton from "@/app/components/Buttons/ConnectButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from 'expo-constants';
+
 
 export default function LoginForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
+    const API_ENDPOINT = Constants.expoConfig?.extra?.API_ENDPOINT;
 
     const handleSuccess = async (response) => {
         await AsyncStorage.setItem('userToken', response.data.token);
@@ -22,7 +24,7 @@ export default function LoginForm() {
     }
     return (
         <View style={styles.container}>
-            <Image source={logo} style={styles.image}/>
+            {/* <Image source={logo} style={styles.image}/> */}
             <View style={styles.form}>
                 <Text style={styles.title}>Connexion à votre espace client en ligne</Text>
                 {/* Fieldset pour l'input Mot de passe */}
@@ -52,7 +54,7 @@ export default function LoginForm() {
             </View>
 
             <ConnectButton
-            url='http://10.0.2.2:8000/api/auth/customer/login'
+            url={`${API_ENDPOINT}/auth/login`}
             data={{email, password}}
             successCallback={handleSuccess}
             errorCallback={handleError}

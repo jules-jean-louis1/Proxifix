@@ -1,17 +1,18 @@
-// app/screens/Login.jsx
 import React, {useState} from 'react';
 import {View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image} from 'react-native';
 import axios from 'axios';
-import logo from '../assets/images/logo_proaxive2.png';
+// import logo from '../assets/images/logo_proaxive2.png';
 import {useRouter} from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ConnectButton from "@/app/components/Buttons/ConnectButton";
+import Constants from 'expo-constants';
 
 
 export default function LoginTechnicienForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
+    const API_ENDPOINT = Constants.expoConfig?.extra?.API_ENDPOINT;
 
     const handleSuccess = async (response) => {
         await AsyncStorage.setItem('userToken', response.data.token);
@@ -26,7 +27,7 @@ export default function LoginTechnicienForm() {
 
     return (
         <View style={styles.container}>
-            <Image source={logo} style={styles.image}/>
+            {/* <Image source={logo} style={styles.image}/> */}
             <View style={styles.form}>
                 <Text style={styles.title}>Connexion à votre espace technicien en ligne</Text>
                 {/* Fieldset pour l'input Mot de passe */}
@@ -56,7 +57,7 @@ export default function LoginTechnicienForm() {
             </View>
 
             <ConnectButton
-                url='http://10.0.2.2:8000/api/auth/admin/login'
+                url={`${API_ENDPOINT}/auth/login`}
                 data={{email, password}}
                 successCallback={handleSuccess}
                 errorCallback={handleError}
