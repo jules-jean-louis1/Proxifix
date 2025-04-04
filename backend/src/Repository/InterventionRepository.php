@@ -15,6 +15,22 @@ class InterventionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Intervention::class);
     }
+        /**
+     * Récupère les interventions pour un utilisateur donné.
+     *
+     * @param int $userId
+     * @return Intervention[]
+     */
+    public function findByUserId(int $userId): array
+    {
+        return $this->createQueryBuilder('i')
+            ->leftJoin('i.status', 's')
+            ->addSelect('s')
+            ->andWhere('i.user = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getResult();
+    }
 
     //    /**
     //     * @return Intervention[] Returns an array of Intervention objects

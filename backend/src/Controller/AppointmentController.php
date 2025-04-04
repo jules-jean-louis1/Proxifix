@@ -1,7 +1,6 @@
 <?php
 namespace App\Controller;
 
-use App\Entity\AppointmentEquipment;
 use App\Entity\AppointmentRequest;
 use App\Entity\Booking;
 use App\Entity\Company;
@@ -10,7 +9,6 @@ use App\Entity\Intervention;
 use App\Entity\Status;
 use App\Entity\TypeIntervention;
 use App\Entity\User;
-use App\Repository\AppointmentEquipmentRepository;
 use App\Repository\AppointmentRequestRepository;
 use App\Repository\BookingRepository;
 use DateInterval;
@@ -67,19 +65,12 @@ final class AppointmentController extends AbstractController
         $appointmentRequest->setCreatedAt(new DateTimeImmutable());
         $appointmentRequest->setUpdatedAt(new DateTimeImmutable());
         $appointmentRequest->setCompany($company);
-
-        foreach ($payload['equipment'] as $equipmentId) {
-            $equipment = $em->getRepository(Equipment::class)->find($equipmentId);
-            if (! $equipment) {
-                return $this->json(['error' => "Equipment with ID $equipmentId not found"], Response::HTTP_BAD_REQUEST);
-            }
-
-            $appointmentEquipment = new AppointmentEquipment();
-            $appointmentEquipment->setEquipment($equipment);
-            $appointmentEquipment->setAppointment($appointmentRequest);
-
-            $em->persist($appointmentEquipment);
-        }
+        $appointmentRequest->setDescription($payload['description'] ?? null);
+        $appointmentRequest->setEquipment($em->getRepository(Equipment::class)->find($payload['equipment_id']));
+        $appointmentRequest->setTypeIntervention($em->getRepository(TypeIntervention::class)->find($payload['type_intervention_id']) ?? null);
+        $appointmentRequest->setStatus(AppointmentRequest::PENDING);
+        $appointmentRequest->setCreatedAt(new DateTimeImmutable());
+        $appointmentRequest->setUpdatedAt(new DateTimeImmutable());
 
         $em->persist($appointmentRequest);
         $em->flush();
@@ -119,7 +110,7 @@ final class AppointmentController extends AbstractController
     #[Route('/admin/appointment', name: 'patch_appointment', methods: ['PATCH'])]
     #[IsGranted(User::ROLE_TECHNICIAN)]
     #[IsGranted(User::ROLE_ADMIN)]
-    public function insertAppointmentToBooking(Request $request, EntityManagerInterface $em, BookingRepository $bookingRepository, AppointmentEquipmentRepository $ae): JsonResponse
+    public function insertAppointmentToBooking(Request $request, EntityManagerInterface $em, BookingRepository $bookingRepository): JsonResponse
     {
         try {
             $em->beginTransaction();
@@ -186,20 +177,11 @@ final class AppointmentController extends AbstractController
                 $intervention->setDescription($payload['description'] ?? "");
                 $intervention->setTitle($payload['title'] ?? "");
                 $intervention->setStatus($status);
-                $intervention->setType($typeIntervention);
+                $intervention->setTypeIntervention($typeIntervention);
                 $intervention->setUser($user);
                 $intervention->setCreatedAt(new DateTimeImmutable());
                 $intervention->setUpdatedAt(new DateTimeImmutable());
-
-                $equipmentIds = $ae->findEquipmentsByAppointmentId($appointmentId);
-                if (!empty($equipmentIds)) {
-                    foreach ($equipmentIds as $equipmentId) {
-                        $equipment = $em->getRepository(Equipment::class)->find($equipmentId);
-                        if ($equipment) {
-                            $intervention->addEquipment($equipment);
-                        }
-                    }
-                }
+                $intervention->setEquipment($appointment->getEquipment());
 
                 $em->persist($intervention);
                 $em->flush();

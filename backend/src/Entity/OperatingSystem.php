@@ -19,12 +19,13 @@ class OperatingSystem
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['equipment:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 3, max: 255)]
     #[Assert\Regex(pattern: '/^[a-zA-Z0-9_]+$/', message: 'The name can only contain letters, numbers and underscores')]
-    #[Groups(['operatingSystem.create'])]
+    #[Groups(['operatingSystem.create', 'equipment:details'])]
     private ?string $name = null;
 
     /**

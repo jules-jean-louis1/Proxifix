@@ -97,4 +97,21 @@ class EquipmentController extends AbstractController
 
         return new JsonResponse(['message' => 'Equipment deleted'], 200);
     }
+    #[Route('/customer/{userId}', name:'app_equipment_customer_list', methods: ['GET'])]
+    public function getEquipmentUser(int $userId, EntityManagerInterface $em): JsonResponse
+    {
+        $equipments = $em->getRepository(Equipment::class)->findByUserId($userId);
+    
+        if (empty($equipments)) {
+            return new JsonResponse(['error' => 'No equipment found for this user'], 404);
+        }
+    
+        return $this->json($equipments, 200, [], ['groups' => 'equipment:details']);
+    }
+    #[Route('/{id}', name: 'app_equipment_get_one', methods: ['GET'])]
+    public function getOneEquipment(int $id, EntityManagerInterface $em) {
+        $equipment = $em->getRepository(Equipment::class)->findOneBy(['id' => $id]);
+
+        return $this->json($equipment, 200, [], ['groups' => 'equipment:details']);
+    }
 }

@@ -5,7 +5,9 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\InterventionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: InterventionRepository::class)]
 #[ApiResource]
@@ -14,28 +16,47 @@ class Intervention
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['equipment:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['equipment:details'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['equipment:details'])]
     private ?string $description = null;
 
+    #[ORM\Column(Types::TEXT, nullable:true)]
+    #[Groups(['equipment:details'])]
+    private ?string $message_report = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['equipment:details'])]
+    private ?\DateTimeImmutable $start_date = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['equipment:details'])]
+    private ?\DateTimeImmutable $end_date = null;
+
     #[ORM\Column]
+    #[Groups(['equipment:details'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
+    #[Groups(['equipment:details'])]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: TypeIntervention::class, inversedBy: 'interventions')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?TypeIntervention $type = null;
+    #[Groups(['equipment:details'])]
+    private ?TypeIntervention $typeIntervention = null;
 
     #[ORM\ManyToOne(inversedBy: "interventions")]
     private ?Company $company = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['equipment:details'])]
     private ?Status $status = null;
 
     #[ORM\ManyToOne]
@@ -48,7 +69,7 @@ class Intervention
         )
     ]
     private Collection $taskInterventions;
-
+    
     /**
      * @var Collection<int, Booking>
      */
@@ -61,22 +82,14 @@ class Intervention
     ]
     private Collection $bookings;
 
-    /**
-     * @var Collection<int, Equipment>
-     */
-    #[
-        ORM\ManyToMany(
-            targetEntity: Equipment::class,
-            inversedBy: "interventions"
-        )
-    ]
-    private Collection $equipment;
+    #[ORM\ManyToOne(targetEntity: Equipment::class, inversedBy: 'interventions')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Equipment $equipment = null;
 
     public function __construct()
     {
         $this->taskInterventions = new ArrayCollection();
         $this->bookings = new ArrayCollection();
-        $this->equipment = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -108,15 +121,63 @@ class Intervention
         return $this;
     }
 
-    public function getType(): ?TypeIntervention
+    public function getMessageReport(): ?string
     {
-        return $this->type;
+        return $this->message_report;
     }
 
-    public function setType(TypeIntervention $type): static
+    public function setMessageReport(?string $message_report): static
     {
-        $this->type = $type;
+        $this->message_report = $message_report;
 
+        return $this;
+    }
+
+    public function getStartDate(): ?\DateTimeImmutable
+    {
+        return $this->start_date;
+    }
+    public function setStartDate(?\DateTimeImmutable $start_date): static
+    {
+        $this->start_date = $start_date;
+
+        return $this;
+    }
+    public function getEndDate(): ?\DateTimeImmutable
+    {
+        return $this->end_date;
+    }
+    public function setEndDate(?\DateTimeImmutable $end_date): static
+    {
+        $this->end_date = $end_date;
+
+        return $this;
+    }
+    public function getDuration(): ?int
+    {
+        if ($this->start_date && $this->end_date) {
+            return $this->end_date->getTimestamp() - $this->start_date->getTimestamp();
+        }
+
+        return null;
+    }
+    public function getDurationInHours(): ?int
+    {
+        if ($this->start_date && $this->end_date) {
+            return ($this->end_date->getTimestamp() - $this->start_date->getTimestamp()) / 3600;
+        }
+
+        return null;
+    }
+    public function getTypeIntervention(): ?TypeIntervention
+    {
+        return $this->typeIntervention;
+    }
+    
+    public function setTypeIntervention(?TypeIntervention $typeIntervention): static
+    {
+        $this->typeIntervention = $typeIntervention;
+    
         return $this;
     }
 
@@ -184,7 +245,7 @@ class Intervention
     {
         return $this->taskInterventions;
     }
-
+    
     public function addTaskIntervention(
         TaskIntervention $taskIntervention
     ): self {
@@ -198,7 +259,7 @@ class Intervention
         TaskIntervention $taskIntervention
     ): self {
         $this->taskInterventions->removeElement($taskIntervention);
-
+    
         return $this;
     }
 
@@ -232,27 +293,15 @@ class Intervention
         return $this;
     }
 
-    /**
-     * @return Collection<int, Equipment>
-     */
-    public function getequipment(): Collection
+    public function getEquipment(): ?Equipment
     {
         return $this->equipment;
     }
-
-    public function addEquipment(Equipment $equipment): static
+    
+    public function setEquipment(?Equipment $equipment): static
     {
-        if (!$this->equipment->contains($equipment)) {
-            $this->equipment->add($equipment);
-        }
-
-        return $this;
-    }
-
-    public function removeequipment(Equipment $equipment): static
-    {
-        $this->equipment->removeElement($equipment);
-
+        $this->equipment = $equipment;
+    
         return $this;
     }
 }

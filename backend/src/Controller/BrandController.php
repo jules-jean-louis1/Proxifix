@@ -11,10 +11,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/api')]
+#[Route('/api/brand')]
 final class BrandController extends AbstractController
 {
-    #[Route('/brand/create', name: 'app_brand_create', methods: ['POST'])]
+    #[Route('/new', name: 'app_brand_new', methods: ['POST'])]
     #[IsGranted('ROLE_TECHNICIAN')]
     public function create(Request $request, EntityManagerInterface $entityManagerInterface): JsonResponse
     {
@@ -29,7 +29,7 @@ final class BrandController extends AbstractController
         return $this->json($brand, Response::HTTP_CREATED);
     }
 
-    #[Route('/brand/{id}', name: 'app_brand_update', methods: ['PUT'])]
+    #[Route('/{id}', name: 'app_brand_update', methods: ['PUT'])]
     #[IsGranted('ROLE_TECHNICIAN')]
     public function update(Request $request, EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
@@ -47,7 +47,7 @@ final class BrandController extends AbstractController
         return $this->json($brand, Response::HTTP_OK);
     }
 
-    #[Route('/brand/{id}', name: 'app_brand_delete', methods: ['DELETE'])]
+    #[Route('/{id}', name: 'app_brand_delete', methods: ['DELETE'])]
     #[IsGranted('ROLE_TECHNICIAN')]
     public function delete(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
@@ -63,7 +63,7 @@ final class BrandController extends AbstractController
         return $this->json(['success' => 'Brand deleted successfully'], Response::HTTP_OK);
     }
 
-    #[Route('/brand/{id}', name: 'app_brand_get', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_brand_get', methods: ['GET'])]
     #[IsGranted('ROLE_TECHNICIAN')]
     public function get(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
