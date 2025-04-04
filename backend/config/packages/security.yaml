@@ -8,7 +8,7 @@ security:
         ROLE_ADMIN: ['ROLE_ADMIN', 'ROLE_TECHNICIAN']
 
     providers:
-        app_user_provider:
+        user:
             entity:
                 class: App\Entity\User
                 property: email
@@ -19,26 +19,24 @@ security:
             security: false
 
         auth:
-            pattern: ^/api/login
+            pattern: ^/api/auth/login
             stateless: true
             json_login:
-                check_path: /api/login
+                check_path: /api/auth/login
                 username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-            provider: app_user_provider
+            provider: user
 
         api:
             pattern: ^/api
             stateless: true
             lazy: true
             entry_point: jwt
-            jwt:
-                provider: app_user_provider
+            jwt: ~
             refresh_jwt:
-                provider: app_user_provider
-                check_path: /api/auth/refresh
+                check_path: jwt_refresh
 
     access_control:
         - { path: ^/api/auth/refresh, roles: PUBLIC_ACCESS }
