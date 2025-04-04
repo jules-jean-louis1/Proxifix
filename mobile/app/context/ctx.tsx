@@ -1,33 +1,29 @@
 import { useContext, createContext, type PropsWithChildren } from "react";
 import { setStorageItemAsync, useStorageState } from "./useStorageState";
+import { router } from "expo-router";
 
 const AuthContext = createContext<{
   signIn: (email: string, password: string) => Promise<boolean>;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
+  setSession: (session: string| null) => void;
 }>({
   signIn: async () => false,
   signOut: () => null,
   session: null,
   isLoading: false,
+  setSession: () => null,
 });
 
 // This hook can be used to access the user info.
 export function useSession() {
-  const value = useContext(AuthContext);
-  if (process.env.NODE_ENV !== "production") {
-    if (!value) {
-      throw new Error("useSession must be wrapped in a <SessionProvider />");
-    }
-  }
-
-  return value;
+  return useContext(AuthContext);
 }
 
 export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
-
+  
   return (
     <AuthContext.Provider
       value={{
@@ -45,18 +41,27 @@ export function SessionProvider({ children }: PropsWithChildren) {
               throw new Error("Login failed");
             }
             const data = await resp.json();
-            const token = data.token;
+            const sessionData = JSON.stringify({
+              token: data.token,
+              refreshToken: data.refresh_token,
+            });
 
-            await setStorageItemAsync("userToken", token);
-            setSession(token);
+            setSession(sessionData);
             return true;
           } catch (e) {
             return false;
           }
         },
         signOut: async () => {
-          await setStorageItemAsync("userToken", null);
           setSession(null);
+          router.replace("/");
+        },
+        setSession: async (session: string | null) => {
+          if (session) {
+            await setStorageItemAsync("session", session);
+          } else {
+            await setStorageItemAsync("session", null);
+          }
         },
         session,
         isLoading,

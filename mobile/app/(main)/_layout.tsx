@@ -1,6 +1,7 @@
 import { Stack, useRouter } from "expo-router";
 import { useSession } from "../context/ctx";
 import { useEffect } from "react";
+import { ToolBarCustomer } from "../components/Buttons/navigations/ToolBarCustomer";
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -8,7 +9,6 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isLoading && !session) {
-      // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
       router.replace("../login");
     }
   }, [isLoading, session]);
@@ -24,7 +24,8 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
 export default function MainLayout() {
   return (
     <ProtectedLayout>
-      <Stack />
+      <ToolBarCustomer />
+      <Stack screenOptions={{headerShown : false}} />
     </ProtectedLayout>
   );
 }

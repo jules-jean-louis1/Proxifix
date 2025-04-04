@@ -23,14 +23,14 @@ export default function HomeScreen() {
 
       <RedButtonHome
         onPress={() =>
-          router.push({ pathname: "/Login", params: { type: "customer" } })
+          router.push({ pathname: "/login", params: { type: "customer" } })
         }
       >
         Espace Client
       </RedButtonHome>
 
       <BlueButtonHome
-        onPress={() => router.push({ pathname: "/Login", params: { type: "technician" } })}
+        onPress={() => router.push({ pathname: "/login", params: { type: "technician" } })}
       >
         Espace Technicien
       </BlueButtonHome>

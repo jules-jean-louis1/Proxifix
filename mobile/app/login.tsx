@@ -6,16 +6,25 @@ import { useSession } from "./context/ctx";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { signIn, session } = useSession();
+  const { signIn } = useSession();
   const router = useRouter();
   const params = useLocalSearchParams();
-  console.log(params);
+  const isCustomer = params.type === "customer" ? true : false;
+  //TODO: From index to login you have type but on redirect to login only
+  //http://localhost:8081/login?type=customer&__EXPO_ROUTER_key=undefined-cMfCzrLqfKZv1szoPU1lK
 
   const handleLogin = async () => {
     const success = await signIn(email, password);
     if (success) {
-      console.log(session);
-      router.replace("/(main)/customer");
+      console.log("success");
+      console.log(isCustomer);
+      console.log(params.type);
+      if (isCustomer) {
+        console.log("customer");
+        router.replace("/(main)/customer");
+      } else {
+        // router.replace("/(main)/admin")
+      }
     } else {
       alert("Login failed. Please try again.");
     }
@@ -37,11 +46,7 @@ export default function Login() {
         value={password}
         onChangeText={setPassword}
       />
-      {params.type === "customer" ? (
-        <Button title="Connexion" onPress={handleLogin} />
-      ) : (
-        <Button title="Login" onPress={handleLogin} />
-      )}
+      <Button title="Connexion" onPress={handleLogin} />
     </View>
   );
 }
