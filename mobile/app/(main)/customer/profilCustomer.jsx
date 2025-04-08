@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import SaveButton from "../components/Buttons/SaveButton";
-import CancelButton from "../components/Buttons/CancelButton";
+import SaveButton from "../../components/Buttons/SaveButton";
+import CancelButton from "../../components/Buttons/CancelButton";
 import axios from "axios";
 import Constants from 'expo-constants';
 

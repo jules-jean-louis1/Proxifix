@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 // import logo from '../assets/images/logo.png';
@@ -23,14 +23,14 @@ export default function HomeScreen() {
 
       <RedButtonHome
         onPress={() =>
-          router.push({ pathname: "/login", params: { type: "customer" } })
+          router.push({ pathname: "/loginCustomer"})
         }
       >
         Espace Client
       </RedButtonHome>
 
       <BlueButtonHome
-        onPress={() => router.push({ pathname: "/login", params: { type: "technician" } })}
+        onPress={() => router.push({ pathname: "/loginAdmin"})}
       >
         Espace Technicien
       </BlueButtonHome>
@@ -39,7 +39,7 @@ export default function HomeScreen() {
 }
 
 const colors = {
-  primary500: "#000000", // Add this if missing
+  primary500: "#000000",
   secondary500: "#E53953",
 };
 
