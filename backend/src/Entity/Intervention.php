@@ -16,50 +16,51 @@ class Intervention
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['equipment:details'])]
+    #[Groups(['intervention:read','equipment:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['equipment:details'])]
+    #[Groups(['intervention:read','equipment:details'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['equipment:details'])]
+    #[Groups(['intervention:read','equipment:details'])]
     private ?string $description = null;
 
     #[ORM\Column(Types::TEXT, nullable:true)]
-    #[Groups(['equipment:details'])]
+    #[Groups(['intervention:read','equipment:details'])]
     private ?string $message_report = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(['equipment:details'])]
+    #[Groups(['intervention:read','equipment:details'])]
     private ?\DateTimeImmutable $start_date = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(['equipment:details'])]
+    #[Groups(['intervention:read','equipment:details'])]
     private ?\DateTimeImmutable $end_date = null;
 
     #[ORM\Column]
-    #[Groups(['equipment:details'])]
+    #[Groups(['intervention:read','equipment:details'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    #[Groups(['equipment:details'])]
+    #[Groups(['intervention:read','equipment:details'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(targetEntity: TypeIntervention::class, inversedBy: 'interventions')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['equipment:details'])]
+    #[Groups(['intervention:read','equipment:details'])]
     private ?TypeIntervention $typeIntervention = null;
 
     #[ORM\ManyToOne(inversedBy: "interventions")]
     private ?Company $company = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['equipment:details'])]
+    #[Groups(['intervention:read','equipment:details'])]
     private ?Status $status = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['intervention:read'])]
     private ?User $user = null;
 
     #[
@@ -68,6 +69,7 @@ class Intervention
             targetEntity: TaskIntervention::class
         )
     ]
+    #[Groups(['intervention:read'])]
     private Collection $taskInterventions;
     
     /**
@@ -80,10 +82,12 @@ class Intervention
             orphanRemoval: true
         )
     ]
+    #[Groups(['intervention:read'])]
     private Collection $bookings;
 
     #[ORM\ManyToOne(targetEntity: Equipment::class, inversedBy: 'interventions')]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['intervention:read'])]
     private ?Equipment $equipment = null;
 
     public function __construct()

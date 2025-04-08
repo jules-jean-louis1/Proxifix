@@ -32,6 +32,26 @@ class InterventionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findByCompanyId(int $companyId, int $page, int $limit, string $order, ?int $status): array
+    {
+        $offset = ($page - 1) * $limit;
+    
+        $qb = $this->createQueryBuilder('i')
+            ->where('i.company = :companyId')
+            ->setParameter('companyId', $companyId)
+            ->orderBy('i.created_at', $order)
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+    
+        if ($status !== "all") {
+            $qb->leftJoin('i.status', 's')
+               ->andWhere('s.name = :status')
+               ->setParameter('status', $status);
+        }
+    
+        return $qb->getQuery()->getResult();
+    }
+
     //    /**
     //     * @return Intervention[] Returns an array of Intervention objects
     //     */

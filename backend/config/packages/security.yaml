@@ -52,6 +52,7 @@ security:
         - { path: ^/api/brands, roles: ROLE_TECHNICIAN }
         - { path: ^/api/equipment, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/intervention, roles: ROLE_TECHNICIAN }
+        - { path: ^/api/admin/interventions, roles: ROLE_TECHNICIAN }
         - { path: ^/api/operating_system, roles: ROLE_TECHNICIAN }
         - { path: ^/api/company, roles: ROLE_ADMIN }
         - { path: ^/api/task, roles: ROLE_ADMIN }
