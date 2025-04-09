@@ -14,11 +14,11 @@ class Status
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['equipment:details'])]
+    #[Groups(['equipment:details','intervention:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['equipment:details'])]
+    #[Groups(['equipment:details','intervention:details'])]
     private ?string $name = null;
 
     public const PENDING = "pending";

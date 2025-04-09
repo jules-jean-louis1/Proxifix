@@ -213,7 +213,7 @@ class InterventionController extends AbstractController
 
         $interventions = $interventionRepository->findByCompanyId($companyId, $page, $limit, $order, $status);
 
-        return $this->json($interventions, 200, [], ['groups' => 'intervention:read']);
+        return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
     }
 
 }

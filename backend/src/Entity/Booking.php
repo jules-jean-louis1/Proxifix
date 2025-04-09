@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\BookingRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource]
 #[ORM\Entity(repositoryClass: BookingRepository::class)]
@@ -14,21 +15,27 @@ class Booking
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['intervention:details'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['intervention:details'])]
     private ?\DateTimeImmutable $start_date = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['intervention:details'])]
     private ?\DateTimeImmutable $end_date = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['intervention:details'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['intervention:details'])]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['intervention:details'])]
     private ?bool $all_day = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
@@ -36,9 +43,11 @@ class Booking
     private ?Intervention $intervention = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['intervention:details'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['intervention:details'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'bookings')]

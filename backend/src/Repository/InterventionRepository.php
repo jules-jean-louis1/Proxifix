@@ -32,7 +32,7 @@ class InterventionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findByCompanyId(int $companyId, int $page, int $limit, string $order, ?int $status): array
+    public function findByCompanyId(int $companyId, int $page, int $limit, string $order, ?string $status): array
     {
         $offset = ($page - 1) * $limit;
     

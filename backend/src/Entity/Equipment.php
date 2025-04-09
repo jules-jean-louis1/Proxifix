@@ -26,19 +26,19 @@ class Equipment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['equipment:read', 'equipment:details'])]
+    #[Groups(['equipment:read', 'equipment:details','intervention:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['equipment:read', 'equipment:details'])]
+    #[Groups(['equipment:read', 'equipment:details','intervention:details'])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(['equipment:read', 'equipment:details'])]
+    #[Groups(['equipment:read', 'equipment:details','intervention:details'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    #[Groups(['equipment:read', 'equipment:details'])]
+    #[Groups(['equipment:read', 'equipment:details','intervention:details'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
