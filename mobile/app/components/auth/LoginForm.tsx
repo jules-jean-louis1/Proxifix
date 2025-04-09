@@ -41,7 +41,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       />
       <AppButton
         children={"Connexion"}
-        type="validate"
+        type="primary"
         onPress={() => handleLogin()}
         disabled={false}
         icon="login"

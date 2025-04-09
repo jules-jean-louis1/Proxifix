@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-import { LoginForm } from "./components/auth/loginForm";
+import { LoginForm } from "./components/auth/LoginForm";
 import { Divider } from "react-native-paper";
 
 export default function LoginCustomer() {

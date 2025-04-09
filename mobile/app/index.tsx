@@ -2,8 +2,7 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 // import logo from '../assets/images/logo.png';
-import RedButtonHome from "@/app/components/Buttons/RedButtonHome";
-import BlueButtonHome from "@/app/components/Buttons/BlueButtonHome";
+import { AppButton } from "./components/Buttons/AppButton";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -20,20 +19,20 @@ export default function HomeScreen() {
       </Text>
 
       {/* Registration and Login Buttons */}
-
-      <RedButtonHome
-        onPress={() =>
-          router.push({ pathname: "/loginCustomer"})
-        }
-      >
-        Espace Client
-      </RedButtonHome>
-
-      <BlueButtonHome
-        onPress={() => router.push({ pathname: "/loginAdmin"})}
-      >
-        Espace Technicien
-      </BlueButtonHome>
+      <View style={{ width: "85%" }}>
+        <AppButton
+          children="Espace Client"
+          type="primary"
+          icon={"account"}
+          onPress={() => router.push({ pathname: "/loginCustomer" })}
+        />
+        <AppButton
+          children="Espace Technicien"
+          type="tertiary"
+          icon={"account"}
+          onPress={() => router.push({ pathname: "/loginAdmin" })}
+        />
+      </View>
     </View>
   );
 }

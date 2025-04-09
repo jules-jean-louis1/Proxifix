@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { LoginForm } from "./components/auth/loginForm";
+import { LoginForm } from "./components/auth/LoginForm";
 
 export default function LoginCustomer() {
   const [success, setSuccess] = useState<boolean | null>(null);
