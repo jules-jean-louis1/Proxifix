@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SaveButton from "../components/Buttons/SaveButton";
 import CancelButton from "../components/Buttons/CancelButton";
 import axios from "axios";
 
 const Profile = () => {
-    const [userData, setUserData] = useState({ email: "", firstName: "", lastName: "", password: "" });
+    const [userData, setUserData] = useState({ email: "", firstName: "", lastName: "", password: "", address: "", postalCode: "" });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [activeTab, setActiveTab] = useState("Compte");
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -56,7 +57,7 @@ const Profile = () => {
 
             if (response.status === 200) {
                 const newToken = response.data.token;
-                if (newToken) { // Vérifiez si le token est défini
+                if (newToken) {
                     await AsyncStorage.setItem('userToken', newToken);
                 } else {
                     console.error('Le nouveau token est indéfini');
@@ -71,7 +72,6 @@ const Profile = () => {
         }
     };
 
-
     if (loading) {
         return <ActivityIndicator size="large" color="#0000ff" />;
     }
@@ -82,57 +82,90 @@ const Profile = () => {
     return (
         <View style={styles.container}>
             <View style={styles.navigation}>
-                <Text style={styles.navigationText}>Compte</Text>
-                <Text style={styles.navigationText}>Adresse</Text>
+                <TouchableOpacity onPress={() => setActiveTab('Compte')}>
+                    <Text style={[styles.navigationText, activeTab === 'Compte' && styles.activeTab]}>Compte</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setActiveTab('Adresse')}>
+                    <Text style={[styles.navigationText, activeTab === 'Adresse' && styles.activeTab]}>Adresse</Text>
+                </TouchableOpacity>
             </View>
-            <View style={styles.form}>
-                <Text style={styles.subtitle}>Informations de votre compte utilisateur</Text>
-                <Text style={styles.text}>Mettre à jour vos informations</Text>
+            <ScrollView contentContainerStyle={styles.form}>
+                {activeTab === 'Compte' && (
+                    <>
+                        <Text style={styles.subtitle}>Informations de votre compte utilisateur</Text>
+                        <Text style={styles.text}>Mettre à jour vos informations</Text>
 
-                <View style={styles.fieldSet}>
-                    <Text style={styles.legend}>Adresse email</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email"
-                        onChangeText={(value) => handleInputChange('email', value)}
-                        value={userData.email}
-                    />
-                </View>
+                        <View style={styles.fieldSet}>
+                            <Text style={styles.legend}>Adresse email</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Email"
+                                onChangeText={(value) => handleInputChange('email', value)}
+                                value={userData.email}
+                            />
+                        </View>
 
-                <View style={styles.fieldSet}>
-                    <Text style={styles.legend}>Nom</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Nom"
-                        onChangeText={(value) => handleInputChange('lastName', value)}
-                        value={userData.lastName}
-                    />
-                </View>
+                        <View style={styles.fieldSet}>
+                            <Text style={styles.legend}>Nom</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Nom"
+                                onChangeText={(value) => handleInputChange('lastName', value)}
+                                value={userData.lastName}
+                            />
+                        </View>
 
-                <View style={styles.fieldSet}>
-                    <Text style={styles.legend}>Prénom</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Prénom"
-                        onChangeText={(value) => handleInputChange('firstName', value)}
-                        value={userData.firstName}
-                    />
-                </View>
+                        <View style={styles.fieldSet}>
+                            <Text style={styles.legend}>Prénom</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Prénom"
+                                onChangeText={(value) => handleInputChange('firstName', value)}
+                                value={userData.firstName}
+                            />
+                        </View>
 
-                <View style={styles.fieldSet}>
-                    <Text style={styles.legend}>Téléphone</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Téléphone"
-                        onChangeText={(value) => handleInputChange('phoneNumber', value)}
-                        value={"a changer"}
-                    >
-                    </TextInput>
-                </View>
+                        <View style={styles.fieldSet}>
+                            <Text style={styles.legend}>Téléphone</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Téléphone"
+                                onChangeText={(value) => handleInputChange('phoneNumber', value)}
+                                value={"a changer"}
+                            />
+                        </View>
+                    </>
+                )}
+                {activeTab === 'Adresse' && (
+                    <>
+                        <Text style={styles.subtitle}>Modifier mon adresse postale</Text>
+                        <Text style={styles.text}>Si vous avez changé d'adresse postale, il est important de la mettre à jour via le formulaire ci-dessous.</Text>
+
+                        <View style={styles.fieldSet}>
+                            <Text style={styles.legend}>Adresse postale</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Adresse postale"
+                                onChangeText={(value) => handleInputChange('address', value)}
+                                value={userData.address}
+                            />
+                        </View>
+
+                        <View style={styles.fieldSet}>
+                            <Text style={styles.legend}>Code postal</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Code postal"
+                                onChangeText={(value) => handleInputChange('postalCode', value)}
+                                value={userData.postalCode}
+                            />
+                        </View>
+                    </>
+                )}
 
                 <CancelButton>Annuler</CancelButton>
                 <SaveButton onPress={handleSubmit}>Enregistrer</SaveButton>
-            </View>
+            </ScrollView>
         </View>
     );
 };
@@ -140,16 +173,30 @@ const Profile = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: '#F0F3F4',
     },
-    title: {
-        fontSize: 24,
-        color: '#344260',
-        fontFamily: 'Outfit-Bold.ttf',
+    navigation: {
+        height: 50,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
+    },
+    navigationText: {
+        fontFamily: 'Rubik-Bold.ttf',
         fontWeight: 'bold',
-        marginVertical: 20,
+        color: '#5B6880',
+    },
+    activeTab: {
+        color: '#F9556D',
+        borderBottomWidth: 2,
+        borderBottomColor: '#F9556D',
+    },
+    form: {
+        flexGrow: 1,
+        padding: 20,
+        backgroundColor: '#fff',
     },
     subtitle: {
         marginBottom: 10,
@@ -160,25 +207,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     text: {
-        marginBottom: 40,
+        marginBottom: 20,
         textAlign: 'center',
         fontSize: 12,
         color: '#344260',
         fontFamily: 'Outfit-Regular.ttf',
         fontWeight: 'regular',
-    },
-    form: {
-        width: '100%',
-        padding: 20,
-        backgroundColor: '#fff',
-        flexDirection: 'column',
-    },
-    input: {
-        marginTop: 10,
-        height: 40,
-        borderWidth: 0,
-        paddingLeft: 10,
-        width: '100%',
     },
     fieldSet: {
         marginVertical: 10,
@@ -197,17 +231,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingHorizontal: 5,
     },
-    navigation: {
+    input: {
+        height: 40,
+        borderWidth: 0,
+        paddingLeft: 10,
         width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-    },
-
-    navigationText: {
-        fontFamily: 'Rubik-Bold.ttf',
-        fontWeight: 'bold',
-        marginBottom: 20,
-        color: '#5B6880',
     },
     error: {
         color: 'red',

@@ -8,6 +8,7 @@ import {Feather} from "@expo/vector-icons";
 import RegisterButton from "@/app/components/Buttons/RegisterButton";
 
 export default function RegisterForm() {
+    const apiBaseUrl = process.env.API_BASE_URL;
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -74,7 +75,7 @@ export default function RegisterForm() {
             </View>
 
             <RegisterButton
-                url='http://10.0.2.2:8000/api/auth/customer/register'
+                url={`${apiBaseUrl}/api/auth/customer/register`}
                 data={{ email, first_name: firstName, last_name: lastName, password }}
                 successCallback={handleSuccess}
                 errorCallback={handleError}

@@ -9,6 +9,7 @@ import ConnectButton from "@/app/components/Buttons/ConnectButton";
 
 
 export default function LoginTechnicienForm() {
+    const apiBaseUrl = process.env.API_BASE_URL;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
@@ -56,7 +57,7 @@ export default function LoginTechnicienForm() {
             </View>
 
             <ConnectButton
-                url='http://10.0.2.2:8000/api/auth/admin/login'
+                url={`${apiBaseUrl}/api/auth/login`}
                 data={{email, password}}
                 successCallback={handleSuccess}
                 errorCallback={handleError}

@@ -7,6 +7,7 @@ import logo from "../assets/images/logo_proaxive2.png";
 import RegisterButton from "@/app/components/Buttons/RegisterButton";
 
 export default function RegisterTechnicienForm() {
+    const apiBaseUrl = process.env.API_BASE_URL;
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -73,7 +74,7 @@ export default function RegisterTechnicienForm() {
             </View>
 
             <RegisterButton
-                url='http://10.0.2.2:8000/api/auth/admin/register'
+                url={`${apiBaseUrl}/api/auth/admin/register`}
                 data={{ email, first_name: firstName, last_name: lastName, password }}
                 successCallback={handleSuccess}
                 errorCallback={handleError}

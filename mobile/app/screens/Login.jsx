@@ -7,6 +7,7 @@ import ConnectButton from "@/app/components/Buttons/ConnectButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginForm() {
+    const apiBaseUrl = process.env.API_BASE_URL
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
@@ -52,10 +53,10 @@ export default function LoginForm() {
             </View>
 
             <ConnectButton
-            url='http://10.0.2.2:8000/api/auth/customer/login'
-            data={{email, password}}
-            successCallback={handleSuccess}
-            errorCallback={handleError}
+                url={`${apiBaseUrl}/api/auth/login`}
+                data={{email, password}}
+                successCallback={handleSuccess}
+                errorCallback={handleError}
             />
 
             <View style={styles.containerBar}>
