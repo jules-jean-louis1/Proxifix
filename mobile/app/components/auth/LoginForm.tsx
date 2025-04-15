@@ -1,8 +1,8 @@
-import { View } from "react-native";
-import { TextInput } from "react-native-paper";
-import { AppButton } from "../Buttons/AppButton";
-import React, { useState } from "react";
+import { AppButton } from "../buttons/AppButton";
+import React from "react";
 import { useSession } from "@/app/context/ctx";
+import { FormProvider, useForm } from "react-hook-form";
+import { AppTextField } from "../inputs/AppTextField";
 
 interface LoginFormProps {
   success: boolean | null;
@@ -13,39 +13,47 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   success,
   setSuccess,
 }: LoginFormProps) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const methods = useForm();
+  const { handleSubmit } = methods;
   const { signIn } = useSession();
 
-  const handleLogin = async () => {
-    const success = await signIn(email, password);
+  const onSubmit = async (data: any) => {
+    if (data.email === "" || data.password === "") {
+      return;
+    }
+    const success = await signIn(data.email, data.password);
     success ? setSuccess(true) : setSuccess(false);
   };
   return (
-    <View>
-      <TextInput
-        mode="outlined"
-        label="Email"
-        placeholder="Entrez votre identifiant ou adresse email"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
+    <FormProvider {...methods}>
+      <AppTextField
+        nameField="email"
+        label="Adresse email"
+        placeholder="Entrez votre adresse email"
+        rules={{
+          required: "L'adresse email est obligatoire",
+          pattern: {
+            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+            message: "Adresse email invalide",
+          },
+        }}
       />
-      <TextInput
-        mode="outlined"
+      <AppTextField
+        nameField="password"
         label="Mot de passe"
         placeholder="Entrez votre mot de passe"
-        secureTextEntry
-        right={<TextInput.Icon icon="eye" />}
-        value={password}
-        onChangeText={(text) => setPassword(text)}
+        secureTextEntry={true}
+        rules={{ required: "Le mot de passe est obligatoire" }}
       />
       <AppButton
         children={"Connexion"}
         type="primary"
-        onPress={() => handleLogin()}
+        onPress={handleSubmit((data) => {
+          onSubmit(data);
+        })}
         disabled={false}
         icon="login"
       />
-    </View>
+    </FormProvider>
   );
 };
