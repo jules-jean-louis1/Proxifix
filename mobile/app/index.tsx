@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 // import logo from '../assets/images/logo.png';
-import { AppButton } from "./components/Buttons/AppButton";
+import { AppButton } from "./components/buttons/AppButton";
 
 export default function HomeScreen() {
   const router = useRouter();

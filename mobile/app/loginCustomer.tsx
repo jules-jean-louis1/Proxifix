@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { LoginForm } from "./components/auth/LoginForm";
+import { Divider } from "react-native-paper";
 
 export default function LoginCustomer() {
   const [success, setSuccess] = useState<boolean | null>(null);
@@ -12,7 +13,7 @@ export default function LoginCustomer() {
       return;
     }
     if (success) {
-      router.replace("/(main)/customer");
+      router.replace("/(tabs)/customer");
     }
   }, [success]);
 
@@ -26,12 +27,28 @@ export default function LoginCustomer() {
           Pour vous connecter, utilisez votre adresse email fournie au
           technicien.
         </Text>
-        {success === false && <Text style={styles.errorMessage}>Mot de passe ou login incorrect</Text>}
+        {success === false && (
+          <Text style={styles.errorMessage}>
+            Mot de passe ou login incorrect
+          </Text>
+        )}
         <LoginForm success={success} setSuccess={setSuccess} />
         <Text style={styles.inline}>
           Votre accès est confidentiel, ne le communiquez jamais à autrui.
         </Text>
       </View>
+      <View style={styles.containerBar}>
+        <Divider />
+      </View>
+      <Text style={styles.inline}>
+        Vous n'avez pas de compte ?{" "}
+        <Text
+          style={{ color: "#E53953", fontWeight: "bold" }}
+          onPress={() => router.push("/registerCustomer")}
+        >
+          Inscrivez-vous
+        </Text>
+      </Text>
     </View>
   );
 }
@@ -68,8 +85,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginVertical: 20,
   },
-  errorMessage : {
+  errorMessage: {
     textAlign: "center",
-    color: "#ff0000"
-  }
+    color: "#ff0000",
+  },
+  containerBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    marginTop: 30,
+  },
 });
