@@ -21,11 +21,11 @@ class Status
     #[Groups(['equipment:details','intervention:details'])]
     private ?string $name = null;
 
-    public const PENDING = "pending";
-    public const AWAITING_PICKUP = "awaiting_pickup";
-    public const IN_PROGRESS = "in_progress";
-    public const COMPLETED = "completed";
-    public const CANCELLED = "cancelled";
+    public const PENDING = "En attente";
+    public const AWAITING_PICKUP = "En attente de récupération";
+    public const IN_PROGRESS = "En traitement";
+    public const COMPLETED = "Complété(e)";
+    public const CANCELLED = "Annulé(e)";
     public function getId(): ?int
     {
         return $this->id;
