@@ -9,17 +9,20 @@ use App\Entity\Task;
 use App\Entity\TaskIntervention;
 use App\Entity\TypeIntervention;
 use App\Entity\User;
+use App\Repository\InterventionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-#[Route("/api/intervention")]
+#[Route('/api')]
 class InterventionController extends AbstractController
 {
-    #[Route("/create", name: "app_intervention_create", methods: ["POST"])]
-    public function create(
+    #[Route("/intervention/new", name: "app_new_intervention", methods: ["POST"])]
+    public function createInterventionOnly(
         Request $request,
         EntityManagerInterface $entityManager
     ): JsonResponse {
@@ -42,49 +45,79 @@ class InterventionController extends AbstractController
                 ->getRepository(User::class)
                 ->find($payload["user_id"]);
 
-            $intervention->setType($typeIntervention);
+            $intervention->setTypeIntervention($typeIntervention);
             $intervention->setStatus($status);
             $intervention->setUser($user);
             $intervention->setCreatedAt(new \DateTimeImmutable());
             $intervention->setUpdatedAt(new \DateTimeImmutable());
+            $intervention->setStartDate($payload['start_date'] ?
+            new \DateTimeImmutable($payload["start_date"]) : null
+            );
+            $intervention->setEndDate($payload['end_date'] ?
+                new \DateTimeImmutable($payload["end_date"]) : null
+            );
+            $intervention->setTitle($payload["title"] ?? null);
+            $intervention->setDescription($payload["description"] ?? null);
 
-            foreach ($payload["equipment"] as $equipmentId) {
-                $equipment = $entityManager
-                    ->getRepository(Equipment::class)
-                    ->find($equipmentId);
-                if ($equipment) {
-                    $intervention->addEquipment($equipment);
+            if (isset($payload["equipment_id"])) {
+                $intervention->setEquipment(
+                    $entityManager
+                        ->getRepository(Equipment::class)
+                        ->find($payload["equipment_id"])
+                );
+            }
+
+            if (isset($payload["booking"])) {
+                foreach ($payload["booking"] as $bookingData) {
+                    if (!isset($bookingData['start_date']) || !isset($bookingData['end_date'])) {
+                        throw new \Exception("Booking start and end dates are required");
+                    }
+                    if (!isset($bookingData['title'])) {
+                        throw new \Exception("Booking title is required");
+                    }
+                    if (!isset($bookingData['description'])) {
+                        throw new \Exception("Booking description is required");
+                    }
+                    if (!isset($bookingData['all_day'])) {
+                        throw new \Exception("Booking all_day is required");
+                    }
+
+                    // Create a new Booking entity
+                    $booking = new Booking();
+                    $booking->setStartDate(
+                        new \DateTimeImmutable($bookingData["start_date"])
+                    );
+                    $booking->setEndDate(
+                        new \DateTimeImmutable($bookingData["end_date"])
+                    );
+                    $booking->setTitle($bookingData["title"]);
+                    $booking->setDescription($bookingData["description"]);
+                    $booking->setAllDay($bookingData["all_day"]);
+                    $booking->setIntervention($intervention);
+                    $intervention->addBooking($booking);
+                    $entityManager->persist($booking);
                 }
             }
+            if (isset($payload["task"])) {
+                foreach ($payload["task"] as $taskData) {
+                    if (!isset($taskData['id'])) {
+                        throw new \Exception("Task ID is required");
+                    }
 
-            $booking = new Booking();
-            $booking->setStartDate(
-                new \DateTimeImmutable($payload["booking"]["start_date"])
-            );
-            $booking->setEndDate(
-                new \DateTimeImmutable($payload["booking"]["end_date"])
-            );
-            $booking->setTitle($payload["booking"]["title"]);
-            $booking->setDescription($payload["booking"]["description"]);
-            $booking->setAllDay($payload["booking"]["all_day"]);
-            $booking->setIntervention($intervention);
-
-            $intervention->addBooking($booking);
-
-            $taskIntervention = new TaskIntervention();
-            $task = $entityManager->getRepository(Task::class)->find($payload["task"]["id"]);
-            if (!$task) {
-                throw new \Exception("Task not found");
+                    // Create a new TaskIntervention entity
+                    $taskIntervention = new TaskIntervention();
+                    $task = $entityManager->getRepository(Task::class)->find($taskData["id"]);
+                    if (!$task) {
+                        throw new \Exception("Task not found");
+                    }
+                    $taskIntervention->setTask($task);
+                    $taskIntervention->setIntervention($intervention);
+                    $entityManager->persist($taskIntervention);
+                }
             }
-            $taskIntervention->setTask($task);
-            $taskIntervention->setIntervention($intervention);
-            
-            $entityManager->persist($booking);
-            $entityManager->persist($taskIntervention);
             $entityManager->persist($intervention);
             $entityManager->flush();
             $entityManager->commit();
-
             return new JsonResponse(
                 [
                     "id"          => $intervention->getId(),
@@ -103,8 +136,7 @@ class InterventionController extends AbstractController
             );
         }
     }
-
-    #[Route("/{id}", name: "app_intervention_update", methods: ["PUT"])]
+    #[Route("/intervention/{id}", name: "app_intervention_update", methods: ["PUT"])]
     public function edit(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -132,7 +164,7 @@ class InterventionController extends AbstractController
             $typeIntervention = $entityManager
                 ->getRepository(TypeIntervention::class)
                 ->find($typeInterventionId);
-            $intervention->setType($typeIntervention);
+            $intervention->setTypeIntervention($typeIntervention);
         }
 
         $intervention->setUpdatedAt(new \DateTimeImmutable());
@@ -142,7 +174,7 @@ class InterventionController extends AbstractController
         return $this->json($intervention, 200);
     }
 
-    #[Route("/{id}", name: "app_intervention_delete", methods: ["DELETE"])]
+    #[Route("/intervention/{id}", name: "app_intervention_delete", methods: ["DELETE"])]
     public function delete(
         EntityManagerInterface $entityManager,
         int $id
@@ -163,4 +195,25 @@ class InterventionController extends AbstractController
             200
         );
     }
+    #[Route("/admin/interventions/{page}/{order}/{status}", name: "app_intervention_list", methods: ["GET"], defaults: ['page' => 1, 'order' => 'DESC', 'status' => 'all'])]
+    public function getInterventionsList(int $page, string $order, string $status ,InterventionRepository $interventionRepository): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        if ($user->getCompany() === null) {
+            return $this->json(['error' => 'No Company found for this user'], Response::HTTP_BAD_REQUEST);
+        }
+        $allowedStatus = [Status::PENDING, Status::AWAITING_PICKUP, Status::CANCELLED, Status::COMPLETED, Status::IN_PROGRESS, "all"];
+        
+        $companyId = $user->getCompany()->getId();
+        $limit = 10;
+
+        $interventions = $interventionRepository->findByCompanyId($companyId, $page, $limit, $order, $status);
+
+        return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
+    }
+
 }

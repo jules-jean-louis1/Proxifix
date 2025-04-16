@@ -3,10 +3,9 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\AppointmentRequestRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AppointmentRequestRepository::class)]
 #[ApiResource]
@@ -18,15 +17,23 @@ class AppointmentRequest
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["appointment:read","user:details"])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(["user:details"])]
     private ?\DateTimeImmutable $date = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(["user:details"])]
+    private ?string $description = null;
+
     #[ORM\Column(length : 255)]
+    #[Groups(["user:details"])]
     private ?string $status = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(["user:details"])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(type : Types::DATETIME_IMMUTABLE, nullable: true)]
@@ -37,20 +44,23 @@ class AppointmentRequest
     private ?User $user = null;
 
     #[ORM\OneToOne(mappedBy: 'AppointmentRequest', cascade: ['persist', 'remove'])]
+    #[Groups(["user:details"])]
     private ?Booking $booking = null;
 
     #[ORM\ManyToOne]
     private ?Company $company = null;
 
-    /**
-     * @var Collection<int, AppointmentEquipment>
-     */
-    #[ORM\OneToMany(targetEntity: AppointmentEquipment::class, mappedBy: 'appointment')]
-    private Collection $appointmentEquipment;
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Equipment $equipment = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable:true)]
+    private ?TypeIntervention $typeIntervention = null;
 
     public function __construct()
     {
-        $this->appointmentEquipment = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -66,6 +76,17 @@ class AppointmentRequest
     public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
+
+        return $this;
+    }
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }
@@ -152,45 +173,27 @@ class AppointmentRequest
         return $this;
     }
 
-    /**
-     * @return Collection<int, AppointmentEquipment>
-     */
-    public function getAppointmentEquipment(): Collection
+    public function getEquipment(): ?Equipment
     {
-        return $this->appointmentEquipment;
+        return $this->equipment;
     }
-
-    public function addAppointmentEquipment(AppointmentEquipment $appointmentEquipment): static
+    
+    public function setEquipment(?Equipment $equipment): static
     {
-        if (! $this->appointmentEquipment->contains($appointmentEquipment)) {
-            $this->appointmentEquipment->add($appointmentEquipment);
-            $appointmentEquipment->setAppointment($this);
-        }
-
+        $this->equipment = $equipment;
+    
         return $this;
     }
 
-    public function removeAppointmentEquipment(AppointmentEquipment $appointmentEquipment): static
+    public function getTypeIntervention(): ?TypeIntervention
     {
-        if ($this->appointmentEquipment->removeElement($appointmentEquipment)) {
-            // set the owning side to null (unless already changed)
-            if ($appointmentEquipment->getAppointment() === $this) {
-                $appointmentEquipment->setAppointment(null);
-            }
-        }
-
+        return $this->typeIntervention;
+    }
+    
+    public function setTypeIntervention(?TypeIntervention $typeIntervention): static
+    {
+        $this->typeIntervention = $typeIntervention;
+    
         return $this;
     }
-    public function getEquipments(): array
-    {
-        return $this->appointmentEquipment->map(function (AppointmentEquipment $appointmentEquipment) {
-            return $appointmentEquipment->getEquipment();
-        })->toArray();
-    }
-    public function getEquipmentIds(): array
-{
-    return $this->appointmentEquipment->map(function (AppointmentEquipment $appointmentEquipment) {
-        return $appointmentEquipment->getEquipment()->getId();
-    })->toArray();
-}
 }
