@@ -33,6 +33,30 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
+    public function customerList(int $page, int $limit): array
+    {
+        $offset = ($page - 1) * $limit;
+    
+        return $this->createQueryBuilder('u')
+            ->where("JSON_GET_TEXT(u.roles, 0) = :role")
+            ->setParameter('role', 'ROLE_CUSTOMER')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function searchCustomer(string $searchQuery) 
+    {
+        return $this->createQueryBuilder('u')
+            ->where("JSON_GET_TEXT(u.roles, 0) = :role")
+            ->andWhere("u.first_name = :searchQuery")
+            ->orWhere("u.last_name = :searchQuery")
+            ->setParameter('role', 'ROLE_CUSTOMER')
+            ->setParameter('searchQuery', $searchQuery)
+            ->getQuery()
+            ->getResult();
+    }
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */

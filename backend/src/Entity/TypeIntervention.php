@@ -15,19 +15,19 @@ class TypeIntervention
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['equipment:details','intervention:details'])]
+    #[Groups(['equipment:details','intervention:details',"user:details"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['equipment:details','intervention:details'])]
+    #[Groups(['equipment:details','intervention:details',"user:details"])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(['equipment:details', 'intervention:details'])]
+    #[Groups(['equipment:details', 'intervention:details',"user:details"])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    #[Groups(['equipment:details', 'intervention:details'])]
+    #[Groups(['equipment:details', 'intervention:details',"user:details"])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\OneToMany(mappedBy: 'typeIntervention', targetEntity: Intervention::class)]

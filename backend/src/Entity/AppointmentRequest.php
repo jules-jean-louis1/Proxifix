@@ -3,10 +3,9 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\AppointmentRequestRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AppointmentRequestRepository::class)]
 #[ApiResource]
@@ -18,18 +17,23 @@ class AppointmentRequest
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["appointment:read","user:details"])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(["user:details"])]
     private ?\DateTimeImmutable $date = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(["user:details"])]
     private ?string $description = null;
 
     #[ORM\Column(length : 255)]
+    #[Groups(["user:details"])]
     private ?string $status = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(["user:details"])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(type : Types::DATETIME_IMMUTABLE, nullable: true)]
@@ -40,6 +44,7 @@ class AppointmentRequest
     private ?User $user = null;
 
     #[ORM\OneToOne(mappedBy: 'AppointmentRequest', cascade: ['persist', 'remove'])]
+    #[Groups(["user:details"])]
     private ?Booking $booking = null;
 
     #[ORM\ManyToOne]

@@ -3,25 +3,26 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/customer')]
+#[Route('/api')]
 final class CustomerController extends AbstractController
 {
-    #[Route('/{id}', name: 'app_customer_edit', methods: ['PUT'])]
+    #[Route('/customer/{id}', name: 'app_customer_edit', methods: ['PATCH'])]
     public function editCustomer(
         int $id,
         Request $request,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher
     ): JsonResponse {
         try {
-            $entityManager->beginTransaction();
-
             $payload  = $request->getPayload();
             $customerUser     = $entityManager->getRepository(User::class)->find($id);
 
@@ -60,24 +61,34 @@ final class CustomerController extends AbstractController
                 $customerUser->setLastName($lastName);
             }
 
-            $customerUser->setUpdatedAt(new \DateTimeImmutable());
+            $email = $payload->get('email');
+            if (isset($email)) {
+                $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+                if ($existingUser) {
+                    return $this->json(['error' => 'Email already exists'], Response::HTTP_CONFLICT);
+                }
+                $customerUser->setEmail($email);
+            }
+
+            $password = $payload->get('password');
+            if (isset($password)) {
+                $hashedPassword = $passwordHasher->hashPassword($customerUser, $password);
+                $customerUser->setPassword($hashedPassword);
+            }
+
             $customerUser->setUpdatedAt(new \DateTimeImmutable());
 
-
+            $entityManager->persist($customerUser);
             $entityManager->flush();
-            $entityManager->commit();
 
-            return $this->json(data: [
-                'user'     => $customerUser,
-            ], status: 200);
+            return $this->json($customerUser, 200, [], ['groups' => ["user:customer:edit-profile"]]);
 
         } catch (\Exception $e) {
-            $entityManager->rollback();
             return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    #[Route('/{id}', name: 'app_customer_delete', methods: ['DELETE'])]
+    #[Route('/customer/{id}', name: 'app_customer_delete', methods: ['DELETE'])]
     public function delete(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
         $customerUser = $entityManagerInterface->getRepository(User::class)->find($id);
@@ -92,7 +103,7 @@ final class CustomerController extends AbstractController
         return $this->json(['message' => 'Customer deleted'], Response::HTTP_OK);
     }
 
-    #[Route('/{id}', name: 'app_customer_show', methods: ['GET'])]
+    #[Route('/customer/{id}', name: 'app_customer_show', methods: ['GET'])]
     public function show(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
         $customerUser = $entityManagerInterface->getRepository(User::class)->find($id);
@@ -101,28 +112,27 @@ final class CustomerController extends AbstractController
             return $this->json(['error' => 'Customer not found'], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->json($customerUser, Response::HTTP_OK);
+        return $this->json($customerUser, Response::HTTP_OK, [], ["groups" => "user:details", "equipment:details"]);
     }
 
     #[Route('/customers', name: 'app_customers_list', methods: ['GET'])]
-    public function list(EntityManagerInterface $entityManagerInterface, Request $request): JsonResponse
+    public function list(UserRepository $userRepository, Request $request): JsonResponse
     {
         $page   = $request->query->getInt('page', 1);
         $limit  = $request->query->getInt('limit', 10);
-        $offset = ($page - 1) * $limit;
-
-        $customerUser = $entityManagerInterface->getRepository(User::class)->findBy(["roles" => [User::ROLE_CUSTOMER]], null, $limit, $offset);
-
-        return $this->json($customerUser, Response::HTTP_OK);
+    
+        $customerUsers = $userRepository->customerList($page, $limit);
+    
+        return $this->json($customerUsers, Response::HTTP_OK, [], ["groups" => "user:details", "equipment:details"]);
     }
 
-    #[Route('/customer/search', name: 'app_customer_search', methods: ['GET'])]
-    public function search(Request $request, EntityManagerInterface $entityManagerInterface): JsonResponse
+    #[Route('/customer-search', name: 'app_customer_search', methods: ['GET'])]
+    public function search(Request $request, UserRepository $userRepository): JsonResponse
     {
         $query = $request->query->get('query');
 
-        $customers = $entityManagerInterface->getRepository(User::class)->search($query);
+        $customer = $userRepository->searchCustomer($query);
 
-        return $this->json($customers, Response::HTTP_OK);
+        return $this->json($customer, Response::HTTP_OK);
     }
 }

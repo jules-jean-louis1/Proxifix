@@ -24,6 +24,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
@@ -33,6 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             message: "The username can only contain letters, numbers and underscores"
         )
     ]
+    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?string $email = null;
 
     /**
@@ -50,6 +52,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             message: "Choose a valid role."
         )
     ]
+    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private array $roles = [];
 
     /**
@@ -71,19 +74,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 255)]
+    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?string $first_name = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 2, max: 255)]
+    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?string $last_name = null;
 
     #[ORM\Column]
+    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
+    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: "users")]
+    #[Groups(["user:customer:read", "user:details"])]
     private ?Company $company = null;
 
     /**
@@ -96,6 +104,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             cascade: ["remove"]
         )
     ]
+    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private Collection $equipment;
 
     /**
@@ -104,22 +113,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[
         ORM\OneToMany(
             targetEntity: AppointmentRequest::class,
-            mappedBy: "user_id",
+            mappedBy: "user",
             orphanRemoval: true
         )
     ]
+    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private Collection $appointmentRequests;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?string $zipcode = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(min: 2, max: 255)]
+    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?string $city = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?string $address = null;
 
 

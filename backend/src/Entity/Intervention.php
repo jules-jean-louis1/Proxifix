@@ -16,47 +16,47 @@ class Intervention
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details'])]
+    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details'])]
+    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details'])]
+    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
     private ?string $description = null;
 
     #[ORM\Column(Types::TEXT, nullable:true)]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details'])]
+    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
     private ?string $message_report = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details'])]
+    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
     private ?\DateTimeImmutable $start_date = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details'])]
+    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
     private ?\DateTimeImmutable $end_date = null;
 
     #[ORM\Column]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details'])]
+    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details'])]
+    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(targetEntity: TypeIntervention::class, inversedBy: 'interventions')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details'])]
+    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
     private ?TypeIntervention $typeIntervention = null;
 
     #[ORM\ManyToOne(inversedBy: "interventions")]
     private ?Company $company = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details'])]
+    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
     private ?Status $status = null;
 
     #[ORM\ManyToOne]

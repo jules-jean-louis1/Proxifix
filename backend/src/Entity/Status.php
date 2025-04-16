@@ -18,7 +18,7 @@ class Status
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['equipment:details','intervention:details'])]
+    #[Groups(['equipment:details','intervention:details', "user:details"])]
     private ?string $name = null;
 
     public const PENDING = "En attente";

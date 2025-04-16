@@ -26,42 +26,42 @@ class Equipment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['equipment:read', 'equipment:details','intervention:details'])]
+    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['equipment:read', 'equipment:details','intervention:details'])]
+    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(['equipment:read', 'equipment:details','intervention:details'])]
+    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    #[Groups(['equipment:read', 'equipment:details','intervention:details'])]
+    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
-    #[Groups(['equipment:details'])]
+    #[Groups(['equipment:details', "user:details"])]
     private ?TypeEquipment $type_equipment = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['equipment:details'])]
+    #[Groups(['equipment:details', "user:details"])]
     private ?OperatingSystem $operating_system = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
-    #[Groups(['equipment:details'])]
+    #[Groups(['equipment:details', "user:details"])]
     private ?Brand $brand = null;
 
     /**
      * @var Collection<int, Intervention>
      */
     #[ORM\OneToMany(targetEntity: Intervention::class, mappedBy: "equipment")]
-    #[Groups(['equipment:details'])]
+    #[Groups(['equipment:details', "user:details"])]
     private Collection $interventions;
 
     #[ORM\OneToMany(mappedBy: 'equipment', targetEntity: AppointmentRequest::class)]

@@ -15,27 +15,27 @@ class Booking
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['intervention:details'])]
+    #[Groups(['intervention:details',"user:details"])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(['intervention:details'])]
+    #[Groups(['intervention:details',"user:details"])]
     private ?\DateTimeImmutable $start_date = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(['intervention:details'])]
+    #[Groups(['intervention:details',"user:details"])]
     private ?\DateTimeImmutable $end_date = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['intervention:details'])]
+    #[Groups(['intervention:details',"user:details"])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['intervention:details'])]
+    #[Groups(['intervention:details',"user:details"])]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['intervention:details'])]
+    #[Groups(['intervention:details',"user:details"])]
     private ?bool $all_day = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
@@ -43,11 +43,11 @@ class Booking
     private ?Intervention $intervention = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(['intervention:details'])]
+    #[Groups(['intervention:details',"user:details"])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(['intervention:details'])]
+    #[Groups(['intervention:details',"user:details"])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'bookings')]
