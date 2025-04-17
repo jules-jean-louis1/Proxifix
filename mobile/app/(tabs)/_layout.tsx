@@ -1,7 +1,7 @@
 import { Stack, useRouter } from "expo-router";
 import { useSession } from "../context/ctx";
 import { useEffect } from "react";
-import { ToolBarCustomer } from "../components/navigations/ToolBarCustomer";
+import { ToolBarCustomer } from "../components/navigation/ToolBarCustomer";
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
