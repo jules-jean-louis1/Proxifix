@@ -1,4 +1,4 @@
-import { useContext, createContext, type PropsWithChildren } from "react";
+import React, { useContext, createContext, type PropsWithChildren } from "react";
 import { setStorageItemAsync, useStorageState } from "./useStorageState";
 import { router } from "expo-router";
 
@@ -49,6 +49,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
             setSession(sessionData);
             return true;
           } catch (e) {
+            console.error("Error during signIn:", e);
             return false;
           }
         },

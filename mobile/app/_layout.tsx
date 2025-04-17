@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import { PaperProvider } from "react-native-paper";
 import { SessionProvider } from "./context/ctx";
+import React from "react";
 
 export default function Layout() {
   return (
