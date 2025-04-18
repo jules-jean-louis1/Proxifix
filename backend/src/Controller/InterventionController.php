@@ -216,4 +216,17 @@ class InterventionController extends AbstractController
         return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
     }
 
+    #[Route("/intervention/customer/{userId}", name: "app_intervention_customer_list", methods: ["GET"])]
+    public function getInterventionsByCustomer(
+        int $userId,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+
+        $interventions = $entityManager
+            ->getRepository(Intervention::class)
+            ->findBy(['user' => $userId]);
+
+        return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
+    }
+
 }
