@@ -5,6 +5,8 @@ import { Button, Text } from "react-native-paper";
 import { useApi } from "@/app/utils/useApi";
 import { Feather } from "@expo/vector-icons";
 import { EquipmentCardHome } from "@/app/components/equipment/EquipmentCardHome";
+import { router } from "expo-router";
+import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
 
 export const CustomerHome = () => {
   const sessionCtx = useSessionContext();
@@ -29,6 +31,7 @@ export const CustomerHome = () => {
 
   return (
     <View style={styles.container}>
+      <ToolBarCustomer />
       <View
         style={{
           marginTop: 5,
@@ -45,7 +48,7 @@ export const CustomerHome = () => {
         </Text>
       </View>
       <View style={styles.interventionBlock}>
-        <Pressable style={styles.button}>
+        <Pressable style={styles.button} onPress={() => router.push("/(tabs)/customer/interventions")}>
           <Image
             source={require("../../assets/images/tool_test 1.png")}
             style={styles.icon}
@@ -113,6 +116,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
+    backgroundColor: "#FFFFFF"
   },
   text: {
     color: "#000",
@@ -224,9 +228,9 @@ const styles = StyleSheet.create({
   },
   buttonUnder: {
     flex: 1,
-    backgroundColor: "transparent", // Boutons transparents
-    borderWidth: 0, // Supprimer les bordures
-    elevation: 0, // Supprimer l'ombre
+    backgroundColor: "transparent",
+    borderWidth: 0,
+    elevation: 0,
   },
   noTopBorder: {
     borderTopWidth: 0,
@@ -238,8 +242,8 @@ const styles = StyleSheet.create({
   verticalDivider: {
     width: 1,
     height: "80%",
-    backgroundColor: "#000", // Couleur du séparateur
-    marginHorizontal: 8, // Espacement entre le séparateur et les boutons
+    backgroundColor: "#000",
+    marginHorizontal: 8,
   },
 });
 

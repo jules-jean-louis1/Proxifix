@@ -1,7 +1,6 @@
 import { Stack, useRouter } from "expo-router";
 import { useSession } from "../context/ctx";
 import { useEffect } from "react";
-import { ToolBarCustomer } from "../components/navigation/ToolBarCustomer";
 import React from "react";
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
@@ -25,7 +24,6 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
 export default function MainLayout() {
   return (
     <ProtectedLayout>
-      <ToolBarCustomer />
       <Stack screenOptions={{headerShown : false}} />
     </ProtectedLayout>
   );
