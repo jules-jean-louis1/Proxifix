@@ -24,7 +24,7 @@ class AppointmentRequestRepository extends ServiceEntityRepository
             ->setMaxResults(100);
 
         if ($companyId !== null) {
-            $qb->andWhere('a.company_id = :company_id')
+            $qb->andWhere('a.company = :company_id')
                 ->setParameter('company_id', $companyId);
         }
 

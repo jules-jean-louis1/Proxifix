@@ -65,7 +65,6 @@ class InterventionController extends AbstractController
                 $intervention->setEquipment($equipment);
             }
     
-            // ⚠️ Nouvelle gestion de appointment_request
             if (isset($payload["appointment_request_id"])) {
                 $appointmentRequest = $entityManager
                     ->getRepository(AppointmentRequest::class)

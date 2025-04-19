@@ -80,8 +80,8 @@ class InterventionRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('i')
             ->select('COUNT(i.id)')
             ->where('i.company = :companyId')
-            ->andWhere('b.start_date < :end_date')
-            ->andWhere('b.end_date > :start_date')
+            ->andWhere('i.start_date < :end_date')
+            ->andWhere('i.end_date > :start_date')
             ->setParameter('companyId', $companyId)
             ->setParameter('start_date', $start_date)
             ->setParameter('end_date', $end_date);
