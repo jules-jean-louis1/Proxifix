@@ -2,7 +2,6 @@
 namespace App\Controller;
 
 use App\Entity\AppointmentRequest;
-use App\Entity\Booking;
 use App\Entity\Company;
 use App\Entity\Equipment;
 use App\Entity\Intervention;
@@ -10,7 +9,7 @@ use App\Entity\Status;
 use App\Entity\TypeIntervention;
 use App\Entity\User;
 use App\Repository\AppointmentRequestRepository;
-use App\Repository\BookingRepository;
+use App\Repository\InterventionRepository;
 use DateInterval;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,7 +24,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class AppointmentController extends AbstractController
 {
     #[Route('/appointment/free-slots', name: 'get_available_slots', methods: ['GET'])]
-    public function getAvailableSlots(Request $req, BookingRepository $bookingRepository): JsonResponse
+    public function getAvailableSlots(Request $req, InterventionRepository $interventionRepository): JsonResponse
     {
         $date      = $req->query->get('date');
         $companyId = $req->query->get('companyId');
@@ -35,7 +34,7 @@ final class AppointmentController extends AbstractController
             return $this->json(['error' => 'date is required'], Response::HTTP_BAD_REQUEST);
         }
         $date  = new \DateTime($date);
-        $slots = $bookingRepository->getFreeSlots($date, $companyId);
+        $slots = $interventionRepository->getFreeSlots($date, $companyId);
 
         return $this->json($slots, Response::HTTP_OK);
 
@@ -110,7 +109,7 @@ final class AppointmentController extends AbstractController
     #[Route('/admin/appointment', name: 'patch_appointment', methods: ['PATCH'])]
     #[IsGranted(User::ROLE_TECHNICIAN)]
     #[IsGranted(User::ROLE_ADMIN)]
-    public function insertAppointmentToBooking(Request $request, EntityManagerInterface $em, BookingRepository $bookingRepository): JsonResponse
+    public function insertAppointmentToBooking(Request $request, EntityManagerInterface $em, InterventionRepository $interventionRepository): JsonResponse
     {
         try {
             $em->beginTransaction();
@@ -148,7 +147,7 @@ final class AppointmentController extends AbstractController
                 $startDate = $appointment->getDate();
                 $endDate   = isset($payload['end_date']) ? new DateTimeImmutable($payload['end_date']) : (new DateTimeImmutable($startDate->format('Y-m-d H:i:s')))->add(new DateInterval('PT1H'));
 
-                if (! $bookingRepository->isSlotsAvailable($appointment->getCompany()->getId(), $appointment->getDate(), $endDate)) {
+                if (! $interventionRepository->isSlotsAvailable($appointment->getCompany()->getId(), $appointment->getDate(), $endDate)) {
                     return $this->json(["errors" => "Slot already taken"], Response::HTTP_CONFLICT);
                 }
 
@@ -186,25 +185,6 @@ final class AppointmentController extends AbstractController
                 $em->persist($intervention);
                 $em->flush();
 
-                $booking = new Booking();
-                $user    = $this->getUser();
-                if (! $user instanceof User) {
-                    return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
-                }
-                $booking->setApprovedBy($user);
-
-                $booking->setAppointmentRequest($appointment);
-                $booking->setDescription($payload['description'] ?? "");
-                $booking->setTitle($payload['title'] ?? "");
-                $booking->setStartDate($startDate);
-                $booking->setEndDate($endDate);
-                $booking->setUpdatedAt(new DateTimeImmutable());
-                $booking->setCreatedAt(new DateTimeImmutable());
-                $booking->setIntervention($intervention);
-                $booking->setAllDay($payload['all_day'] ?? null);
-
-                $em->persist($booking);
-                $em->flush();
 
                 $em->commit();
 
@@ -219,11 +199,6 @@ final class AppointmentController extends AbstractController
                         'id'          => $intervention->getId(),
                         'title'       => $intervention->getTitle(),
                         'description' => $intervention->getDescription(),
-                    ],
-                    'booking'      => [
-                        'id'         => $booking->getId(),
-                        'start_date' => $booking->getStartDate()->format('Y-m-d H:i:s'),
-                        'end_date'   => $booking->getEndDate()->format('Y-m-d H:i:s'),
                     ],
                 ], Response::HTTP_OK);
             }

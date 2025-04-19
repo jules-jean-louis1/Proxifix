@@ -73,18 +73,10 @@ class Intervention
     #[Groups(['intervention:read', 'intervention:details'])]
     private Collection $taskInterventions;
     
-    /**
-     * @var Collection<int, Booking>
-     */
-    #[
-        ORM\OneToMany(
-            targetEntity: Booking::class,
-            mappedBy: "intervention",
-            orphanRemoval: true
-        )
-    ]
+    #[ORM\ManyToOne(inversedBy: null)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['intervention:read', 'intervention:details'])]
-    private Collection $bookings;
+    private ?AppointmentRequest $appointmentRequest = null;
 
     #[ORM\ManyToOne(targetEntity: Equipment::class, inversedBy: 'interventions')]
     #[ORM\JoinColumn(nullable: true)]
@@ -94,7 +86,6 @@ class Intervention
     public function __construct()
     {
         $this->taskInterventions = new ArrayCollection();
-        $this->bookings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -268,33 +259,14 @@ class Intervention
         return $this;
     }
 
-    /**
-     * @return Collection<int, Booking>
-     */
-    public function getBookings(): Collection
+    public function getAppointmentRequest(): ?AppointmentRequest
     {
-        return $this->bookings;
+        return $this->appointmentRequest;
     }
-
-    public function addBooking(Booking $booking): static
+    
+    public function setAppointmentRequest(?AppointmentRequest $appointmentRequest): static
     {
-        if (!$this->bookings->contains($booking)) {
-            $this->bookings->add($booking);
-            $booking->setIntervention($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBooking(Booking $booking): static
-    {
-        if ($this->bookings->removeElement($booking)) {
-            // set the owning side to null (unless already changed)
-            if ($booking->getIntervention() === $this) {
-                $booking->setIntervention(null);
-            }
-        }
-
+        $this->appointmentRequest = $appointmentRequest;
         return $this;
     }
 

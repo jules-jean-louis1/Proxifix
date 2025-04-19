@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Intervention;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -52,6 +53,43 @@ class InterventionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function getFreeSlots(\DateTime $date, ?int $companyId = null, ?int $interval_min = null): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+    
+        $query = <<<SQL
+            SELECT * 
+            FROM get_free_slots(:date, :company_id, :interval)
+        SQL;
+    
+        $result = $conn->executeQuery($query, [
+            'date' => $date->format('Y-m-d'),
+            'company_id' => $companyId ?? 0,
+            'interval' => $interval_min ?? 60,
+        ]);
+    
+        return $result->fetchAllAssociative();
+    }
+
+    public function isSlotsAvailable(int $companyId, string|DateTimeImmutable $start_date, string|DateTimeImmutable $end_date = null): bool
+    {
+
+        $start_date = $start_date instanceof DateTimeImmutable ? $start_date : new DateTimeImmutable($start_date);
+        $end_date = $end_date instanceof DateTimeImmutable ? $end_date : $start_date->add(new \DateInterval('PT1H')); // Par défaut, 1 heure
+    
+        $qb = $this->createQueryBuilder('i')
+            ->select('COUNT(i.id)')
+            ->where('i.company = :companyId')
+            ->andWhere('b.start_date < :end_date')
+            ->andWhere('b.end_date > :start_date')
+            ->setParameter('companyId', $companyId)
+            ->setParameter('start_date', $start_date)
+            ->setParameter('end_date', $end_date);
+    
+        $count = $qb->getQuery()->getSingleScalarResult();
+    
+        return $count == 0;
+    }
     //    /**
     //     * @return Intervention[] Returns an array of Intervention objects
     //     */

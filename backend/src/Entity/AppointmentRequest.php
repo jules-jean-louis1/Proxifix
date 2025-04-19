@@ -24,6 +24,10 @@ class AppointmentRequest
     #[Groups(["user:details"])]
     private ?\DateTimeImmutable $date = null;
 
+    #[ORM\Column(length: 255)]
+    #[Groups(['intervention:details',"user:details"])]
+    private ?string $title = null;
+
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(["user:details"])]
     private ?string $description = null;
@@ -31,6 +35,11 @@ class AppointmentRequest
     #[ORM\Column(length : 255)]
     #[Groups(["user:details"])]
     private ?string $status = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'appointmentRequests')]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['intervention:details',"user:details"])]
+    private ?User $approved_by = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     #[Groups(["user:details"])]
@@ -43,10 +52,6 @@ class AppointmentRequest
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\OneToOne(mappedBy: 'AppointmentRequest', cascade: ['persist', 'remove'])]
-    #[Groups(["user:details"])]
-    private ?Booking $booking = null;
-
     #[ORM\ManyToOne]
     private ?Company $company = null;
 
@@ -58,9 +63,13 @@ class AppointmentRequest
     #[ORM\JoinColumn(nullable:true)]
     private ?TypeIntervention $typeIntervention = null;
 
+    #[ORM\OneToOne(mappedBy: "appointmentRequest")]
+    private ?Intervention $intervention = null;
+
     public function __construct()
     {
-
+        $this->status = self::PENDING;
+        $this->created_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -79,6 +88,19 @@ class AppointmentRequest
 
         return $this;
     }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -102,7 +124,17 @@ class AppointmentRequest
 
         return $this;
     }
+    public function getApprovedBy(): ?User
+    {
+        return $this->approved_by;
+    }
 
+    public function setApprovedBy(?User $approved_by): static
+    {
+        $this->approved_by = $approved_by;
+
+        return $this;
+    }
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;
@@ -139,27 +171,6 @@ class AppointmentRequest
         return $this;
     }
 
-    public function getBooking(): ?Booking
-    {
-        return $this->booking;
-    }
-
-    public function setBooking(?Booking $booking): static
-    {
-        // unset the owning side of the relation if necessary
-        if ($booking === null && $this->booking !== null) {
-            $this->booking->setAppointmentRequest(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($booking !== null && $booking->getAppointmentRequest() !== $this) {
-            $booking->setAppointmentRequest($this);
-        }
-
-        $this->booking = $booking;
-
-        return $this;
-    }
 
     public function getCompany(): ?Company
     {
@@ -194,6 +205,17 @@ class AppointmentRequest
     {
         $this->typeIntervention = $typeIntervention;
     
+        return $this;
+    }
+    public function getIntervention(): ?Intervention
+    {
+        return $this->intervention;
+    }
+
+    public function setIntervention(?Intervention $intervention): static
+    {
+        $this->intervention = $intervention;
+
         return $this;
     }
 }
