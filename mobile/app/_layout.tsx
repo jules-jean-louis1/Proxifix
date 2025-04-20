@@ -1,10 +1,20 @@
-import {Stack} from 'expo-router/stack';
+import { Stack } from "expo-router";
+import { PaperProvider } from "react-native-paper";
+import { SessionProvider } from "./context/ctx";
+import React from "react";
 
 export default function Layout() {
-    return (
+  return (
+    <SessionProvider>
+      <PaperProvider>
         <Stack>
-            <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-            <Stack.Screen name="auth" options={{headerShown: false}}/>
+          {/* PUBLIC_ACCESS */}
+          <Stack.Screen name="home" options={{ headerShown : false}} />
+          <Stack.Screen name="login" options={{ headerShown: false}} />
+          {/* LOGGED_ACCESS */}
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
-    );
+      </PaperProvider>
+    </SessionProvider>
+  );
 }

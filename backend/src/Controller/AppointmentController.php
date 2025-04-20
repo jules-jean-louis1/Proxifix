@@ -1,18 +1,15 @@
 <?php
 namespace App\Controller;
 
-use App\Entity\AppointmentEquipment;
 use App\Entity\AppointmentRequest;
-use App\Entity\Booking;
 use App\Entity\Company;
 use App\Entity\Equipment;
 use App\Entity\Intervention;
 use App\Entity\Status;
 use App\Entity\TypeIntervention;
 use App\Entity\User;
-use App\Repository\AppointmentEquipmentRepository;
 use App\Repository\AppointmentRequestRepository;
-use App\Repository\BookingRepository;
+use App\Repository\InterventionRepository;
 use DateInterval;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,7 +24,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class AppointmentController extends AbstractController
 {
     #[Route('/appointment/free-slots', name: 'get_available_slots', methods: ['GET'])]
-    public function getAvailableSlots(Request $req, BookingRepository $bookingRepository): JsonResponse
+    public function getAvailableSlots(Request $req, InterventionRepository $interventionRepository): JsonResponse
     {
         $date      = $req->query->get('date');
         $companyId = $req->query->get('companyId');
@@ -37,7 +34,7 @@ final class AppointmentController extends AbstractController
             return $this->json(['error' => 'date is required'], Response::HTTP_BAD_REQUEST);
         }
         $date  = new \DateTime($date);
-        $slots = $bookingRepository->getFreeSlots($date, $companyId);
+        $slots = $interventionRepository->getFreeSlots($date, $companyId);
 
         return $this->json($slots, Response::HTTP_OK);
 
@@ -67,19 +64,10 @@ final class AppointmentController extends AbstractController
         $appointmentRequest->setCreatedAt(new DateTimeImmutable());
         $appointmentRequest->setUpdatedAt(new DateTimeImmutable());
         $appointmentRequest->setCompany($company);
-
-        foreach ($payload['equipment'] as $equipmentId) {
-            $equipment = $em->getRepository(Equipment::class)->find($equipmentId);
-            if (! $equipment) {
-                return $this->json(['error' => "Equipment with ID $equipmentId not found"], Response::HTTP_BAD_REQUEST);
-            }
-
-            $appointmentEquipment = new AppointmentEquipment();
-            $appointmentEquipment->setEquipment($equipment);
-            $appointmentEquipment->setAppointment($appointmentRequest);
-
-            $em->persist($appointmentEquipment);
-        }
+        $appointmentRequest->setTitle($payload['title'] ?? null);
+        $appointmentRequest->setDescription($payload['description'] ?? null);
+        $appointmentRequest->setEquipment($payload['equipment_id'] ? $em->getRepository(Equipment::class)->find($payload['equipment_id']) : null);
+        $appointmentRequest->setTypeIntervention($em->getRepository(TypeIntervention::class)->find($payload['type_intervention_id']) ?? null);
 
         $em->persist($appointmentRequest);
         $em->flush();
@@ -88,8 +76,16 @@ final class AppointmentController extends AbstractController
     }
 
     #[Route('/appointment/{status}', name: 'get_pending_appointment', methods: ['GET'])]
-    public function getAppointmentList(string $status, AppointmentRequestRepository $arr, ?int $companyId = null): JsonResponse
+    public function getAppointmentList(string $status, AppointmentRequestRepository $arr): JsonResponse
     {
+        $user = $this->getUser();
+        if (! $user instanceof User) {
+            return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
+        }
+        if ($user->getCompany() === null) {
+            return $this->json(['error' => 'No Company found for this user'], Response::HTTP_BAD_REQUEST);
+        }
+        $companyId   = $user->getCompany()->getId();
         $validStatus = [AppointmentRequest::ACCEPTED, AppointmentRequest::PENDING, AppointmentRequest::REJECTED];
 
         if (! $status || ! in_array($status, $validStatus)) {
@@ -105,21 +101,27 @@ final class AppointmentController extends AbstractController
 
         $data = array_map(function ($appointment) {
             return [
-                'id'      => $appointment->getId(),
-                'date'    => $appointment->getDate()->format('Y-m-d H:i:s'),
-                'status'  => $appointment->getStatus(),
-                'company' => $appointment->getCompany() ? $appointment->getCompany()->getName() : null,
-                'user'    => $appointment->getUser() ? [$appointment->getUser()->getId(), $appointment->getUser()->getFirstName(), $appointment->getUser()->getLastName(), $appointment->getUser()->getEmail()] : null,
+                'id'                => $appointment->getId(),
+                'date'              => $appointment->getDate()->format('Y-m-d H:i:s'),
+                'title'             => $appointment->getTitle(),
+                'description'       => $appointment->getDescription(),
+                'type_intervention' => $appointment->getTypeIntervention() ? $appointment->getTypeIntervention()->getName() : null,
+                'equipment'         => $appointment->getEquipment() ? $appointment->getEquipment()->getName() : null,
+                'created_at'        => $appointment->getCreatedAt()->format('Y-m-d H:i:s'),
+                'updated_at'        => $appointment->getUpdatedAt() ? $appointment->getUpdatedAt()->format('Y-m-d H:i:s') : null,
+                'status'            => $appointment->getStatus(),
+                'company'           => $appointment->getCompany() ? $appointment->getCompany()->getName() : null,
+                'user'              => $appointment->getUser() ? [$appointment->getUser()->getId(), $appointment->getUser()->getFirstName(), $appointment->getUser()->getLastName(), $appointment->getUser()->getEmail()] : null,
             ];
         }, $appointments);
 
         return $this->json($data, Response::HTTP_OK);
     }
 
-    #[Route('/admin/appointment', name: 'patch_appointment', methods: ['PATCH'])]
     #[IsGranted(User::ROLE_TECHNICIAN)]
     #[IsGranted(User::ROLE_ADMIN)]
-    public function insertAppointmentToBooking(Request $request, EntityManagerInterface $em, BookingRepository $bookingRepository, AppointmentEquipmentRepository $ae): JsonResponse
+    #[Route('/appointment/validate', name: 'patch_appointment', methods: ['POST'])]
+    public function insertAppointmentToIntervention(Request $request, EntityManagerInterface $em, InterventionRepository $interventionRepository): JsonResponse
     {
         try {
             $em->beginTransaction();
@@ -152,83 +154,41 @@ final class AppointmentController extends AbstractController
 
             if ($status === AppointmentRequest::ACCEPTED) {
                 if ($appointment->getStatus() === AppointmentRequest::ACCEPTED) {
-                    return $this->json(["success" => "Appointment updated"], 204);
+                    return $this->json(["success" => "Appointment already accepted"], Response::HTTP_NO_CONTENT);
                 }
-                $startDate = $appointment->getDate();
-                $endDate   = isset($payload['end_date']) ? new DateTimeImmutable($payload['end_date']) : (new DateTimeImmutable($startDate->format('Y-m-d H:i:s')))->add(new DateInterval('PT1H'));
+                if (! isset($payload['type_intervention_id']) && $appointment->getTypeIntervention() === null) {
+                    return $this->json(["error" => "Missing type_intervention_id"], Response::HTTP_BAD_REQUEST);
+                }
+                $typeIntervention = $payload['type_intervention_id'] ? $em->getRepository(TypeIntervention::class)->find($payload['type_intervention_id']) : $appointment->getTypeIntervention();
+                $startDate        = $appointment->getDate();
+                $endDate          = isset($payload['end_date']) ? new DateTimeImmutable($payload['end_date']) : (new DateTimeImmutable($startDate->format('Y-m-d H:i:s')))->add(new DateInterval('PT1H'));
 
-                if (! $bookingRepository->isSlotsAvailable($appointment->getCompany()->getId(), $appointment->getDate(), $endDate)) {
-                    return $this->json(["errors" => "Slot already taken"], Response::HTTP_CONFLICT);
+                if (! $interventionRepository->isSlotsAvailable($appointment->getCompany()->getId(), $startDate, $endDate)) {
+                    return $this->json(["error" => "Slot already taken"], Response::HTTP_CONFLICT);
                 }
 
                 $appointment->setStatus(AppointmentRequest::ACCEPTED);
                 $appointment->setUpdatedAt(new DateTimeImmutable());
                 $em->persist($appointment);
 
-                if (! isset($payload["type_intervention_id"], $payload["status_id"], $payload["user_id"])) {
-                    return $this->json(['error' => 'Missing required intervention parameters'], Response::HTTP_BAD_REQUEST);
-                }
-
-                $typeIntervention = $em->getRepository(TypeIntervention::class)->find($payload["type_intervention_id"]);
-                $status           = $em->getRepository(Status::class)->find($payload["status_id"]);
-                $user             = $em->getRepository(User::class)->find($payload["user_id"]);
-
-                if (! $typeIntervention || ! $status || ! $user) {
-                    return $this->json(['error' => 'Invalid type_intervention_id, status_id, or user_id'], Response::HTTP_BAD_REQUEST);
-                }
-
-                if (! $appointment->getCompany()) {
-                    return $this->json(['error' => 'Company not found'], Response::HTTP_BAD_REQUEST);
-                }
-
                 $intervention = new Intervention();
                 $intervention->setCompany($appointment->getCompany());
-                $intervention->setDescription($payload['description'] ?? "");
-                $intervention->setTitle($payload['title'] ?? "");
-                $intervention->setStatus($status);
-                $intervention->setType($typeIntervention);
-                $intervention->setUser($user);
+                $intervention->setDescription($payload['description'] ?? $appointment->getDescription());
+                $intervention->setTitle($payload['title'] ?? $appointment->getTitle());
+                $intervention->setStatus($em->getRepository(Status::class)->findOneBy(['name' => $status]));
+                $intervention->setTypeIntervention($typeIntervention);
+                $intervention->setUser($appointment->getUser());
                 $intervention->setCreatedAt(new DateTimeImmutable());
                 $intervention->setUpdatedAt(new DateTimeImmutable());
-
-                $equipmentIds = $ae->findEquipmentsByAppointmentId($appointmentId);
-                if (!empty($equipmentIds)) {
-                    foreach ($equipmentIds as $equipmentId) {
-                        $equipment = $em->getRepository(Equipment::class)->find($equipmentId);
-                        if ($equipment) {
-                            $intervention->addEquipment($equipment);
-                        }
-                    }
-                }
+                $intervention->setEquipment($appointment->getEquipment());
 
                 $em->persist($intervention);
                 $em->flush();
-
-                $booking = new Booking();
-                $user    = $this->getUser();
-                if (! $user instanceof User) {
-                    return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
-                }
-                $booking->setApprovedBy($user);
-
-                $booking->setAppointmentRequest($appointment);
-                $booking->setDescription($payload['description'] ?? "");
-                $booking->setTitle($payload['title'] ?? "");
-                $booking->setStartDate($startDate);
-                $booking->setEndDate($endDate);
-                $booking->setUpdatedAt(new DateTimeImmutable());
-                $booking->setCreatedAt(new DateTimeImmutable());
-                $booking->setIntervention($intervention);
-                $booking->setAllDay($payload['all_day'] ?? null);
-
-                $em->persist($booking);
-                $em->flush();
-
                 $em->commit();
 
                 return $this->json([
                     'success'      => true,
-                    'message'      => 'Appointment successfully updated and linked to a booking.',
+                    'message'      => 'Appointment successfully validated.',
                     'appointment'  => [
                         'id'     => $appointment->getId(),
                         'status' => $appointment->getStatus(),
@@ -237,11 +197,6 @@ final class AppointmentController extends AbstractController
                         'id'          => $intervention->getId(),
                         'title'       => $intervention->getTitle(),
                         'description' => $intervention->getDescription(),
-                    ],
-                    'booking'      => [
-                        'id'         => $booking->getId(),
-                        'start_date' => $booking->getStartDate()->format('Y-m-d H:i:s'),
-                        'end_date'   => $booking->getEndDate()->format('Y-m-d H:i:s'),
                     ],
                 ], Response::HTTP_OK);
             }
@@ -262,6 +217,9 @@ final class AppointmentController extends AbstractController
             return $this->json(["error" => "Appointment not found"], Response::HTTP_NOT_FOUND);
         }
 
+        if ($appointment->getStatus() === AppointmentRequest::ACCEPTED) {
+            return $this->json(['error' => "Cannot edit an appointment who's has been accepted"]);
+        }
         $payload = $request->toArray();
         if (! isset($payload['date'])) {
             return $this->json(["errors" => "missing fields"], Response::HTTP_BAD_REQUEST);
@@ -304,5 +262,16 @@ final class AppointmentController extends AbstractController
         $em->remove($appointment);
         $em->flush();
         return $this->json(["success" => "Appointment deleted"], Response::HTTP_OK);
+    }
+    #[Route('/appointment/{id}', name: 'get_one_appointment', methods: ['GET'])]
+    public function getOneAppointment(int $id, EntityManagerInterface $em)
+    {
+        $appointment = $em->getRepository(AppointmentRequest::class)->find($id);
+
+        if (!$appointment) {
+            return $this->json(["error" => "Appointment not found."], Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->json($appointment, 200);
     }
 }

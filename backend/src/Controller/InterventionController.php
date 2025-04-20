@@ -1,7 +1,8 @@
 <?php
 namespace App\Controller;
 
-use App\Entity\Booking;
+use App\Entity\AppointmentRequest;
+use App\Entity\Company;
 use App\Entity\Equipment;
 use App\Entity\Intervention;
 use App\Entity\Status;
@@ -9,17 +10,20 @@ use App\Entity\Task;
 use App\Entity\TaskIntervention;
 use App\Entity\TypeIntervention;
 use App\Entity\User;
+use App\Repository\InterventionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route("/api/intervention")]
+#[Route('/api')]
 class InterventionController extends AbstractController
 {
-    #[Route("/create", name: "app_intervention_create", methods: ["POST"])]
-    public function create(
+
+    #[Route("/intervention/new", name: "app_new_intervention", methods: ["POST"])]
+    public function createInterventionOnly(
         Request $request,
         EntityManagerInterface $entityManager
     ): JsonResponse {
@@ -29,58 +33,97 @@ class InterventionController extends AbstractController
             $payload = $request->getPayload()->all();
 
             $intervention = new Intervention();
-            $intervention->setTitle($payload["title"]);
-            $intervention->setDescription($payload["description"]);
+            $intervention->setTitle($payload["title"] ?? null);
+            $intervention->setDescription($payload["description"] ?? null);
+            $intervention->setCreatedAt(new \DateTimeImmutable());
+            $intervention->setUpdatedAt(new \DateTimeImmutable());
 
+            // Relations
             $typeIntervention = $entityManager
                 ->getRepository(TypeIntervention::class)
                 ->find($payload["type_intervention_id"]);
+
             $status = $entityManager
                 ->getRepository(Status::class)
                 ->find($payload["status_id"]);
+
             $user = $entityManager
                 ->getRepository(User::class)
                 ->find($payload["user_id"]);
 
-            $intervention->setType($typeIntervention);
+            $intervention->setTypeIntervention($typeIntervention);
             $intervention->setStatus($status);
             $intervention->setUser($user);
-            $intervention->setCreatedAt(new \DateTimeImmutable());
-            $intervention->setUpdatedAt(new \DateTimeImmutable());
 
-            foreach ($payload["equipment"] as $equipmentId) {
-                $equipment = $entityManager
-                    ->getRepository(Equipment::class)
-                    ->find($equipmentId);
-                if ($equipment) {
-                    $intervention->addEquipment($equipment);
+            if (isset($payload['start_date'])) {
+                $intervention->setStartDate(new \DateTimeImmutable($payload["start_date"]));
+            }
+            if (isset($payload['end_date'])) {
+                $intervention->setEndDate(new \DateTimeImmutable($payload["end_date"]));
+            }
+
+            if (isset($payload['appointment_request_id'])) {
+                $appointment = $entityManager->getRepository(AppointmentRequest::class)->find($payload['appointment_request_id']);
+                if (! $appointment) {
+                    return $this->json(["error" => "AppointmentRequest not found"], Response::HTTP_BAD_REQUEST);
+                }
+                $company = $appointment->getCompany();
+                $intervention->setCompany($company);
+                if ($appointment->getEquipment() !== null) {
+                    $intervention->setEquipment($appointment->getEquipment());
+                } else {
+                    return $this->json(["error" => "No equipment associated with the AppointmentRequest"], Response::HTTP_BAD_REQUEST);
+                }
+            } elseif (isset($payload['equipment_id'])) {
+                $equipment = $entityManager->getRepository(Equipment::class)->find($payload['equipment_id']);
+                if (! $equipment) {
+                    return $this->json(["error" => "Equipment not found"], Response::HTTP_BAD_REQUEST);
+                }
+                $company = $entityManager->getRepository(Company::class)->find($payload['company_id']);
+                if (! $company) {
+                    return $this->json(["error" => "Company not found"], Response::HTTP_BAD_REQUEST);
+                }
+                $intervention->setCompany($company);
+
+                if ($equipment->getUser()->getId() !== $payload['user_id']) {
+                    return $this->json(["error" => "Equipment doesn't belong to the selected user"], Response::HTTP_BAD_REQUEST);
+                }
+                $intervention->setEquipment($equipment);
+            } else {
+                return $this->json(["error" => "Either appointment_request_id or equipment_id is required"], Response::HTTP_BAD_REQUEST);
+            }
+
+            if (isset($payload["appointment_request_id"])) {
+                $appointmentRequest = $entityManager
+                    ->getRepository(AppointmentRequest::class)
+                    ->find($payload["appointment_request_id"]);
+
+                if (! $appointmentRequest) {
+                    throw new \Exception("AppointmentRequest not found");
+                }
+
+                $intervention->setAppointmentRequest($appointmentRequest);
+            }
+
+            // Tasks
+            if (isset($payload["task"])) {
+                foreach ($payload["task"] as $taskData) {
+                    if (! isset($taskData['id'])) {
+                        throw new \Exception("Task ID is required");
+                    }
+
+                    $task = $entityManager->getRepository(Task::class)->find($taskData["id"]);
+                    if (! $task) {
+                        throw new \Exception("Task not found");
+                    }
+
+                    $taskIntervention = new TaskIntervention();
+                    $taskIntervention->setTask($task);
+                    $taskIntervention->setIntervention($intervention);
+                    $entityManager->persist($taskIntervention);
                 }
             }
 
-            $booking = new Booking();
-            $booking->setStartDate(
-                new \DateTimeImmutable($payload["booking"]["start_date"])
-            );
-            $booking->setEndDate(
-                new \DateTimeImmutable($payload["booking"]["end_date"])
-            );
-            $booking->setTitle($payload["booking"]["title"]);
-            $booking->setDescription($payload["booking"]["description"]);
-            $booking->setAllDay($payload["booking"]["all_day"]);
-            $booking->setIntervention($intervention);
-
-            $intervention->addBooking($booking);
-
-            $taskIntervention = new TaskIntervention();
-            $task = $entityManager->getRepository(Task::class)->find($payload["task"]["id"]);
-            if (!$task) {
-                throw new \Exception("Task not found");
-            }
-            $taskIntervention->setTask($task);
-            $taskIntervention->setIntervention($intervention);
-            
-            $entityManager->persist($booking);
-            $entityManager->persist($taskIntervention);
             $entityManager->persist($intervention);
             $entityManager->flush();
             $entityManager->commit();
@@ -103,46 +146,141 @@ class InterventionController extends AbstractController
             );
         }
     }
-
-    #[Route("/{id}", name: "app_intervention_update", methods: ["PUT"])]
+    #[Route("/intervention/{id}", name: "app_intervention_update", methods: ["PATCH"])]
     public function edit(
         Request $request,
         EntityManagerInterface $entityManager,
         int $id
     ): JsonResponse {
-        $payload = $request->getPayload();
+        try {
+            $entityManager->beginTransaction();
+            $payload = $request->toArray();
 
-        $intervention = $entityManager
-            ->getRepository(Intervention::class)
-            ->find($id);
+            $intervention = $entityManager
+                ->getRepository(Intervention::class)
+                ->find($id);
 
-        if (! $intervention) {
-            return $this->json(["error" => "Intervention not found"], 404);
+            if (! $intervention) {
+                return $this->json(["error" => "Intervention not found"], 404);
+            }
+
+            if (isset($payload["title"])) {
+                $intervention->setTitle($payload["title"]);
+            }
+
+            if (isset($payload["description"])) {
+                $intervention->setDescription($payload["description"]);
+            }
+
+            if (isset($payload["type_intervention_id"])) {
+                $typeIntervention = $entityManager
+                    ->getRepository(TypeIntervention::class)
+                    ->find($payload["type_intervention_id"]);
+
+                if (! $typeIntervention) {
+                    return $this->json(["error" => "TypeIntervention not found"], 400);
+                }
+
+                $intervention->setTypeIntervention($typeIntervention);
+            }
+
+            if (isset($payload["status_id"])) {
+                $status = $entityManager
+                    ->getRepository(Status::class)
+                    ->find($payload["status_id"]);
+
+                if (! $status) {
+                    return $this->json(["error" => "Status not found"], 400);
+                }
+
+                $intervention->setStatus($status);
+            }
+
+            if (isset($payload["appointment_request_id"])) {
+                $appointmentRequest = $entityManager
+                    ->getRepository(AppointmentRequest::class)
+                    ->find($payload["appointment_request_id"]);
+
+                if (! $appointmentRequest) {
+                    return $this->json(["error" => "AppointmentRequest not found"], 400);
+                }
+
+                $intervention->setAppointmentRequest($appointmentRequest);
+            }
+
+            if (isset($payload["equipment_id"])) {
+                $equipment = $entityManager
+                    ->getRepository(Equipment::class)
+                    ->find($payload["equipment_id"]);
+
+                if (! $equipment) {
+                    return $this->json(["error" => "Equipment not found"], 400);
+                }
+
+                $intervention->setEquipment($equipment);
+            }
+
+            // Mise à jour des tâches
+            if (isset($payload["task"])) {
+                $currentTasks = $entityManager
+                    ->getRepository(TaskIntervention::class)
+                    ->findBy(['intervention' => $intervention]);
+
+                $currentTaskIds = array_map(
+                    fn($taskIntervention) => $taskIntervention->getTask()->getId(),
+                    $currentTasks
+                );
+
+                $newTaskIds = array_map(
+                    fn($task) => $task['id'],
+                    $payload["task"]
+                );
+
+                // Supprimer les tâches qui ne sont plus dans le payload
+                foreach ($currentTasks as $taskIntervention) {
+                    if (! in_array($taskIntervention->getTask()->getId(), $newTaskIds)) {
+                        $entityManager->remove($taskIntervention);
+                    }
+                }
+
+                // Ajouter les nouvelles tâches
+                foreach ($newTaskIds as $taskId) {
+                    if (! in_array($taskId, $currentTaskIds)) {
+                        $task = $entityManager->getRepository(Task::class)->find($taskId);
+                        if (! $task) {
+                            return $this->json(["error" => "Task with ID $taskId not found"], 400);
+                        }
+
+                        $taskIntervention = new TaskIntervention();
+                        $taskIntervention->setTask($task);
+                        $taskIntervention->setIntervention($intervention);
+                        $entityManager->persist($taskIntervention);
+                    }
+                }
+            }
+
+            $intervention->setUpdatedAt(new \DateTimeImmutable());
+
+            $entityManager->flush();
+
+            return $this->json([
+                "id"                     => $intervention->getId(),
+                "title"                  => $intervention->getTitle(),
+                "description"            => $intervention->getDescription(),
+                "appointment_request_id" => $intervention->getAppointmentRequest()?->getId(),
+            ], 200);
+        } catch (\Exception $e) {
+            $entityManager->rollback();
+            return new JsonResponse(
+                [
+                    "error" => $e->getMessage(),
+                ],
+                400
+            );
         }
-        $title = $payload->get("title") ?? null;
-        if (isset($title)) {
-            $intervention->setTitle($title);
-        }
-        $description = $payload->get("description") ?? null;
-        if (isset($description)) {
-            $intervention->setDescription($description);
-        }
-        $typeInterventionId = $payload->get("type_intervention_id") ?? null;
-        if (isset($typeInterventionId)) {
-            $typeIntervention = $entityManager
-                ->getRepository(TypeIntervention::class)
-                ->find($typeInterventionId);
-            $intervention->setType($typeIntervention);
-        }
-
-        $intervention->setUpdatedAt(new \DateTimeImmutable());
-
-        $entityManager->flush();
-
-        return $this->json($intervention, 200);
     }
 
-    #[Route("/{id}", name: "app_intervention_delete", methods: ["DELETE"])]
+    #[Route("/intervention/{id}", name: "app_intervention_delete", methods: ["DELETE"])]
     public function delete(
         EntityManagerInterface $entityManager,
         int $id
@@ -163,4 +301,38 @@ class InterventionController extends AbstractController
             200
         );
     }
+    #[Route("/admin/interventions/{page}/{order}/{status}", name: "app_intervention_list", methods: ["GET"], defaults: ['page' => 1, 'order' => 'DESC', 'status' => 'all'])]
+    public function getInterventionsList(int $page, string $order, string $status, InterventionRepository $interventionRepository): JsonResponse
+    {
+        $user = $this->getUser();
+        if (! $user instanceof User) {
+            return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        if ($user->getCompany() === null) {
+            return $this->json(['error' => 'No Company found for this user'], Response::HTTP_BAD_REQUEST);
+        }
+        $allowedStatus = [Status::PENDING, Status::AWAITING_PICKUP, Status::CANCELLED, Status::COMPLETED, Status::IN_PROGRESS, "all"];
+
+        $companyId = $user->getCompany()->getId();
+        $limit     = 10;
+
+        $interventions = $interventionRepository->findByCompanyId($companyId, $page, $limit, $order, $status);
+
+        return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
+    }
+
+    #[Route("/intervention/customer/{userId}", name: "app_intervention_customer_list", methods: ["GET"])]
+    public function getInterventionsByCustomer(
+        int $userId,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+
+        $interventions = $entityManager
+            ->getRepository(Intervention::class)
+            ->findBy(['user' => $userId]);
+
+        return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
+    }
+
 }

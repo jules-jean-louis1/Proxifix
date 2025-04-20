@@ -3,67 +3,75 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use App\Repository\EquipmentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['equipment:read']],
+    denormalizationContext: ['groups' => ['equipment:write']],
+    operations: [
+        new Get(
+            uriTemplate: '/api/equipment/{id}',
+            normalizationContext: ['groups' => ['equipment:read', 'equipment:details']]
+        )
+    ]
+)]
 #[ORM\Entity(repositoryClass: EquipmentRepository::class)]
 class Equipment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['equipment'])]
+    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['equipment'])]
+    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(['equipment'])]
+    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    #[Groups(['equipment'])]
+    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
-    #[Groups(['equipment'])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
-    #[Groups(['equipment'])]
+    #[Groups(['equipment:details', "user:details"])]
     private ?TypeEquipment $type_equipment = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['equipment'])]
+    #[Groups(['equipment:details', "user:details"])]
     private ?OperatingSystem $operating_system = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
-    #[Groups(['equipment'])]
+    #[Groups(['equipment:details', "user:details"])]
     private ?Brand $brand = null;
 
     /**
      * @var Collection<int, Intervention>
      */
-    #[ORM\ManyToMany(targetEntity: Intervention::class, mappedBy: "equipment")]
+    #[ORM\OneToMany(targetEntity: Intervention::class, mappedBy: "equipment")]
+    #[Groups(['equipment:details', "user:details"])]
     private Collection $interventions;
 
-    /**
-     * @var Collection<int, AppointmentEquipment>
-     */
-    #[ORM\OneToMany(targetEntity: AppointmentEquipment::class, mappedBy: 'equipment')]
-    private Collection $appointmentEquipment;
+    #[ORM\OneToMany(mappedBy: 'equipment', targetEntity: AppointmentRequest::class)]
+    #[Groups(['equipment:details'])]
+    private Collection $appointmentRequests;
 
     public function __construct()
     {
         $this->interventions = new ArrayCollection();
-        $this->appointmentEquipment = new ArrayCollection();
+        $this->appointmentRequests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -167,7 +175,7 @@ class Equipment
     {
         if (!$this->interventions->contains($intervention)) {
             $this->interventions->add($intervention);
-            $intervention->addEquipment($this);
+            $intervention->setEquipment($this);
         }
 
         return $this;
@@ -176,39 +184,38 @@ class Equipment
     public function removeIntervention(Intervention $intervention): static
     {
         if ($this->interventions->removeElement($intervention)) {
-            $intervention->removeEquipment($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, AppointmentEquipment>
-     */
-    public function getAppointmentEquipment(): Collection
-    {
-        return $this->appointmentEquipment;
-    }
-
-    public function addAppointmentEquipment(AppointmentEquipment $appointmentEquipment): static
-    {
-        if (!$this->appointmentEquipment->contains($appointmentEquipment)) {
-            $this->appointmentEquipment->add($appointmentEquipment);
-            $appointmentEquipment->setEquipment($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAppointmentEquipment(AppointmentEquipment $appointmentEquipment): static
-    {
-        if ($this->appointmentEquipment->removeElement($appointmentEquipment)) {
-            // set the owning side to null (unless already changed)
-            if ($appointmentEquipment->getEquipment() === $this) {
-                $appointmentEquipment->setEquipment(null);
+            if ($intervention->getEquipment() === $this) {
+                $intervention->setEquipment(null);
             }
         }
 
+        return $this;
+    }
+
+    public function getAppointmentRequests(): Collection
+    {
+        return $this->appointmentRequests;
+    }
+    
+    public function addAppointmentRequest(AppointmentRequest $appointmentRequest): static
+    {
+        if (!$this->appointmentRequests->contains($appointmentRequest)) {
+            $this->appointmentRequests->add($appointmentRequest);
+            $appointmentRequest->setEquipment($this); // Met à jour le côté propriétaire
+        }
+    
+        return $this;
+    }
+    
+    public function removeAppointmentRequest(AppointmentRequest $appointmentRequest): static
+    {
+        if ($this->appointmentRequests->removeElement($appointmentRequest)) {
+            // Met à jour le côté propriétaire si nécessaire
+            if ($appointmentRequest->getEquipment() === $this) {
+                $appointmentRequest->setEquipment(null);
+            }
+        }
+    
         return $this;
     }
 }
