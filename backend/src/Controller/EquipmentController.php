@@ -23,12 +23,12 @@ class EquipmentController extends AbstractController
         if (! $payload->has('name') || !$payload->has('user_id') || !$payload->has('brand_id')) {
             return new JsonResponse(['error' => 'Name, user_id, type_equipment_id and brand_id are required'], 400);
         }
-        
+
         $user        = $entityManager->getRepository(User::class)->find($payload->get('user_id'));
         $typeEquipment   = $entityManager->getRepository(TypeEquipment::class)->find($payload->get('type_equipment_id'));
         $brand           = $entityManager->getRepository(Brand::class)->find($payload->get('brand_id'));
         $operatingSystem = null;
-        if ($payload->has('operating_system_id')) {
+        if ($payload->has('operating_system_id') && $payload->get('operating_system_id') !== null) {
             $operatingSystem = $entityManager->getRepository(OperatingSystem::class)->find($payload->get('operating_system_id'));
         }
 
@@ -44,7 +44,8 @@ class EquipmentController extends AbstractController
         $entityManager->persist($equipment);
         $entityManager->flush();
 
-        return $this->json([$equipment], 201);
+        return $this->json($equipment, 201, [], ['groups' => 'equipment:details']);
+
     }
 
     #[Route('/{id}', name: 'app_equipment_edit', methods: ['PUT'])]

@@ -205,9 +205,6 @@ const EquipmentsPage = () => {
                     label: os.name,
                     value: os.id,
                   }))}
-                  rules={{
-                    required: "Le système d'exploitation est obligatoire",
-                  }}
                 />
                 <AppButton
                   type="primary"
