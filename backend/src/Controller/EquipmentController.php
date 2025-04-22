@@ -15,21 +15,28 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/equipment')]
 class EquipmentController extends AbstractController
 {
-    #[Route('/create', name: 'app_equipment_create', methods: ['POST'])]
+    #[Route('/new', name: 'app_equipment_create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $payload = $request->getPayload();
 
+        if (! $payload->has('name') || !$payload->has('user_id') || !$payload->has('brand_id')) {
+            return new JsonResponse(['error' => 'Name, user_id, type_equipment_id and brand_id are required'], 400);
+        }
+        
         $user        = $entityManager->getRepository(User::class)->find($payload->get('user_id'));
         $typeEquipment   = $entityManager->getRepository(TypeEquipment::class)->find($payload->get('type_equipment_id'));
-        $operatingSystem = $entityManager->getRepository(OperatingSystem::class)->find($payload->get('operating_system_id'));
         $brand           = $entityManager->getRepository(Brand::class)->find($payload->get('brand_id'));
+        $operatingSystem = null;
+        if ($payload->has('operating_system_id')) {
+            $operatingSystem = $entityManager->getRepository(OperatingSystem::class)->find($payload->get('operating_system_id'));
+        }
 
         $equipment = new Equipment();
         $equipment->setName($payload->get('name') ?? '');
-        $equipment->setUser($user ?? null);
+        $equipment->setUser($user);
         $equipment->setTypeEquipment($typeEquipment);
-        $equipment->setOperatingSystem($operatingSystem);
+        $equipment->setOperatingSystem( $operatingSystem);
         $equipment->setBrand($brand);
         $equipment->setCreatedAt(new \DateTimeImmutable());
         $equipment->setUpdatedAt(new \DateTimeImmutable());
@@ -103,7 +110,7 @@ class EquipmentController extends AbstractController
         $equipments = $em->getRepository(Equipment::class)->findByUserId($userId);
     
         if (empty($equipments)) {
-            return new JsonResponse(['error' => 'No equipment found for this user'], 404);
+            return new JsonResponse(['error' => 'No equipment found for this user'], 204);
         }
     
         return $this->json($equipments, 200, [], ['groups' => 'equipment:details']);

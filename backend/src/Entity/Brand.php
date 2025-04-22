@@ -16,11 +16,11 @@ class Brand
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['equipment:details'])]
+    #[Groups(['equipment:details', 'brand:get_all'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['equipment:details'])]
+    #[Groups(['equipment:details', 'brand:get_all'])]
     private ?string $name = null;
 
     /**

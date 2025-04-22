@@ -11,10 +11,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/api/brand')]
+#[Route('/api')]
 final class BrandController extends AbstractController
 {
-    #[Route('/new', name: 'app_brand_new', methods: ['POST'])]
+    #[Route('/brand/all', name: 'app_brands_get', methods: ['GET'])]
+    public function getAll(EntityManagerInterface $entityManagerInterface): JsonResponse
+    {
+        $brands = $entityManagerInterface->getRepository(Brand::class)->findAll();
+
+        if (empty($brands)) {
+            return $this->json(['error' => 'No brands found'], Response::HTTP_NOT_FOUND);
+        }
+        return $this->json($brands, Response::HTTP_OK, [], ['groups' => ['brand:get_all']]);
+
+    }
+    
+    #[Route('/brand/new', name: 'app_brand_new', methods: ['POST'])]
     #[IsGranted('ROLE_TECHNICIAN')]
     public function create(Request $request, EntityManagerInterface $entityManagerInterface): JsonResponse
     {
@@ -29,7 +41,7 @@ final class BrandController extends AbstractController
         return $this->json($brand, Response::HTTP_CREATED);
     }
 
-    #[Route('/{id}', name: 'app_brand_update', methods: ['PUT'])]
+    #[Route('/brand/{id}', name: 'app_brand_update', methods: ['PUT'])]
     #[IsGranted('ROLE_TECHNICIAN')]
     public function update(Request $request, EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
@@ -47,7 +59,7 @@ final class BrandController extends AbstractController
         return $this->json($brand, Response::HTTP_OK);
     }
 
-    #[Route('/{id}', name: 'app_brand_delete', methods: ['DELETE'])]
+    #[Route('/brand/{id}', name: 'app_brand_delete', methods: ['DELETE'])]
     #[IsGranted('ROLE_TECHNICIAN')]
     public function delete(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
@@ -64,7 +76,6 @@ final class BrandController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_brand_get', methods: ['GET'])]
-    #[IsGranted('ROLE_TECHNICIAN')]
     public function get(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
         $brand = $entityManagerInterface->getRepository(Brand::class)->find($id);
@@ -76,12 +87,4 @@ final class BrandController extends AbstractController
         return $this->json($brand, Response::HTTP_OK);
     }
 
-    #[Route('/brands', name: 'app_brands_get', methods: ['GET'])]
-    #[IsGranted('ROLE_TECHNICIAN')]
-    public function getAll(EntityManagerInterface $entityManagerInterface): JsonResponse
-    {
-        $brands = $entityManagerInterface->getRepository(Brand::class)->findAll();
-
-        return $this->json($brands, Response::HTTP_OK);
-    }
 }

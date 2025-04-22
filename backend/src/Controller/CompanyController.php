@@ -14,35 +14,42 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class CompanyController extends AbstractController
 {
-    #[IsGranted('ROLE_ADMIN')]
-    #[Route('/api/company/new', name: 'app_company')]
-    public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {
+    #[IsGranted("ROLE_ADMIN")]
+    #[Route("/api/company/new", name: "app_company")]
+    public function create(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
         $payload = $request->getPayload();
 
-        $type = $payload->get('type');
+        $type = $payload->get("type");
         if (!$this->isTypeExist($type)) {
             return $this->json(["errors" => "Type does not exist."], 404);
         }
 
         $company = new Company();
-        $company->setName($payload->get('name'));
-        $company->setType($payload->get('type') ?? "");
-        $company->setAddress($payload->get('address') ?? "");
-        $company->setCity($payload->get('city') ?? "");
-        $company->setZipCode($payload->get('zip_code') ?? "");
-        $company->setWebsite($payload->get('website') ?? "");
-        $company->setAbout($payload->get('about') ?? "");
+        $company->setName($payload->get("name"));
+        $company->setType($payload->get("type") ?? "");
+        $company->setAddress($payload->get("address") ?? "");
+        $company->setCity($payload->get("city") ?? "");
+        $company->setZipCode($payload->get("zip_code") ?? "");
+        $company->setWebsite($payload->get("website") ?? "");
+        $company->setAbout($payload->get("about") ?? "");
         $company->setCreatedAt(new \DateTimeImmutable());
         $company->setUpdatedAt(new \DateTimeImmutable());
 
-        if ($payload->get('user_id')) {
-            $user = $entityManager->getRepository(User::class)->find($payload->get('user_id'));
+        if ($payload->get("user_id")) {
+            $user = $entityManager
+                ->getRepository(User::class)
+                ->find($payload->get("user_id"));
             if (!$user) {
-                return $this->json(['error' => 'User not found'], 404);
+                return $this->json(["error" => "User not found"], 404);
             }
-            if ($user->getRoles() === ['ROLE_CUSTOMER']) {
-                return $this->json(['error' => 'Customer cannot be part of a company'], 400);
+            if ($user->getRoles() === ["ROLE_CUSTOMER"]) {
+                return $this->json(
+                    ["error" => "Customer cannot be part of a company"],
+                    400
+                );
             }
             $company->addUser($user);
         }
@@ -52,50 +59,53 @@ final class CompanyController extends AbstractController
 
         return $this->json($company, 201);
     }
-    #[IsGranted('ROLE_ADMIN')]
-    #[Route('/api/company/{id}', name: 'app_company_update', methods: ['PUT'])]
-    public function update(Request $request, EntityManagerInterface $entityManager, int $id): JsonResponse
-    {
+    #[IsGranted("ROLE_ADMIN")]
+    #[Route("/api/company/{id}", name: "app_company_update", methods: ["PUT"])]
+    public function update(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        int $id
+    ): JsonResponse {
         $payload = $request->getPayload();
         $company = $entityManager->getRepository(Company::class)->find($id);
 
         if (!$company) {
-            return $this->json(['error' => 'Company not found'], 404);
+            return $this->json(["error" => "Company not found"], 404);
         }
-        $name = $payload->get('name');
+        $name = $payload->get("name");
         if (isset($name)) {
             $company->setName($name);
         }
-        $about = $payload->get('about');
+        $about = $payload->get("about");
         if (isset($about)) {
             $company->setAbout($about);
         }
-        $type = $payload->get('type');
+        $type = $payload->get("type");
         if (isset($type)) {
             $company->setType($type);
         }
-        $address = $payload->get('address');
+        $address = $payload->get("address");
         if (isset($address)) {
             $company->setAddress($address);
         }
-        $city = $payload->get('city');
+        $city = $payload->get("city");
         if (isset($city)) {
             $company->setCity($city);
         }
-        $zipCode = $payload->get('zip_code');
+        $zipCode = $payload->get("zip_code");
         if (isset($zipCode)) {
             $company->setZipCode($zipCode);
         }
-        $website = $payload->get('website');
+        $website = $payload->get("website");
         if (isset($website)) {
             $company->setWebsite($website);
         }
 
-        $userId = $payload->get('user_id');
+        $userId = $payload->get("user_id");
         if (isset($userId)) {
             $user = $entityManager->getRepository(User::class)->find($userId);
             if (!$user) {
-                return $this->json(['error' => 'User not found'], 404);
+                return $this->json(["error" => "User not found"], 404);
             }
             $company->addUser($user);
         }
@@ -104,57 +114,95 @@ final class CompanyController extends AbstractController
 
         return $this->json($company, 200);
     }
-    #[IsGranted('ROLE_SUPERADMIN')]
-    #[Route('/api/company/{id}', name: 'app_company_delete', methods: ['DELETE'])]
-    public function delete(EntityManagerInterface $entityManager, int $id): JsonResponse
-    {
+    #[IsGranted("ROLE_SUPERADMIN")]
+    #[
+        Route(
+            "/api/company/{id}",
+            name: "app_company_delete",
+            methods: ["DELETE"]
+        )
+    ]
+    public function delete(
+        EntityManagerInterface $entityManager,
+        int $id
+    ): JsonResponse {
         $company = $entityManager->getRepository(Company::class)->find($id);
 
         if (!$company) {
-            return $this->json(['error' => 'Company not found'], 404);
+            return $this->json(["error" => "Company not found"], 404);
         }
 
         $entityManager->remove($company);
         $entityManager->flush();
 
-        return $this->json(['success' => 'Company deleted successfully'], 200);
+        return $this->json(["success" => "Company deleted successfully"], 200);
     }
 
     private function isTypeExist(string $type): bool
     {
-        $types = [Company::EI, Company::SC, Company::SA, Company::EURL, Company::SARL, Company::SNC, Company::MICRO_ENTERPRISE, Company::SASU, Company::SAS];
+        $types = [
+            Company::EI,
+            Company::SC,
+            Company::SA,
+            Company::EURL,
+            Company::SARL,
+            Company::SNC,
+            Company::MICRO_ENTERPRISE,
+            Company::SASU,
+            Company::SAS,
+        ];
         return in_array($type, $types);
     }
-    #[Route('/api/companies/list', name: 'app_company_list', methods: ['GET'])]
-    public function getList(EntityManagerInterface $entityManagerInterface)
-    {
-        $companies = $entityManagerInterface->getRepository(Company::class)->findAll();
+    #[Route("/api/companies/list", name: "app_company_list", methods: ["GET"])]
+    public function getList(
+        EntityManagerInterface $entityManagerInterface
+    ): JsonResponse {
+        $companies = $entityManagerInterface
+            ->getRepository(Company::class)
+            ->findAll();
         if (!$companies) {
-            return $this->json(['error' => 'No companies found'], 404);
+            return $this->json(["error" => "No companies found"], 404);
         }
         return $this->json($companies, 200);
     }
 
-    #[Route('/api/company/{id}', name: 'app_company_details', methods: ['GET'])]
-    public function getDetails(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
-    {
-        $company = $entityManagerInterface->getRepository(Company::class)->find($id);
+    #[Route("/api/company/{id}", name: "app_company_details", methods: ["GET"])]
+    public function getDetails(
+        EntityManagerInterface $entityManagerInterface,
+        int $id
+    ): JsonResponse {
+        $company = $entityManagerInterface
+            ->getRepository(Company::class)
+            ->find($id);
         if (!$company) {
-            return $this->json(['error' => 'Company not found'], 404);
+            return $this->json(["error" => "Company not found"], 404);
         }
         return $this->json($company, 200);
     }
-    
-    #[Route('/api/company/{id}/users', name: 'app_company_users', methods: ['GET'])]
-    public function getUsers(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
-    {
-        $company = $entityManagerInterface->getRepository(Company::class)->find($id);
+
+    #[
+        Route(
+            "/api/company/{id}/users",
+            name: "app_company_users",
+            methods: ["GET"]
+        )
+    ]
+    public function getUsers(
+        EntityManagerInterface $entityManagerInterface,
+        int $id
+    ): JsonResponse {
+        $company = $entityManagerInterface
+            ->getRepository(Company::class)
+            ->find($id);
         if (!$company) {
-            return $this->json(['error' => 'Company not found'], 404);
+            return $this->json(["error" => "Company not found"], 404);
         }
         $users = $company->getUsers();
         if (!$users) {
-            return $this->json(['error' => 'No users found for this company'], 404);
+            return $this->json(
+                ["error" => "No users found for this company"],
+                404
+            );
         }
         return $this->json($users, 200);
     }

@@ -49,11 +49,10 @@ security:
         #- { path: ^/api/register, roles: ROLE_ADMIN }
         - { path: ^/api/customer, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/customer, roles: ROLE_TECHNICIAN }
-        - { path: ^/api/brands, roles: ROLE_TECHNICIAN }
         - { path: ^/api/equipment, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/intervention, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/admin/interventions, roles: ROLE_TECHNICIAN }
-        - { path: ^/api/operating_system, roles: ROLE_TECHNICIAN }
+        - { path: ^/api/operating_system, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/company, roles: ROLE_ADMIN }
         - { path: ^/api/task, roles: ROLE_ADMIN }
         - { path: ^/api/task/intervention, roles: ROLE_ADMIN }
@@ -61,6 +60,7 @@ security:
         - { path: ^/api/appointment, roles : IS_AUTHENTICATED_FULLY}
         - { path: ^/api/customer/appointment, roles: IS_AUTHENTICATED_FULLY}
         - { path: ^/api/admin/appointment, roles: ROLE_TECHNICIAN}
+        - { path: ^/api/brand, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     doctrine:

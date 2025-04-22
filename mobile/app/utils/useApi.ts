@@ -6,7 +6,6 @@ const apiUrl = process.env.EXPO_PUBLIC_API_URL || "https://api.example.com";
 export const useApi = () => {
   const { session, setSession, signOut } = useSession();
   const parsedSession = session ? JSON.parse(session) : null;
-  console.log("sessionCtx");
   // Create axios instance
   const api: AxiosInstance = axios.create({
     baseURL: apiUrl,
@@ -43,9 +42,8 @@ export const useApi = () => {
               refreshToken: refresh_token,
             };
 
-            // Update session
+            api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
             setSession(JSON.stringify(newSession));
-
             // Retry original request with new token
             originalRequest.headers["Authorization"] = `Bearer ${token}`;
             return axios(originalRequest);
