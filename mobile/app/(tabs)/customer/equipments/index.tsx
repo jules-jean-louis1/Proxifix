@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import {
-  Alert,
   FlatList,
   Modal,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -18,10 +18,11 @@ import { AppButton } from "@/app/components/buttons/AppButton";
 import { FormProvider, useForm } from "react-hook-form";
 import { AppTextField } from "@/app/components/inputs/AppTextField";
 import { AppSelectInput } from "@/app/components/inputs/AppSelectInput";
+import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 const EquipmentsPage = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [formDirty, setFormDirty] = useState<boolean>(false);
   const [equipments, setEquipments] = useState<
     components["schemas"]["Equipment-equipment.read_equipment.details"][]
   >([]);
@@ -38,7 +39,6 @@ const EquipmentsPage = () => {
 
   const onSubmit = async (data: any) => {
     const values = methods.getValues();
-    console.log("values", values);
 
     try {
       const response = await api.post("/equipment/new", {
@@ -55,25 +55,6 @@ const EquipmentsPage = () => {
           : (error as any).message
       );
       setError((error as any).message || "Impossible to add the equipment.");
-    }
-  };
-
-  const handleCloseModal = () => {
-    if (formDirty) {
-      Alert.alert(
-        "Confirmer",
-        "Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter ?",
-        [
-          { text: "Annuler", style: "cancel" },
-          {
-            text: "Quitter",
-            style: "destructive",
-            onPress: () => setModalVisible(false),
-          },
-        ]
-      );
-    } else {
-      setModalVisible(false);
     }
   };
 
@@ -137,7 +118,7 @@ const EquipmentsPage = () => {
         data={equipments}
         keyExtractor={(item) => item.id!.toString()}
         renderItem={({ item }) => (
-          <View style={styles.equipmentItem}>
+          <Pressable style={styles.equipmentItem} onPress={() => {router.push(`/customer/equipment/${item.id}`)}}>
             <Text style={styles.equipmentName}>{item.name}</Text>
             <Text style={styles.equipmentBrand}>{item.brand?.name}</Text>
             <Text style={styles.equipmentOS}>
@@ -151,7 +132,7 @@ const EquipmentsPage = () => {
                 locale: fr,
               })}
             </Text>
-          </View>
+          </Pressable>
         )}
       />
       <Modal
@@ -164,12 +145,19 @@ const EquipmentsPage = () => {
         <View style={{ flex: 1, justifyContent: "center" }}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
-              <TouchableOpacity onPress={handleCloseModal}>
-                <Text style={styles.cancelButton}>Annuler</Text>
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                style={{
+                  padding: 10,
+                  borderRadius: 50,
+                  backgroundColor: "#F0F3F4",
+                }}
+              >
+                <Feather name="x" size={24} color={"#000"} />
               </TouchableOpacity>
             </View>
             <View style={styles.modalContent}>
-                <Text style={styles.title}>Ajouter un équipement</Text>
+              <Text style={styles.title}>Ajouter un équipement</Text>
               <FormProvider {...methods}>
                 <AppTextField
                   nameField="name"
@@ -201,10 +189,18 @@ const EquipmentsPage = () => {
                   nameField="operating_system_id"
                   label="Système d'exploitation"
                   placeholder="Sélectionnez le système d'exploitation"
-                  options={os.map((os:any) => ({
+                  options={os.map((os: any) => ({
                     label: os.name,
                     value: os.id,
                   }))}
+                />
+                <AppButton
+                  type="secondary"
+                  children="Annuler"
+                  onPress={() => {
+                    setModalVisible(false);
+                    methods.reset();
+                  }}
                 />
                 <AppButton
                   type="primary"
@@ -287,8 +283,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
   },
   cancelButton: {
     color: "#FF3B30",

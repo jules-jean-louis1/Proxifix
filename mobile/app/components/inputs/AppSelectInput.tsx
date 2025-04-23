@@ -18,7 +18,7 @@ export const AppSelectInput: React.FC<AppSelectInputProps> = ({
   placeholder,
   options,
   rules,
-  defaultValue = null,
+  defaultValue = "",
 }) => {
   const { control } = useFormContext();
 
@@ -61,24 +61,27 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 8,
-    color: "#344260",
+    fontSize: 14,
+    marginBottom: 4,
+    color: "#364A63",
+    fontWeight: 'bold'
   },
   pickerContainer: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
+    borderRadius: 4,
     overflow: "hidden",
-    backgroundColor: "#fff",
+    backgroundColor: "#F9F9F9",
   },
   picker: {
     height: 50,
+    color: "#000",
+    fontSize: 16,
+    backgroundColor: "#F9F9F9",
+    borderWidth: 1,
+    borderColor: "#000",
   },
   errorText: {
     marginTop: 4,
     fontSize: 12,
-    color: "red",
+    color: "#B00020",
   },
 });

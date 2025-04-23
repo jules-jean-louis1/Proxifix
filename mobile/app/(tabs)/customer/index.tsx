@@ -48,7 +48,7 @@ export const CustomerHome = () => {
         </Text>
       </View>
       <View style={styles.interventionBlock}>
-        <Pressable style={styles.button} onPress={() => router.push("/(tabs)/customer/interventions")}>
+        <Pressable style={styles.button} onPress={() => router.push("/customer/interventions")}>
           <Image
             source={require("../../assets/images/tool_test 1.png")}
             style={styles.icon}
@@ -88,7 +88,7 @@ export const CustomerHome = () => {
         </View>
       </View>
       <View style={styles.rowButtonsSide}>
-        <Pressable style={styles.buttonSide}>
+        <Pressable style={styles.buttonSide} onPress={() => router.push("/customer/equipments")}>
           <Image
             source={require("../../assets/images/equipment.png")}
             style={styles.iconSide}
@@ -97,7 +97,7 @@ export const CustomerHome = () => {
             EQUIPEMENTS
           </Text>
         </Pressable>
-        <Pressable style={styles.buttonSide}>
+        <Pressable style={styles.buttonSide} onPress={() => router.push("/customer/profil")}>
           <Image
             source={require("../../assets/images/settings.png")}
             style={styles.iconSide}

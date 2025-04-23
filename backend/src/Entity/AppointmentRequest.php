@@ -17,7 +17,7 @@ class AppointmentRequest
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["appointment:read","user:details"])]
+    #[Groups(["appointment:read","user:details", "equipment:details"])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
@@ -25,27 +25,28 @@ class AppointmentRequest
     private ?\DateTimeImmutable $date = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['intervention:details',"user:details"])]
+    #[Groups(['intervention:details',"user:details", "equipment:details"])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(["user:details"])]
+    #[Groups(["user:details", "equipment:details"])]
     private ?string $description = null;
 
     #[ORM\Column(length : 255)]
-    #[Groups(["user:details"])]
+    #[Groups(["user:details", "equipment:details"])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'appointmentRequests')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['intervention:details',"user:details"])]
+    #[Groups(['intervention:details',"user:details", "equipment:details"])]
     private ?User $approved_by = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(["user:details"])]
+    #[Groups(["user:details", "equipment:details"])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(type : Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(["user:details", "equipment:details", "equipment:details"])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy : 'appointmentRequests')]

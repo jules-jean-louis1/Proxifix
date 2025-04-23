@@ -2,10 +2,11 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Slot, Tabs } from "expo-router";
 import { Feather } from "@expo/vector-icons";
+import TabBar from "@/app/components/navigation/TabBar";
 
 export default function CustomerLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "#01358D" }}>
+    <Tabs screenOptions={{ tabBarActiveTintColor: "#01358D" }} tabBar={(props) => <TabBar />}>
       <Tabs.Screen
         name="index"
         options={{
@@ -46,11 +47,3 @@ export default function CustomerLayout() {
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "flex-start",
-    backgroundColor: "#fff",
-  },
-});
