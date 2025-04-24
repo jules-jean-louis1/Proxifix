@@ -58,6 +58,10 @@ class EquipmentController extends AbstractController
         if (! $equipment) {
             return new JsonResponse(['error' => 'Equipment not found'], 404);
         }
+        // $intervention = $equipment->getInterventions();
+        // if ($intervention) {
+        //     return new JsonResponse(['error' => 'Cannot edit equipment with interventions'], 400);
+        // }
 
         $name = $payload->get('name') ?? null;
         if (isset($name)) {
@@ -98,6 +102,11 @@ class EquipmentController extends AbstractController
 
         if (! $equipment) {
             return new JsonResponse(['error' => 'Equipment not found'], 404);
+        }
+
+        $intervention = $equipment->getInterventions();
+        if ($intervention) {
+            return new JsonResponse(['error' => 'Cannot delete equipment with interventions'], 400);
         }
 
         $entityManagerInterface->remove($equipment);

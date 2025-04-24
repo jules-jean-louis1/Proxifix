@@ -1,106 +1,128 @@
-import {View, StyleSheet} from 'react-native';
-import {Text, PlatformPressable} from '@react-navigation/elements';
-import {Feather} from "@expo/vector-icons";
+import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
+import { useRouter, usePathname } from "expo-router";
+import { Feather } from "@expo/vector-icons";
+import React from "react";
 
-export default function TabBar({state, descriptors, navigation}) {
-    // Handle icons with route name
-    const icon = {
-        index: (props) => <Feather name="home" size={24} {...props} />,
-        interventions: (props) => <Feather name="tool" size={24} {...props} />,
-        profile: (props) => <Feather name="settings" size={24} {...props} />,
-    }
+const TabBar = () => {
+  const router = useRouter();
+  const pathname = usePathname();
 
-    // stock current route name
-    const currentRoute = state.routes[state.index].name;
-
-    // we don't want tabbar on index/home page
-    if (currentRoute === 'index') return null;
-
+  const isActive = (route: any) => pathname === route;
+  const isEquipmentsRoute = () => {
     return (
-        <View style={styles.tabbar}>
-            {state.routes.map((route, index) => {
-                const {options} = descriptors[route.key];
-
-                const label =
-                    options.tabBarLabel !== undefined
-                        ? options.tabBarLabel
-                        : options.title !== undefined
-                            ? options.title
-                            : route.name;
-
-                const isFocused = state.index === index;
-
-                const onPress = () => {
-                    const event = navigation.emit({
-                        type: 'tabPress',
-                        target: route.key,
-                        canPreventDefault: true,
-                    });
-
-                    if (!isFocused && !event.defaultPrevented) {
-                        navigation.navigate(route.name, route.params);
-                    }
-                };
-
-                const onLongPress = () => {
-                    navigation.emit({
-                        type: 'tabLongPress',
-                        target: route.key,
-                    });
-                };
-
-                return (
-                    <PlatformPressable
-                        key={route.key}
-                        onPress={onPress}
-                        onLongPress={onLongPress}
-                        style={[styles.tabbarItem, isFocused]
-                    }>
-                        <View style={[styles.iconContainer, isFocused && styles.focusedIconContainer]}>
-                            {icon[route.name]({
-                                color: isFocused,
-                            })}
-                        </View>
-                        <Text style={[{ color: '#000' }, styles.label]}>
-                            {label}
-                        </Text>
-                    </PlatformPressable>
-                );
-            })}
-        </View>
+      pathname === "/customer/equipments" ||
+      pathname.startsWith("/customer/equipment/")
     );
-}
+  };
+  const isInterventionsRoute = () => {
+    return (
+      pathname === "/customer/interventions" ||
+      pathname.startsWith("/customer/intervention/")
+    );
+  };
+
+  return (
+    <View style={styles.tabBar}>
+      <TouchableOpacity
+        style={styles.tab}
+        onPress={() => router.push("/customer")}
+      >
+        <Feather
+          name="home"
+          size={18}
+          color={isActive("/customer") ? "#01358D" : "#999"}
+        />
+        <Text
+          style={{
+            color: isActive("/customer") ? "#01358D" : "#999",
+            fontSize: 12,
+            marginTop: 2,
+          }}
+        >
+          Accueil
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.tab}
+        onPress={() => router.push("/customer/interventions")}
+      >
+        <Feather
+          name="list"
+          size={18}
+          color={isInterventionsRoute() ? "#01358D" : "#999"}
+        />
+        <Text
+          style={{
+            color: isInterventionsRoute() ? "#01358D" : "#999",
+            fontSize: 12,
+            marginTop: 2,
+          }}
+        >
+          Interventions
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.tab}
+        onPress={() => router.push("/customer/equipments")}
+      >
+        <Feather
+          name="monitor"
+          size={18}
+          color={isEquipmentsRoute() ? "#01358D" : "#999"}
+        />
+        <Text
+          style={{
+            color: isEquipmentsRoute() ? "#01358D" : "#999",
+            fontSize: 12,
+            marginTop: 2,
+          }}
+        >
+          Equipements
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.tab}
+        onPress={() => router.push("/customer/profil")}
+      >
+        <Feather
+          name="settings"
+          size={18}
+          color={isActive("/customer/profil") ? "#01358D" : "#999"}
+        />
+        <Text
+          style={{
+            color: isActive("/customer/profil") ? "#01358D" : "#999",
+            fontSize: 12,
+            marginTop: 2,
+          }}
+        >
+          Profil
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export default TabBar;
 
 const styles = StyleSheet.create({
-    tabbar: {
-        width: '100%',
-        height: 80,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        backgroundColor: '#fff',
-        borderColor: '#00000033',
-        borderTopWidth: 1,
-    },
-    tabbarItem: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#fff',
-        gap: 2,
-
-    },
-    iconContainer: {
-        paddingVertical: 8,
-        paddingHorizontal: 25,
-        borderRadius: 20,
-    },
-    focusedIconContainer: {
-        backgroundColor: '#FFD1DC',
-    },
-    label: {
-        fontWeight: 'bold',
-        marginBottom: 8,
-    }
-})
-
+  tabBar: {
+    flexDirection: "row",
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    backgroundColor: "#fff",
+    height: 60,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  tab: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

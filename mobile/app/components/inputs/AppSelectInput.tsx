@@ -34,7 +34,7 @@ export const AppSelectInput: React.FC<AppSelectInputProps> = ({
           <>
             <View style={styles.pickerContainer}>
               <Picker
-                selectedValue={value}
+                selectedValue={value || defaultValue}
                 onValueChange={(itemValue) => onChange(parseInt(itemValue))}
                 style={styles.picker}
               >

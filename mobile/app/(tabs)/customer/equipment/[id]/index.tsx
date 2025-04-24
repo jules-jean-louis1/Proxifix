@@ -3,13 +3,15 @@ import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { AppButton } from "@/app/components/buttons/AppButton";
+import { EquipmentModalForm } from "@/app/components/equipment/EquipmentModalForm";
 
 export default function EquipmentDetails() {
   const { id } = useLocalSearchParams();
   const [equipment, setEquipment] = useState<any>(null);
+  const [typeEquipment, setTypeEquipment] = useState<any[]>([]);
+  const [brands, setBrands] = useState<any[]>([]);
+  const [os, setOs] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const api = useApi();
 
   useEffect(() => {
@@ -17,6 +19,12 @@ export default function EquipmentDetails() {
       try {
         const response = await api.get(`/equipment/${id}`);
         setEquipment(response.data);
+        const typeEquipmentResponse = await api.get("/type_equipment/all");
+        setTypeEquipment(typeEquipmentResponse.data);
+        const brandsResponse = await api.get("/brand/all");
+        setBrands(brandsResponse.data);
+        const osResponse = await api.get("/operating_system/all");
+        setOs(osResponse.data);
       } catch (error) {
         console.error(
           "Error:",
@@ -48,7 +56,6 @@ export default function EquipmentDetails() {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Informations principales */}
       <View style={styles.section}>
         <Text style={styles.title}>Détails de l'équipement</Text>
         <View style={styles.row}>
@@ -71,7 +78,6 @@ export default function EquipmentDetails() {
         </View>
       </View>
 
-      {/* Interventions */}
       <View style={styles.section}>
         <Text style={styles.subtitle}>Interventions</Text>
         {equipment.interventions.length > 0 ? (
@@ -97,7 +103,6 @@ export default function EquipmentDetails() {
         )}
       </View>
 
-      {/* Demandes de rendez-vous */}
       <View style={styles.section}>
         <Text style={styles.subtitle}>Demandes de rendez-vous</Text>
         {equipment.appointmentRequests.length > 0 ? (
@@ -106,7 +111,8 @@ export default function EquipmentDetails() {
               <Text style={styles.cardTitle}>{request.title}</Text>
               <Text style={styles.cardText}>{request.description}</Text>
               <Text style={styles.cardText}>
-                Statut : {request.status === "accepted" ? "Accepté" : "En attente"}
+                Statut :{" "}
+                {request.status === "accepted" ? "Accepté" : "En attente"}
               </Text>
             </View>
           ))
@@ -116,14 +122,15 @@ export default function EquipmentDetails() {
           </Text>
         )}
       </View>
-      <AppButton 
-        type="secondary"
-        children="Editer cette équipement"
-        onPress={() => {setModalVisible(true)}}
-        style={{ marginTop: 16 }}
+      {/* Actions */}
+      <EquipmentModalForm
+        type="update"
+        equipment={equipment}
+        brands={brands}
+        typeEquipment={typeEquipment}
+        os={os}
       />
     </ScrollView>
-    // Modal for editing equipment details can be implemented here
   );
 }
 

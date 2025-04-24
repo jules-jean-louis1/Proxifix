@@ -20,9 +20,9 @@ import { AppTextField } from "@/app/components/inputs/AppTextField";
 import { AppSelectInput } from "@/app/components/inputs/AppSelectInput";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { EquipmentModalForm } from "@/app/components/equipment/EquipmentModalForm";
 
 const EquipmentsPage = () => {
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [equipments, setEquipments] = useState<
     components["schemas"]["Equipment-equipment.read_equipment.details"][]
   >([]);
@@ -34,29 +34,7 @@ const EquipmentsPage = () => {
   const sessionCtx = useSessionContext();
   const sessionData = sessionCtx?.session;
   const api = useApi();
-  const methods = useForm();
-  const { handleSubmit } = methods;
 
-  const onSubmit = async (data: any) => {
-    const values = methods.getValues();
-
-    try {
-      const response = await api.post("/equipment/new", {
-        ...data,
-        user_id: sessionData?.id,
-      });
-      setEquipments((prev) => [...prev, response.data]);
-      setModalVisible(false);
-    } catch (error) {
-      console.error(
-        "Error:",
-        (error as any).response
-          ? (error as any).response.data
-          : (error as any).message
-      );
-      setError((error as any).message || "Impossible to add the equipment.");
-    }
-  };
 
   useEffect(() => {
     (async () => {
@@ -106,11 +84,13 @@ const EquipmentsPage = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tous mes équipements</Text>
-      <AppButton
-        type="primary"
-        children="Ajouter un equipement"
-        onPress={() => setModalVisible(true)}
-      />
+      <EquipmentModalForm
+          type="create"
+          brands={brands}
+          typeEquipment={typeEquipment}
+          os={os}
+          setEquipments={setEquipments}
+          />
       {equipments.length === 0 && (
         <Text style={styles.loadingText}>Aucun équipement trouvé.</Text>
       )}
@@ -135,85 +115,6 @@ const EquipmentsPage = () => {
           </Pressable>
         )}
       />
-      <Modal
-        animationType="slide"
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={{ flex: 1, justifyContent: "center" }}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                style={{
-                  padding: 10,
-                  borderRadius: 50,
-                  backgroundColor: "#F0F3F4",
-                }}
-              >
-                <Feather name="x" size={24} color={"#000"} />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.modalContent}>
-              <Text style={styles.title}>Ajouter un équipement</Text>
-              <FormProvider {...methods}>
-                <AppTextField
-                  nameField="name"
-                  label="Nom"
-                  placeholder="Entrez le nom de l'équipement"
-                  rules={{ required: "Le nom est obligatoire" }}
-                />
-                <AppSelectInput
-                  nameField="type_equipment_id"
-                  label="Type"
-                  placeholder="Sélectionnez le type d'équipement"
-                  options={typeEquipment.map((type) => ({
-                    label: type.name,
-                    value: type.id,
-                  }))}
-                  rules={{ required: "Le type est obligatoire" }}
-                />
-                <AppSelectInput
-                  nameField="brand_id"
-                  label="Marque"
-                  placeholder="Sélectionnez la marque"
-                  options={brands.map((brand) => ({
-                    label: brand.name,
-                    value: brand.id,
-                  }))}
-                  rules={{ required: "La marque est obligatoire" }}
-                />
-                <AppSelectInput
-                  nameField="operating_system_id"
-                  label="Système d'exploitation"
-                  placeholder="Sélectionnez le système d'exploitation"
-                  options={os.map((os: any) => ({
-                    label: os.name,
-                    value: os.id,
-                  }))}
-                />
-                <AppButton
-                  type="secondary"
-                  children="Annuler"
-                  onPress={() => {
-                    setModalVisible(false);
-                    methods.reset();
-                  }}
-                />
-                <AppButton
-                  type="primary"
-                  children="Ajouter"
-                  onPress={handleSubmit((data) => {
-                    onSubmit(data);
-                  })}
-                />
-              </FormProvider>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
