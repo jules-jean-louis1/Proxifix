@@ -53,7 +53,7 @@ security:
         - { path: ^/api/intervention, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/admin/interventions, roles: ROLE_TECHNICIAN }
         - { path: ^/api/operating_system, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/api/company, roles: ROLE_ADMIN }
+        - { path: ^/api/company, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/task, roles: ROLE_ADMIN }
         - { path: ^/api/task/intervention, roles: ROLE_ADMIN }
         - { path: ^/api/appointment/free-slots, roles: IS_AUTHENTICATED_FULLY}

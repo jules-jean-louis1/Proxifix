@@ -6,12 +6,15 @@ import {Feather} from "@expo/vector-icons";
 import { useApi } from '@/app/utils/useApi';
 import { useSessionContext } from '@/app/context/useSessionContext';
 import CustomerHomeButton from '@/app/components/buttons/CustomerHomeButton';
+import { AppointmentModalForm } from '@/app/components/appointment/AppointmentModalForm';
 
 export default function InterventionsPage() {
     const api = useApi();
     const sessionCtx = useSessionContext();
     const sessionData = sessionCtx?.session;
     const [interventions, setInterventions] = useState<any>([]);
+    const [equipements, setEquipments] = useState<any>([]);
+    const [company, setCompanies] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<any>(null);
 
@@ -20,7 +23,10 @@ export default function InterventionsPage() {
             try {
                 const response = await api.get(`/intervention/customer/${sessionData?.id}`)
                 setInterventions(response.data);
-                console.log(interventions);
+                const equipementsResponse = await api.get(`/equipment/customer/${sessionData?.id}`);
+                setEquipments(equipementsResponse.data);
+                const companiesResponse = await api.get(`/company/all`)
+                setCompanies(companiesResponse.data);
             } catch (error) {
                 console.error('Error fetching interventions:', error);
                 setError(error || 'Impossible to get interventions.');
@@ -50,13 +56,18 @@ export default function InterventionsPage() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
+                <AppointmentModalForm
+                    type="create"
+                    companies={company}
+                    equipments={equipements}
+                    setInterventions={setInterventions}
+                />
                 <Text style={styles.title}>Liste des interventions</Text>
                 <Text style={styles.description}>
                     Vous avez
                     actuellement {interventions.length} intervention{interventions.length > 1 ? 's' : ''} enregistrée{interventions.length > 1 ? 's' : ''}.
                 </Text>
             </View>
-
             <View style={styles.listContainer}>
                 <FlatList
                     data={interventions}
@@ -100,10 +111,10 @@ export default function InterventionsPage() {
                 />
             </View>
 
-            <View style={styles.buttonContainer}>
+            {/* <View style={styles.buttonContainer}>
                 <CustomerHomeButton text="Equipements" icon="monitor" url="/equipments/list"/>
                 <CustomerHomeButton text="Profil" icon="settings" url="/profile"/>
-            </View>
+            </View> */}
         </View>
     )
         ;

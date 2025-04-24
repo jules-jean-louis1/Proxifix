@@ -34,7 +34,7 @@ final class AppointmentController extends AbstractController
             return $this->json(['error' => 'date is required'], Response::HTTP_BAD_REQUEST);
         }
         $date  = new \DateTime($date);
-        $slots = $interventionRepository->getFreeSlots($date, $companyId);
+        $slots = $interventionRepository->getFreeSlots($date, $companyId, $interval);
 
         return $this->json($slots, Response::HTTP_OK);
 

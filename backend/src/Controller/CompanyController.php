@@ -153,7 +153,7 @@ final class CompanyController extends AbstractController
         ];
         return in_array($type, $types);
     }
-    #[Route("/api/companies/list", name: "app_company_list", methods: ["GET"])]
+    #[Route("/api/company/all", name: "app_company_list", methods: ["GET"])]
     public function getList(
         EntityManagerInterface $entityManagerInterface
     ): JsonResponse {
@@ -163,7 +163,22 @@ final class CompanyController extends AbstractController
         if (!$companies) {
             return $this->json(["error" => "No companies found"], 404);
         }
-        return $this->json($companies, 200);
+        $data = array_map(function (Company $company) {
+            return [
+                "id" => $company->getId(),
+                "name" => $company->getName(),
+                "about" => $company->getAbout(),
+                "type" => $company->getType(),
+                "address" => $company->getAddress(),
+                "city" => $company->getCity(),
+                "zip_code" => $company->getZipCode(),
+                "website" => $company->getWebsite(),
+                "created_at" => $company->getCreatedAt()?->format('Y-m-d\TH:i:sP'),
+                "updated_at" => $company->getUpdatedAt()?->format('Y-m-d\TH:i:sP'),
+            ];
+        }, $companies);
+    
+        return $this->json($data, 200);
     }
 
     #[Route("/api/company/{id}", name: "app_company_details", methods: ["GET"])]
