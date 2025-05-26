@@ -334,5 +334,24 @@ class InterventionController extends AbstractController
 
         return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
     }
+    #[Route("/intervention/{id}/{status}", name: "app_intervention_status", methods: ["PATCH"])]
+    public function changeStatusIntervention(
+        int $id,
+        string $status,
+        EntityManagerInterface $entityManager        
+    ): JsonResponse {
+        $intervention = $entityManager
+            ->getRepository(Intervention::class)
+            ->find($id);
+
+        if (! $intervention) {
+            return $this->json(["error" => "Intervention not found"], 404);
+        }
+        
+        $intervention->setStatus($status);
+        $intervention->flush();
+        
+        return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
+    }
 
 }
