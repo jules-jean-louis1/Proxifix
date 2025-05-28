@@ -216,6 +216,41 @@ sequenceDiagram
     API-->>Frontend: Équipement créé
 ```
 
+Demande d'une creation d'entreprise par un utilisateur :
+
+| `is_approved` | Signification                      |
+| ------------- | ---------------------------------- |
+| `null`        | En attente de validation (pending) |
+| `true`        | Acceptée par un `super_admin`      |
+| `false`       | Refusée par un `super_admin`       |
+
+
+```mermaid
+sequenceDiagram
+    participant Utilisateur
+    participant Frontend
+    participant API
+    participant DB
+    participant SuperAdmin
+
+    Utilisateur->>Frontend: Remplit formulaire "Créer entreprise"
+    Frontend->>API: POST /register-company (infos entreprise + user)
+    API->>DB: Crée l'utilisateur (user)
+    API->>DB: Crée l'entreprise (company avec is_approved=false)
+    API-->>Frontend: Message: "Demande envoyée, en attente de validation"
+
+    SuperAdmin->>Frontend: Se connecte (ROLE_SUPER_ADMIN)
+    Frontend->>API: GET /admin/pending-companies
+    API->>DB: Récupère les entreprises non approuvées
+    API-->>Frontend: Liste des entreprises à valider
+
+    SuperAdmin->>Frontend: Clique "Valider entreprise"
+    Frontend->>API: PATCH /admin/companies/{id}/approve
+    API->>DB: Met à jour company (is_approved=true, approved_by_id, approved_at)
+    API-->>Frontend: Message: "Entreprise validée"
+
+```
+
 ### Diagramme de class
 
 ```mermaid
@@ -361,3 +396,26 @@ class TaskIntervention {
 }
 
 ```
+
+### Diagramme de composants / Architecture
+
+Composant 1 : Application Mobile (React Native)
+
+    Responsabilités : Interface utilisateur, gestion des états locaux, appels à l'API.
+
+Composant 2 : API REST (Symfony)
+
+    Responsabilités : Logique métier, authentification/autorisation, gestion des requêtes HTTP, interaction avec la base de données.
+
+Composant 3 : Base de Données (PostgreSQL)
+
+    Responsabilités : Stockage persistant des données (utilisateurs, entreprises, appareils, interventions).
+
+Flux de données :
+
++---------------------+             +---------------------+             +---------------------+
+|                     |             |                     |             |                     |
+|  Application Mobile | <---------> |      API REST       | <---------> |    Base de Données  |
+|    (React Native)   |   (HTTP)    |      (Symfony)      |   (SQL/ORM) |     (PostgreSQL)    |
+|                     |             |                     |             |                     |
++---------------------+             +---------------------+             +---------------------+

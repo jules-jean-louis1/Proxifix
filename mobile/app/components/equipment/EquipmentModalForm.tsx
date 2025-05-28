@@ -148,7 +148,7 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
                   nameField="operating_system_id"
                   label="Système d'exploitation"
                   placeholder="Sélectionnez le système d'exploitation"
-                  defaultValue={equipment?.operating_system.id}
+                  defaultValue={equipment?.operating_system ? equipment.operating_system.id : ""}
                   options={os!.map((os: any) => ({
                     label: os.name,
                     value: os.id,

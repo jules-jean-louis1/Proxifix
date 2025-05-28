@@ -82,6 +82,9 @@ class Company
     #[ORM\OneToMany(targetEntity: AppointmentRequest::class, mappedBy: 'company')]
     private Collection $appointmentRequests;
 
+    #[ORM\Column (type: 'boolean', nullable: true)]
+    private ?bool $is_approved = null;
+
     public function __construct()
     {
         $this->interventions = new ArrayCollection();
@@ -291,5 +294,22 @@ class Company
         }
 
         return $this;
+    }
+
+    public function isApproved(): ?bool
+    {
+        return $this->is_approved;
+    }
+
+    public function setIsApproved(bool $is_approved): static
+    {
+        $this->is_approved = $is_approved;
+
+        return $this;
+    }
+
+    public function getIsApproved(): ?bool
+    {
+        return $this->is_approved;
     }
 }

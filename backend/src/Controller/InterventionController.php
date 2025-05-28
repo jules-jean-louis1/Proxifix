@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api')]
 class InterventionController extends AbstractController
@@ -348,10 +349,71 @@ class InterventionController extends AbstractController
             return $this->json(["error" => "Intervention not found"], 404);
         }
         
-        $intervention->setStatus($status);
-        $intervention->flush();
+        $statusEntity = $entityManager->getRepository(Status::class)->find($status);
+        if (! $statusEntity) {
+            return $this->json(["error" => "Status not found"], 400);
+        }
+        $intervention->setStatus($statusEntity);
+        $entityManager->flush();
         
+        return $this->json($intervention, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
+    }
+    #[IsGranted('ROLE_TECHNICIAN')]
+    #[Route("/intervention/{status}", name: "app_intervention_status_list", methods: ["GET"])]
+    public function getInterventionsByStatus(
+        string $status,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $allowedStatuses = [
+            Status::PENDING,
+            Status::AWAITING_PICKUP,
+            Status::CANCELLED,
+            Status::COMPLETED,
+            Status::IN_PROGRESS
+        ];
+
+        if (! in_array($status, $allowedStatuses)) {
+            return $this->json(["error" => "Invalid status"], 400);
+        }
+        $currentUser = $this->getUser();
+
+        // Vérifier si l'utilisateur courant est lié à la company
+        if (! $currentUser instanceof User || ! $currentUser->getCompany()) {
+            return $this->json(["error" => "Unauthorized"], 401);
+        }
+        // Récupérer les interventions par statut
+        if ($status === 'all') {
+            $status = null; // If 'all' is requested, we will not filter by status
+        }
+
+        $interventions = $entityManager
+            ->getRepository(Intervention::class)
+            ->findBy(['status' => $status, 'company_id' => $currentUser->getCompany()->getId()]);
+
         return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
     }
+    #[IsGranted('ROLE_TECHNICIAN')]
+    #[Route("/intervention-pending", name: "app_intervention_pending_list", methods: ["GET"])]
+    public function getPendingInterventions(
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $currentUser = $this->getUser();
 
+        // Vérifier si l'utilisateur courant est lié à la company
+        if (! $currentUser instanceof User || ! $currentUser->getCompany()) {
+            return $this->json(["error" => "Unauthorized"], 401);
+        }
+
+        // Récupérer les interventions en attente
+        $qb = $entityManager->getRepository(Intervention::class)->createQueryBuilder('i');
+        $qb->where('i.status != :completed')
+            ->andWhere('i.status != :canceled')
+            ->andWhere('i.company = :company')
+            ->setParameter('completed', Status::COMPLETED)
+            ->setParameter('canceled', Status::CANCELLED)
+            ->setParameter('company', $currentUser->getCompany());
+        $interventions = $qb->getQuery()->getResult();
+
+        return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
+    }
 }

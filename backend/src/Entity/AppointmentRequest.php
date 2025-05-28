@@ -24,7 +24,7 @@ class AppointmentRequest
     #[Groups(["user:details"])]
     private ?\DateTimeImmutable $date = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, options: ['default' => ''])]
     #[Groups(['intervention:details',"user:details", "equipment:details"])]
     private ?string $title = null;
 

@@ -8,6 +8,7 @@ import { AppSelectInput } from "../inputs/AppSelectInput";
 import { Feather } from "@expo/vector-icons";
 import { AppDateInput } from "../inputs/AppDateInput";
 import { AppTextField } from "../inputs/AppTextField";
+import { format } from "date-fns";
 
 interface AppointmentModalFormProps {
   type: "create" | "update";
@@ -39,8 +40,9 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
     (async () => {
       if (!companyId && !date) return;
       try {
+        const formatDate = format(new Date(date), "yyyy-MM-dd");
         const response = await api.get(
-          `/appointment/free-slots?company_id=${companyId}&date=${date}&interval=60`
+          `/appointment/free-slots?company_id=${companyId}&date=${formatDate}&interval=60`
         );
         setInterventions?.(response.data);
       } catch (error) {
@@ -65,8 +67,7 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
           setModalVisible(!modalVisible);
         }}
       >
-        <View style={{ flex: 1 }}>
-          <View style={styles.modalContainer}>
+        <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}
@@ -79,7 +80,6 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                 <Feather name="x" size={24} color={"#000"} />
               </TouchableOpacity>
             </View>
-          </View>
           <View style={styles.modalContent}>
             <Text>Ajouter un rendez-vous</Text>
             <FormProvider {...methods}>
@@ -93,12 +93,29 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                 }))}
                 rules={{ required: "Ce champ est requis" }}
               />
-              <AppDateInput
+              <AppTextField
                 nameField="date"
-                label="Choisir une date"
-                placeholder="Sélectionner une date"
-                rules={{ required: "Ce champ est requis" }}
-                formatDate={(date) => date.toISOString().split("T")[0]}
+                label="Date"
+                placeholder="YYYY-MM-DD"
+                rules={{
+                  required: "Ce champ est requis",
+                  pattern: {
+                    value: /^\d{4}-\d{2}-\d{2}$/,
+                    message: "Format attendu : YYYY-MM-DD",
+                  },
+                }}
+              />
+              <AppTextField
+                nameField="time"
+                label="Heure"
+                placeholder="HH:MM"
+                rules={{
+                  required: "Ce champ est requis",
+                  pattern: {
+                    value: /^\d{2}:\d{2}$/,
+                    message: "Format attendu : HH:MM",
+                  },
+                }}
               />
               <AppTextField
                 nameField="title"
@@ -137,7 +154,8 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                 onPress={handleSubmit(async (data) => {
                   try {
                     if (type === "create") {
-                      await api.post("/appointment", data);
+                      console.log("Creating appointment with data:", data);
+                      await api.post("/appointment/customer/new", data);
                     } else {
                       await api.put(`/appointment/${intervention?.id}`, data);
                     }

@@ -5,16 +5,16 @@ namespace App\Controller;
 use App\Entity\Company;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use http\Client\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class CompanyController extends AbstractController
 {
-    #[IsGranted("ROLE_ADMIN")]
+    #[IsGranted("ROLE_SUPER_ADMIN")]
     #[Route("/api/company/new", name: "app_company")]
     public function create(
         Request $request,
@@ -37,6 +37,7 @@ final class CompanyController extends AbstractController
         $company->setAbout($payload->get("about") ?? "");
         $company->setCreatedAt(new \DateTimeImmutable());
         $company->setUpdatedAt(new \DateTimeImmutable());
+        $company->setIsApproved($payload->get("is_approved"));
 
         if ($payload->get("user_id")) {
             $user = $entityManager
@@ -69,6 +70,15 @@ final class CompanyController extends AbstractController
         $payload = $request->getPayload();
         $company = $entityManager->getRepository(Company::class)->find($id);
 
+        // Récupérer l'utilisateur courant
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+
+        // Vérifier si l'utilisateur courant est lié à la company
+        if (!$company->getUsers()->contains($currentUser)) {
+            return $this->json(["error" => "You are not a member of this company"], 403);
+        }
+
         if (!$company) {
             return $this->json(["error" => "Company not found"], 404);
         }
@@ -100,6 +110,10 @@ final class CompanyController extends AbstractController
         if (isset($website)) {
             $company->setWebsite($website);
         }
+        $is_approved = $payload->get("is_approved");
+        if (isset($is_approved)) {
+            $company->setIsApproved($is_approved);
+        }
 
         $userId = $payload->get("user_id");
         if (isset($userId)) {
@@ -114,7 +128,7 @@ final class CompanyController extends AbstractController
 
         return $this->json($company, 200);
     }
-    #[IsGranted("ROLE_SUPERADMIN")]
+    #[IsGranted("ROLE_SUPER_ADMIN")]
     #[
         Route(
             "/api/company/{id}",
@@ -122,6 +136,8 @@ final class CompanyController extends AbstractController
             methods: ["DELETE"]
         )
     ]
+    #[IsGranted("ROLE_SUPER_ADMIN")]
+    #[Route("/api/company/{id}/delete", name: "app_company_delete", methods: ["DELETE"])]
     public function delete(
         EntityManagerInterface $entityManager,
         int $id
@@ -221,4 +237,108 @@ final class CompanyController extends AbstractController
         }
         return $this->json($users, 200);
     }
+
+    #[Route('/register-company', name: 'register_company', methods: ['POST'])]
+    public function registerCompany(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): JsonResponse
+    {
+        $payload = $request->getPayload();
+
+        $user = new User();
+        $user->setEmail($payload->get('email'));
+        $user->setFirstName($payload->get('first_name'));
+        $user->setLastName($payload->get('last_name'));
+        $user->setRoles(['ROLE_ADMIN']);
+        $user->setPassword($passwordHasher->hashPassword($user, $payload->get('password')));
+        $user->setCreatedAt(new \DateTimeImmutable());
+        $user->setUpdatedAt(new \DateTimeImmutable());
+
+        $company = new Company();
+        $company->setName($payload->get('company_name'));
+        $company->setAddress($payload->get('address'));
+        $company->setCity($payload->get('city'));
+        $company->setZipCode($payload->get('zip_code'));
+        $company->setWebsite($payload->get('website'));
+        $company->setAbout($payload->get('about'));
+        $company->setType($payload->get('type') ?? Company::MICRO_ENTERPRISE);
+        $company->setCreatedAt(new \DateTimeImmutable());
+        $company->setUpdatedAt(new \DateTimeImmutable());
+
+        $user->setCompany($company);
+
+        $em->persist($company);
+        $em->persist($user);
+        $em->flush();
+
+        return new JsonResponse([
+            'message' => 'Demande enregistrée. Votre entreprise sera validée par un administrateur.'
+        ], JsonResponse::HTTP_CREATED);
+    }
+
+    #[Route('api/company/{id}/approve', name: 'approve_company', methods: ['POST'])]
+    public function approveCompany(
+        EntityManagerInterface $entityManager,
+        int $id
+    ): JsonResponse {
+        $company = $entityManager->getRepository(Company::class)->find($id);
+
+        if (!$company) {
+            return $this->json(["error" => "Company not found"], 404);
+        }
+
+        $company->setIsApproved(true);
+        $company->setUpdatedAt(new \DateTimeImmutable());
+
+        $entityManager->flush();
+
+        return $this->json(["success" => "Company approved successfully"], 200);
+    }
+    #[Route('api/company/{id}/disapprove', name: 'disapprove_company', methods: ['POST'])]
+    public function disapproveCompany(
+        EntityManagerInterface $entityManager,
+        int $id
+    ): JsonResponse {
+        $company = $entityManager->getRepository(Company::class)->find($id);
+
+        if (!$company) {
+            return $this->json(["error" => "Company not found"], 404);
+        }
+
+        $company->setIsApproved(false);
+        $company->setUpdatedAt(new \DateTimeImmutable());
+
+        $entityManager->flush();
+
+        return $this->json(["success" => "Company disapproved successfully"], 200);
+    }
+    #[Route('/api/company/pending', name: 'app_company_pending', methods: ['GET'])]
+    public function getPendingCompanies(
+        EntityManagerInterface $entityManagerInterface
+    ): JsonResponse {
+        $companies = $entityManagerInterface
+            ->getRepository(Company::class)
+            ->findBy(['isApproved' => false]);
+
+        if (!$companies) {
+            return $this->json(["error" => "No pending companies found"], 404);
+        }
+
+        $data = array_map(function (Company $company) {
+            return [
+                "id" => $company->getId(),
+                "name" => $company->getName(),
+                "about" => $company->getAbout(),
+                "type" => $company->getType(),
+                "address" => $company->getAddress(),
+                "city" => $company->getCity(),
+                "zip_code" => $company->getZipCode(),
+                "website" => $company->getWebsite(),
+                "is_approved" => $company->getIsApproved(),
+                "created_at" => $company->getCreatedAt()?->format('Y-m-d\TH:i:sP'),
+                "updated_at" => $company->getUpdatedAt()?->format('Y-m-d\TH:i:sP'),
+            ];
+        }, $companies);
+
+        return $this->json($data, 200);
+    }
+
 }

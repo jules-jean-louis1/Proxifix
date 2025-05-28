@@ -75,7 +75,7 @@ final class BrandController extends AbstractController
         return $this->json(['success' => 'Brand deleted successfully'], Response::HTTP_OK);
     }
 
-    #[Route('/{id}', name: 'app_brand_get', methods: ['GET'])]
+    #[Route('/brand/{id}', name: 'app_brand_get', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function get(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
         $brand = $entityManagerInterface->getRepository(Brand::class)->find($id);

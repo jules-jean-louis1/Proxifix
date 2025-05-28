@@ -21,7 +21,10 @@ export default function InterventionsPage() {
     useEffect(() => {
         (async() => {
             try {
+                setLoading(true);
+                setError(null);
                 const response = await api.get(`/intervention/customer/${sessionData?.id}`)
+                console.log('Interventions:', response.data);
                 setInterventions(response.data);
                 const equipementsResponse = await api.get(`/equipment/customer/${sessionData?.id}`);
                 setEquipments(equipementsResponse.data);
@@ -71,21 +74,21 @@ export default function InterventionsPage() {
             <View style={styles.listContainer}>
                 <FlatList
                     data={interventions}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({item}) => (
+                    keyExtractor={(intervention) => intervention.id}
+                    renderItem={({item: intervention}) => (
                         <View style={styles.interventionItem}>
-                            <Text style={styles.interventionTitle}>{item.title}</Text>
+                            <Text style={styles.interventionTitle}>{intervention.title}</Text>
 
                             <View style={styles.containerInformation}>
                                 <Feather name="briefcase" size={25} color="#000" style={styles.iconLeft}></Feather>
-                                <Text style={styles.interventionDescription}> {item.company.name}</Text>
+                                <Text style={styles.interventionDescription}> {intervention.company.name}</Text>
                             </View>
 
                             <View style={styles.containerInformation}>
                                 <Feather name="package" size={25} color="#000" style={styles.iconLeft}></Feather>
-                                {item.equipment ? (
+                                {intervention.equipment ? (
                                     <Text style={styles.interventionDescription}>
-                                        {item.equipment.name}
+                                        {intervention.equipment.name}
                                     </Text>
                                 ) : (
                                     <Text style={styles.interventionDescription}>Aucun équipement associé</Text>
@@ -95,13 +98,13 @@ export default function InterventionsPage() {
                             <View style={styles.footerContainer}>
                                 <View style={styles.dateContainer}>
                                     <Text style={styles.dateText}>
-                                        {format(new Date(item.created_at), 'dd MMMM yyyy', {locale: fr})}
+                                        {format(new Date(intervention.created_at), 'dd MMMM yyyy', {locale: fr})}
                                     </Text>
                                     <Feather name="calendar" size={17} color="#4BC0C0" style={styles.icon}/>
                                 </View>
 
                                 <Text style={styles.status}>
-                                    {item.status.name}
+                                    {intervention.status.name}
                                 </Text>
 
                                 <Text style={styles.footerDate}>Déposé le : 19/10/35</Text>
@@ -110,11 +113,6 @@ export default function InterventionsPage() {
                     )}
                 />
             </View>
-
-            {/* <View style={styles.buttonContainer}>
-                <CustomerHomeButton text="Equipements" icon="monitor" url="/equipments/list"/>
-                <CustomerHomeButton text="Profil" icon="settings" url="/profile"/>
-            </View> */}
         </View>
     )
         ;

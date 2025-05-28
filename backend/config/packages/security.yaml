@@ -6,6 +6,7 @@ security:
         ROLE_CUSTOMER: ['ROLE_CUSTOMER']
         ROLE_TECHNICIAN: ['ROLE_TECHNICIAN']
         ROLE_ADMIN: ['ROLE_ADMIN', 'ROLE_TECHNICIAN']
+        ROLE_SUPER_ADMIN: ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_TECHNICIAN']
 
     providers:
         user:
