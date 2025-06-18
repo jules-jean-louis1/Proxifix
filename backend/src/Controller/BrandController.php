@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Controller;
 
 use App\Entity\Brand;
+use App\Repository\BrandRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,19 +14,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/api')]
 final class BrandController extends AbstractController
 {
-    #[Route('/brand/all', name: 'app_brands_get', methods: ['GET'])]
-    public function getAll(EntityManagerInterface $entityManagerInterface): JsonResponse
-    {
-        $brands = $entityManagerInterface->getRepository(Brand::class)->findAll();
-
-        if (empty($brands)) {
-            return $this->json(['error' => 'No brands found'], Response::HTTP_NOT_FOUND);
-        }
-        return $this->json($brands, Response::HTTP_OK, [], ['groups' => ['brand:get_all']]);
-
-    }
-    
-    #[Route('/brand/new', name: 'app_brand_new', methods: ['POST'])]
+    #[Route('/brand', name: 'app_brand_new', methods: ['POST'])]
     #[IsGranted('ROLE_TECHNICIAN')]
     public function create(Request $request, EntityManagerInterface $entityManagerInterface): JsonResponse
     {
@@ -46,9 +34,9 @@ final class BrandController extends AbstractController
     public function update(Request $request, EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
         $payload = $request->getPayload();
-        $brand = $entityManagerInterface->getRepository(Brand::class)->find($id);
+        $brand   = $entityManagerInterface->getRepository(Brand::class)->find($id);
 
-        if (!$brand) {
+        if (! $brand) {
             return $this->json(['error' => 'Brand not found'], Response::HTTP_NOT_FOUND);
         }
 
@@ -65,7 +53,7 @@ final class BrandController extends AbstractController
     {
         $brand = $entityManagerInterface->getRepository(Brand::class)->find($id);
 
-        if (!$brand) {
+        if (! $brand) {
             return $this->json(['error' => 'Brand not found'], Response::HTTP_NOT_FOUND);
         }
 
@@ -75,16 +63,26 @@ final class BrandController extends AbstractController
         return $this->json(['success' => 'Brand deleted successfully'], Response::HTTP_OK);
     }
 
-    #[Route('/brand/{id}', name: 'app_brand_get', methods: ['GET'], requirements: ['id' => '\d+'])]
-    public function get(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
+    #[Route('/brand', name: 'app_brand_get', methods: ['GET'])]
+    public function get(BrandRepository $brandRepository, Request $request): JsonResponse
     {
-        $brand = $entityManagerInterface->getRepository(Brand::class)->find($id);
+        $reqId    = $request->query->get('id');
+        $reqPage  = $request->query->get('page') ?? 1;
+        $reqSize  = $request->query->get('size') ?? 25;
+        $reqName  = $request->query->get('name');
+        $reqOrder = $request->query->get('order') ?? "ASC";
 
-        if (!$brand) {
-            return $this->json(['error' => 'Brand not found'], Response::HTTP_NOT_FOUND);
-        }
+        $brands = $brandRepository->getBrands($reqId !== null ? intval($reqId) : null, $reqPage, $reqSize, $reqName, $reqOrder);
 
-        return $this->json($brand, Response::HTTP_OK);
+        $data = array_map(function ($brands) {
+            return [
+                'id'   => $brands->getId(),
+                'logo' => $brands->getLogo(),
+                'name' => $brands->getName(),
+            ];
+        }, $brands);
+
+        return $this->json($data, Response::HTTP_OK);
     }
 
 }

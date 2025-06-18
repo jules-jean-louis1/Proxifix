@@ -16,7 +16,7 @@ class AppointmentRequestRepository extends ServiceEntityRepository
         parent::__construct($registry, AppointmentRequest::class);
     }
 
-    public function getAppointementByStatus(string $status, ?int $companyId = null, ?int $page, ?int $size): array
+    public function getAppointementByStatus(string $status, ?int $page, ?int $size, ?int $companyId = null): array
     {
         $offset = ($page - 1) * $size;
         $qb     = $this->createQueryBuilder('a')

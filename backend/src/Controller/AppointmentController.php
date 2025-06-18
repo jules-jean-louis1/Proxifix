@@ -130,7 +130,6 @@ final class AppointmentController extends AbstractController
 
     #[IsGranted(User::ROLE_TECHNICIAN)]
     #[IsGranted(User::ROLE_ADMIN)]
-
     private function insertAppointmentToIntervention(Request $request, EntityManagerInterface $em, InterventionRepository $interventionRepository, AppointmentRequest $appointment, string $status): JsonResponse
     {
         try {

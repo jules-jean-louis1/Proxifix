@@ -16,6 +16,9 @@ class CompanyRepository extends ServiceEntityRepository
         parent::__construct($registry, Company::class);
     }
 
+    public function getCompanies(?int $id, ?string $name) {
+        
+    }
     //    /**
     //     * @return Company[] Returns an array of Company objects
     //     */
