@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[ApiResource]
@@ -14,15 +15,19 @@ class Task
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["task:read", "task:write", "intervention:details", "task:get_list"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["task:read", "task:write", "intervention:details", "task:get_list"])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(["task:read", "task:write", "intervention:details", "task:get_list"])]
     private ?float $price = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(["task:read", "task:write", "intervention:details", "task:get_list"])]
     private ?string $description = null;
 
     #[ORM\OneToMany(mappedBy: 'task', targetEntity: TaskIntervention::class)]

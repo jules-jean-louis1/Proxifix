@@ -10,9 +10,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route('/api')]
 final class TaskInterventionController extends AbstractController
 {
-    #[Route('/api/task/intervention', name: 'app_task_intervention', methods: ['POST'])]
+    #[Route('/task-intervention', name: 'app_task_intervention', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $em): JsonResponse
     {
         $payload = $request->getPayload();
@@ -40,7 +41,7 @@ final class TaskInterventionController extends AbstractController
         ], 201);
     }
 
-    #[Route('/api/task/intervention/{id}', name: 'app_task_intervention_update', methods: ['PUT'])]
+    #[Route('/task-intervention/{id}', name: 'app_task_intervention_update', methods: ['PUT'])]
     public function update(Request $request, EntityManagerInterface $em, int $id): JsonResponse
     {
         $payload          = $request->getPayload();
@@ -71,7 +72,7 @@ final class TaskInterventionController extends AbstractController
         ], 200);
     }
 
-    #[Route('/api/task/intervention/{id}', name: 'app_task_intervention_delete', methods: ['DELETE'])]
+    #[Route('/task-intervention/{id}', name: 'app_task_intervention_delete', methods: ['DELETE'])]
     public function delete(EntityManagerInterface $em, int $id): JsonResponse
     {
         $taskIntervention = $em->getRepository(TaskIntervention::class)->find($id);
@@ -84,5 +85,35 @@ final class TaskInterventionController extends AbstractController
         $em->flush();
 
         return new JsonResponse(null, 204);
+    }
+
+    #[Route('/task-intervention/{id}', name: 'app_task_intervention_get', methods: ['GET'])]
+    public function get(EntityManagerInterface $em, int $id): JsonResponse
+    {
+        $taskIntervention = $em->getRepository(TaskIntervention::class)->find($id);
+        if (! $taskIntervention) {
+            return new JsonResponse(['error' => 'Task Intervention not found'], 404);
+        }
+
+        return new JsonResponse([
+            'id'              => $taskIntervention->getId(),
+            'task_id'         => $taskIntervention->getTask()->getId(),
+            'intervention_id' => $taskIntervention->getIntervention()->getId(),
+        ], 200);
+    }
+    #[Route('/task-interventions', name: 'app_task_interventions_list', methods: ['GET'])]
+    public function list(EntityManagerInterface $em): JsonResponse
+    {
+        $taskInterventions = $em->getRepository(TaskIntervention::class)->findAll();
+        $data = [];
+        foreach ($taskInterventions as $taskIntervention) {
+            $data[] = [
+                'id'              => $taskIntervention->getId(),
+                'task_id'         => $taskIntervention->getTask()->getId(),
+                'intervention_id' => $taskIntervention->getIntervention()->getId(),
+            ];
+        }
+
+        return new JsonResponse($data, 200);
     }
 }
