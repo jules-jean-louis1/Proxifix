@@ -89,11 +89,11 @@ final class Version20250205114825 extends AbstractMigration
         $this->addSql('DROP SEQUENCE type_equipment_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE type_intervention_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE "user_id_seq" CASCADE');
-        $this->addSql('ALTER TABLE equipment DROP CONSTRAINT FK_D338D5839395C3F3');
-        $this->addSql('ALTER TABLE equipment DROP CONSTRAINT FK_D338D583D63C53FB');
-        $this->addSql('ALTER TABLE equipment DROP CONSTRAINT FK_D338D583A391D4AD');
-        $this->addSql('ALTER TABLE intervention DROP CONSTRAINT FK_D11814AB979B1AD6');
-        $this->addSql('ALTER TABLE "user" DROP CONSTRAINT FK_8D93D649979B1AD6');
+        $this->addSql('ALTER TABLE equipment DROP CONSTRAINT IF EXISTS fk_D338D5839395C3F3');
+        $this->addSql('ALTER TABLE equipment DROP CONSTRAINT IF EXISTS FK_D338D583D63C53FB');
+        $this->addSql('ALTER TABLE equipment DROP CONSTRAINT IF EXISTS FK_D338D583A391D4AD');
+        $this->addSql('ALTER TABLE intervention DROP CONSTRAINT IF EXISTS FK_D11814AB979B1AD6');
+        $this->addSql('ALTER TABLE "user" DROP CONSTRAINT IF EXISTS FK_8D93D649979B1AD6');
         $this->addSql('DROP TABLE brand');
         $this->addSql('DROP TABLE company');
         $this->addSql('DROP TABLE customer');
