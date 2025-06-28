@@ -16,7 +16,34 @@ class CompanyRepository extends ServiceEntityRepository
         parent::__construct($registry, Company::class);
     }
 
-    public function getCompanies(?int $id, ?string $name) {
+    public function getCompanies(
+        ?int $id = null,
+        bool $pending = false,
+        int $page = 1,
+        int $size = 25,
+        ?string $name = null,
+        string $order = 'ASC'
+    ): array {
+        $qb = $this->createQueryBuilder('c')
+            ->setFirstResult(($page - 1) * $size)
+            ->setMaxResults($size)
+            ->orderBy('c.id', $order);
+
+        if ($id !== null) {
+            $qb->andWhere('c.id = :id')
+                ->setParameter('id', $id);
+        }
+
+        if ($pending) {
+            $qb->andWhere('c.pending = true');
+        }
+
+        if ($name !== null) {
+            $qb->andWhere('c.name LIKE :name')
+                ->setParameter('name', '%' . $name . '%');
+        }
+
+        return $qb->getQuery()->getResult();
         
     }
     //    /**

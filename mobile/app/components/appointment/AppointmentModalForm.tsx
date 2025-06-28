@@ -9,6 +9,7 @@ import { Feather } from "@expo/vector-icons";
 import { AppDateInput } from "../inputs/AppDateInput";
 import { AppTextField } from "../inputs/AppTextField";
 import { format } from "date-fns";
+import AppDateInputField from "../inputs/AppDataInputField";
 
 interface AppointmentModalFormProps {
   type: "create" | "update";
@@ -93,18 +94,7 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                 }))}
                 rules={{ required: "Ce champ est requis" }}
               />
-              <AppTextField
-                nameField="date"
-                label="Date"
-                placeholder="YYYY-MM-DD"
-                rules={{
-                  required: "Ce champ est requis",
-                  pattern: {
-                    value: /^\d{4}-\d{2}-\d{2}$/,
-                    message: "Format attendu : YYYY-MM-DD",
-                  },
-                }}
-              />
+              <AppDateInputField />
               <AppTextField
                 nameField="time"
                 label="Heure"

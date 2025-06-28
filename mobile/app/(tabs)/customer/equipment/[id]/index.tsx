@@ -19,11 +19,11 @@ export default function EquipmentDetails() {
       try {
         const response = await api.get(`/equipment/${id}`);
         setEquipment(response.data);
-        const typeEquipmentResponse = await api.get("/type_equipment/all");
+        const typeEquipmentResponse = await api.get("/type-equipment");
         setTypeEquipment(typeEquipmentResponse.data);
-        const brandsResponse = await api.get("/brand/all");
+        const brandsResponse = await api.get("/brand");
         setBrands(brandsResponse.data);
-        const osResponse = await api.get("/operating_system/all");
+        const osResponse = await api.get("/operating-system");
         setOs(osResponse.data);
       } catch (error) {
         console.error(

@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use ApiPlatform\OpenApi\Model\Response;
 use App\Entity\Company;
 use App\Entity\User;
+use App\Repository\CompanyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,10 +14,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[Route('/api')]
 final class CompanyController extends AbstractController
 {
     #[IsGranted("ROLE_SUPER_ADMIN")]
-    #[Route("/api/company/new", name: "app_company")]
+    #[Route("/company", name: "app_company", methods: ["POST"])]
     public function create(
         Request $request,
         EntityManagerInterface $entityManager
@@ -61,7 +64,7 @@ final class CompanyController extends AbstractController
         return $this->json($company, 201);
     }
     #[IsGranted("ROLE_ADMIN")]
-    #[Route("/api/company/{id}", name: "app_company_update", methods: ["PUT"])]
+    #[Route("/company/{id}", name: "app_company_update", methods: ["PUT"])]
     public function update(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -128,16 +131,9 @@ final class CompanyController extends AbstractController
 
         return $this->json($company, 200);
     }
+
     #[IsGranted("ROLE_SUPER_ADMIN")]
-    #[
-        Route(
-            "/api/company/{id}",
-            name: "app_company_delete",
-            methods: ["DELETE"]
-        )
-    ]
-    #[IsGranted("ROLE_SUPER_ADMIN")]
-    #[Route("/api/company/{id}/delete", name: "app_company_delete", methods: ["DELETE"])]
+    #[Route("/company/{id}", name: "app_company_delete", methods: ["DELETE"])]
     public function delete(
         EntityManagerInterface $entityManager,
         int $id
@@ -168,33 +164,6 @@ final class CompanyController extends AbstractController
             Company::SAS,
         ];
         return in_array($type, $types);
-    }
-    #[Route("/api/company/all", name: "app_company_list", methods: ["GET"])]
-    public function getList(
-        EntityManagerInterface $entityManagerInterface
-    ): JsonResponse {
-        $companies = $entityManagerInterface
-            ->getRepository(Company::class)
-            ->findAll();
-        if (!$companies) {
-            return $this->json(["error" => "No companies found"], 404);
-        }
-        $data = array_map(function (Company $company) {
-            return [
-                "id" => $company->getId(),
-                "name" => $company->getName(),
-                "about" => $company->getAbout(),
-                "type" => $company->getType(),
-                "address" => $company->getAddress(),
-                "city" => $company->getCity(),
-                "zip_code" => $company->getZipCode(),
-                "website" => $company->getWebsite(),
-                "created_at" => $company->getCreatedAt()?->format('Y-m-d\TH:i:sP'),
-                "updated_at" => $company->getUpdatedAt()?->format('Y-m-d\TH:i:sP'),
-            ];
-        }, $companies);
-    
-        return $this->json($data, 200);
     }
 
     #[Route("/api/company/{id}", name: "app_company_details", methods: ["GET"])]
@@ -238,7 +207,7 @@ final class CompanyController extends AbstractController
         return $this->json($users, 200);
     }
 
-    #[Route('/register-company', name: 'register_company', methods: ['POST'])]
+    #[Route('/company-registration', name: 'register_company', methods: ['POST'])]
     public function registerCompany(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         $payload = $request->getPayload();
@@ -339,6 +308,22 @@ final class CompanyController extends AbstractController
         }, $companies);
 
         return $this->json($data, 200);
+    }
+
+    #[Route('/company', name: 'app_company', methods: ['GET'])]
+    public function getCompanies(EntityManagerInterface $entityManagerInterface, CompanyRepository $companyRepository, Request $request): JsonResponse
+    {
+        $reqId    = $request->query->get('id');
+        $reqPending = $request->query->get('pending') === 'true';
+        $reqPage  = $request->query->get('page') ?? 1;
+        $reqSize  = $request->query->get('size') ?? 25;
+        $reqName  = $request->query->get('name');
+        $reqOrder = $request->query->get('order') ?? "ASC";
+
+        $companies = $companyRepository->getCompanies($reqId !== null ? intval($reqId) : null, $reqPending, $reqPage, $reqSize, $reqName, $reqOrder);
+
+        return $this->json($companies, 200, [], ['groups' => 'company:details']);
+
     }
 
 }

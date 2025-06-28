@@ -18,7 +18,7 @@ export const CustomerHome = () => {
     if (!sessionData) return;
     (async () => {
       try {
-        const resp = await api.get(`/equipment/customer/${sessionData.id}`);
+        const resp = await api.get(`/equipment?user_id=${sessionData.id}`);
         setEquipment(resp.data);
       } catch (error) {
         console.error(

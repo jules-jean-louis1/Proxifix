@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "proaxive",
+    "slug": "proaxive",
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
+    "platforms": ["ios","android", "web"],
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true

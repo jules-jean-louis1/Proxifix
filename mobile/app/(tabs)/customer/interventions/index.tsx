@@ -16,23 +16,23 @@ export default function InterventionsPage() {
     const [equipements, setEquipments] = useState<any>([]);
     const [company, setCompanies] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<any>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         (async() => {
             try {
                 setLoading(true);
                 setError(null);
-                const response = await api.get(`/intervention/customer/${sessionData?.id}`)
+                const response = await api.get(`/intervention?user_id=${sessionData?.id}`)
                 console.log('Interventions:', response.data);
                 setInterventions(response.data);
-                const equipementsResponse = await api.get(`/equipment/customer/${sessionData?.id}`);
+                const equipementsResponse = await api.get(`/equipment?user_id=${sessionData?.id}`);
                 setEquipments(equipementsResponse.data);
-                const companiesResponse = await api.get(`/company/all`)
+                const companiesResponse = await api.get(`/company`)
                 setCompanies(companiesResponse.data);
             } catch (error) {
                 console.error('Error fetching interventions:', error);
-                setError(error || 'Impossible to get interventions.');
+                setError('Impossible de récupérer les interventions.');
             } finally {
                 setLoading(false);
             }
