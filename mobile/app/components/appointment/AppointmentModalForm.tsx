@@ -9,7 +9,7 @@ import { Feather } from "@expo/vector-icons";
 import { AppDateInput } from "../inputs/AppDateInput";
 import { AppTextField } from "../inputs/AppTextField";
 import { format } from "date-fns";
-import AppDateInputField from "../inputs/AppDataInputField";
+import { AppDateInputField } from "../inputs/AppDateInputField";
 
 interface AppointmentModalFormProps {
   type: "create" | "update";
@@ -69,18 +69,18 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
         }}
       >
         <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                style={{
-                  padding: 10,
-                  borderRadius: 50,
-                  backgroundColor: "#F0F3F4",
-                }}
-              >
-                <Feather name="x" size={24} color={"#000"} />
-              </TouchableOpacity>
-            </View>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={{
+                padding: 10,
+                borderRadius: 50,
+                backgroundColor: "#F0F3F4",
+              }}
+            >
+              <Feather name="x" size={24} color={"#000"} />
+            </TouchableOpacity>
+          </View>
           <View style={styles.modalContent}>
             <Text>Ajouter un rendez-vous</Text>
             <FormProvider {...methods}>
@@ -94,7 +94,15 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                 }))}
                 rules={{ required: "Ce champ est requis" }}
               />
-              <AppDateInputField />
+              <AppDateInputField
+                nameField="date"
+                label="Date de l'intervention"
+                defaultValue={
+                  intervention?.date ? new Date(intervention.date) : new Date()
+                }
+                placeholder="Sélectionner une date"
+                rules={{ required: "Ce champ est requis" }}
+              />
               <AppTextField
                 nameField="time"
                 label="Heure"
