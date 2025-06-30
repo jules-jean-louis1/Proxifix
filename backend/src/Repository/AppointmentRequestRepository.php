@@ -35,19 +35,17 @@ class AppointmentRequestRepository extends ServiceEntityRepository
     }
 
     public function getAppointements(
-        int $companyId,
         int $page,
         int $size,
         ?int $userId = null,
         ?int $appointementId = null,
         ?string $status = null,
         ?DateTime $date = null,
-        ?string $order = null
+        ?string $order = null,
+        ?int $companyId = null
     ): array {
         $offset = ($page - 1) * $size;
-        $query  = $this->createQueryBuilder('a')
-            ->andWhere('a.company = :company_id')
-            ->setParameter('company_id', $companyId);
+        $query  = $this->createQueryBuilder('a');
 
         if ($order !== null) {
             $query->orderBy('a.created_at', $order);
@@ -72,6 +70,11 @@ class AppointmentRequestRepository extends ServiceEntityRepository
             $query->andWhere('a.user = :user_id')
                 ->setParameter('user_id', $userId);
         }
+        if ($companyId !== null) {
+            $query->andWhere('a.company = :company_id')
+                ->setParameter('company_id', $companyId);
+        }
+
         return $query->getQuery()->getResult();
     }
 

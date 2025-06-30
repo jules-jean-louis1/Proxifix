@@ -143,4 +143,11 @@ class EquipmentController extends AbstractController
 
         return $this->json($equipments, 200, [], ['groups' => 'equipment:details']);
     }
+
+    #[Route('/equipment/{id}', name: 'app_equipment_get_one', methods: ['GET'])]
+    public function getOneEquipment(int $id, EntityManagerInterface $em) {
+        $equipment = $em->getRepository(Equipment::class)->findOneBy(['id' => $id]);
+
+        return $this->json($equipment, 200, [], ['groups' => 'equipment:details']);
+    }
 }

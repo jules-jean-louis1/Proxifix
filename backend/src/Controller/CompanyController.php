@@ -311,7 +311,7 @@ final class CompanyController extends AbstractController
     }
 
     #[Route('/company', name: 'app_company', methods: ['GET'])]
-    public function getCompanies(EntityManagerInterface $entityManagerInterface, CompanyRepository $companyRepository, Request $request): JsonResponse
+    public function getCompanies(CompanyRepository $companyRepository, Request $request): JsonResponse
     {
         $reqId    = $request->query->get('id');
         $reqPending = $request->query->get('pending') === 'true';
@@ -322,7 +322,7 @@ final class CompanyController extends AbstractController
 
         $companies = $companyRepository->getCompanies($reqId !== null ? intval($reqId) : null, $reqPending, $reqPage, $reqSize, $reqName, $reqOrder);
 
-        return $this->json($companies, 200, [], ['groups' => 'company:details']);
+        return $this->json($companies, 200, [], ['groups' => 'company:read']);
 
     }
 

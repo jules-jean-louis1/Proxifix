@@ -36,6 +36,7 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
 
   const companyId = methods.getValues().company_id;
   const date = methods.getValues().date;
+  console.log("equipements:", equipments);
 
   useEffect(() => {
     (async () => {
@@ -104,18 +105,6 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                 rules={{ required: "Ce champ est requis" }}
               />
               <AppTextField
-                nameField="time"
-                label="Heure"
-                placeholder="HH:MM"
-                rules={{
-                  required: "Ce champ est requis",
-                  pattern: {
-                    value: /^\d{2}:\d{2}$/,
-                    message: "Format attendu : HH:MM",
-                  },
-                }}
-              />
-              <AppTextField
                 nameField="title"
                 label="Titre"
                 defaultValue={intervention?.title}
@@ -153,7 +142,7 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                   try {
                     if (type === "create") {
                       console.log("Creating appointment with data:", data);
-                      await api.post("/appointment/customer/new", data);
+                      await api.post("/appointment", data);
                     } else {
                       await api.put(`/appointment/${intervention?.id}`, data);
                     }

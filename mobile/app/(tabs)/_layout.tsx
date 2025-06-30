@@ -23,9 +23,9 @@ export default function MainLayout() {
 
   return (
     <Stack>
-      {!isAdmin && <Stack.Screen name="customer" />}
+      {!isAdmin && <Stack.Screen name="customer" options={{ headerShown: false }} />}
 
-      {isAdmin && <Stack.Screen name="admin" />}
+      {isAdmin && <Stack.Screen name="admin" options={{ headerShown: false }} />}
     </Stack>
   );
 }

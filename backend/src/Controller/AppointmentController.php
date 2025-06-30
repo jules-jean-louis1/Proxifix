@@ -26,36 +26,26 @@ final class AppointmentController extends AbstractController
     #[Route('/appointment', name: 'get_appointment', methods: ['GET'])]
     public function getAppointment(Request $request, AppointmentRequestRepository $appointmentRequestRepository, EntityManagerInterface $em): JsonResponse
     {
-        $userIdRequest        = $request->query->get('user-id');
-        $appointmentIdRequest = $request->query->get('appointment-id');
+        $userIdRequest        = $request->query->get('user_id');
+        $appointmentIdRequest = $request->query->get('appointment_id');
         $statusRequest        = $request->query->get('status');
         $pageRequest          = $request->query->get('page') ?? 1;
         $sizeRequest          = $request->query->get('size') ?? 50;
         $dateRequest          = $request->query->get('date');
         $orderRequest         = $request->query->get('order') ?? 'ASC';
+        $companyIdRequest     = $request->query->get('company_id');
 
-        $user = $this->getUser();
-        if (! $user instanceof User) {
-            return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
-        }
-        $userId = $user->getId();
-        $user   = $em->getRepository(User::class)->find($userId);
-        if (! $user) {
-            return $this->json(['error' => 'User not found'], Response::HTTP_BAD_REQUEST);
-        }
-        if (! $user->getCompany()) {
-            return $this->json(['error' => 'Invalid company'], Response::HTTP_UNAUTHORIZED);
-        }
-        $company = $em->getRepository(Company::class)->find($user->getCompany()->getId());
-        if (! $company) {
-            return $this->json(['error' => 'Invalid company'], Response::HTTP_UNAUTHORIZED);
-        }
+        // $user = $this->getUser();
+        // if (! $user instanceof User) {
+        //     return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
+        // }
+        // $userId = $user->getId();
+        // $user   = $em->getRepository(User::class)->find($userId);
+        // if (! $user) {
+        //     return $this->json(['error' => 'User not found'], Response::HTTP_BAD_REQUEST);
+        // }
 
-        $appointments = $appointmentRequestRepository->getAppointements($company->getId(), $pageRequest, $sizeRequest, $userIdRequest, $appointmentIdRequest, $statusRequest, $dateRequest, $orderRequest);
-
-        if (empty($appointments)) {
-            return $this->json(['message' => 'No appointments found'], Response::HTTP_NO_CONTENT);
-        }
+        $appointments = $appointmentRequestRepository->getAppointements($pageRequest, $sizeRequest, $userIdRequest, $appointmentIdRequest, $statusRequest, $dateRequest, $orderRequest, $companyIdRequest);
 
         $data = array_map(function ($appointment) {
             return [
@@ -75,6 +65,7 @@ final class AppointmentController extends AbstractController
 
         return $this->json($data, Response::HTTP_OK);
     }
+    
     #[Route('/appointment/free-slots', name: 'get_available_slots', methods: ['GET'])]
     public function getAvailableSlots(Request $req, InterventionRepository $interventionRepository): JsonResponse
     {
@@ -120,7 +111,10 @@ final class AppointmentController extends AbstractController
         $appointmentRequest->setTitle($payload['title'] ?? null);
         $appointmentRequest->setDescription($payload['description'] ?? null);
         $appointmentRequest->setEquipment($payload['equipment_id'] ? $em->getRepository(Equipment::class)->find($payload['equipment_id']) : null);
-        $appointmentRequest->setTypeIntervention($em->getRepository(TypeIntervention::class)->find($payload['type_intervention_id']) ?? null);
+
+        if (isset($payload['type_intervention_id'])) {
+            $appointmentRequest->setTypeIntervention($em->getRepository(TypeIntervention::class)->find($payload['type_intervention_id']));
+        }
 
         $em->persist($appointmentRequest);
         $em->flush();
