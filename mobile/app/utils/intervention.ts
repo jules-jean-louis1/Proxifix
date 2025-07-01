@@ -38,3 +38,27 @@ export const getStatusInterventionCard = (intervention: any): string => {
   });
   return getNewest[0].status.name;
 };
+
+export enum Appointment_Status {
+  "pending" = "pending",
+  "accepted" = "accepted",
+  "rejected" = "rejected",
+}
+export const APPOINTMENT_STATUS = {
+  PENDING: Appointment_Status.pending,
+  ACCEPTED: Appointment_Status.accepted,
+  REJECTED: Appointment_Status.rejected,
+} as const;
+
+const getStatusAppointmentCard = (status: string):string => {
+  switch (status) {
+    case APPOINTMENT_STATUS.PENDING:
+      return "En attente";
+    case APPOINTMENT_STATUS.ACCEPTED:
+      return "Accepté";
+    case APPOINTMENT_STATUS.REJECTED:
+      return "Rejeté";
+    default:
+      return "Statut inconnu";
+  }
+}

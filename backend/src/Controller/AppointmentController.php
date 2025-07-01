@@ -26,6 +26,7 @@ final class AppointmentController extends AbstractController
     #[Route('/appointment', name: 'get_appointment', methods: ['GET'])]
     public function getAppointment(Request $request, AppointmentRequestRepository $appointmentRequestRepository, EntityManagerInterface $em): JsonResponse
     {
+        $idRequest            = $request->query->get('id');
         $userIdRequest        = $request->query->get('user_id');
         $appointmentIdRequest = $request->query->get('appointment_id');
         $statusRequest        = $request->query->get('status');
@@ -45,7 +46,7 @@ final class AppointmentController extends AbstractController
         //     return $this->json(['error' => 'User not found'], Response::HTTP_BAD_REQUEST);
         // }
 
-        $appointments = $appointmentRequestRepository->getAppointements($pageRequest, $sizeRequest, $userIdRequest, $appointmentIdRequest, $statusRequest, $dateRequest, $orderRequest, $companyIdRequest);
+        $appointments = $appointmentRequestRepository->getAppointements($pageRequest, $sizeRequest, $userIdRequest, $appointmentIdRequest, $statusRequest, $dateRequest, $orderRequest, $companyIdRequest, $idRequest);
 
         $data = array_map(function ($appointment) {
             return [
@@ -54,18 +55,18 @@ final class AppointmentController extends AbstractController
                 'title'             => $appointment->getTitle(),
                 'description'       => $appointment->getDescription(),
                 'type_intervention' => $appointment->getTypeIntervention() ? $appointment->getTypeIntervention()->getName() : null,
-                'equipment'         => $appointment->getEquipment() ? $appointment->getEquipment()->getName() : null,
+                'equipment'         => $appointment->getEquipment() ? ['name' => $appointment->getEquipment()->getName(), 'id' => $appointment->getEquipment()->getId()] : null,
                 'created_at'        => $appointment->getCreatedAt()->format('Y-m-d H:i:s'),
                 'updated_at'        => $appointment->getUpdatedAt() ? $appointment->getUpdatedAt()->format('Y-m-d H:i:s') : null,
                 'status'            => $appointment->getStatus(),
-                'company'           => $appointment->getCompany() ? $appointment->getCompany()->getName() : null,
+                'company'           => $appointment->getCompany() ? ['name' => $appointment->getCompany()->getName(), 'id' => $appointment->getCompany()->getId()] : null,
                 'user'              => $appointment->getUser() ? [$appointment->getUser()->getId(), $appointment->getUser()->getFirstName(), $appointment->getUser()->getLastName(), $appointment->getUser()->getEmail()] : null,
             ];
         }, $appointments);
 
         return $this->json($data, Response::HTTP_OK);
     }
-    
+
     #[Route('/appointment/free-slots', name: 'get_available_slots', methods: ['GET'])]
     public function getAvailableSlots(Request $req, InterventionRepository $interventionRepository): JsonResponse
     {
@@ -217,7 +218,7 @@ final class AppointmentController extends AbstractController
         }
     }
 
-    #[Route('/appointment/{id}', name: 'edit_appointment_for_customer', methods: ['PATCH'])]
+    #[Route('/appointment/{id}', name: 'edit_appointment_for_customer', methods: ['PUT'])]
     public function editAppointment(int $id, Request $request, EntityManagerInterface $em, InterventionRepository $interventionRepository): JsonResponse
     {
         $appointment = $em->getRepository(AppointmentRequest::class)->find($id);
@@ -230,17 +231,17 @@ final class AppointmentController extends AbstractController
             return $this->json(['error' => "Cannot edit an appointment who's has been accepted"]);
         }
         $payload = $request->toArray();
-        if (isset($payload['date'])) {
+        if (!isset($payload['date'])) {
             return $this->json(["errors" => "missing fields"], Response::HTTP_BAD_REQUEST);
         }
 
-        if (isset($payload['company_id'])) {
-            $company = $em->getRepository(Company::class)->find($payload['company_id']);
-            if (! $company) {
-                return $this->json(["errors" => "Company does not exist"], Response::HTTP_NOT_FOUND);
-            }
-            $appointment->setCompany($company);
+
+        $company = $em->getRepository(Company::class)->find($payload['company_id']);
+        if (! $company) {
+            return $this->json(["errors" => "Company does not exist"], Response::HTTP_NOT_FOUND);
         }
+        $appointment->setCompany($company);
+        
 
         if (isset($payload['status']) && ($payload['status'] !== AppointmentRequest::PENDING)) {
             return $this->insertAppointmentToIntervention($request, $em, $interventionRepository, $appointment, $payload['status']);

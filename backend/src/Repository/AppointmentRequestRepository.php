@@ -42,7 +42,8 @@ class AppointmentRequestRepository extends ServiceEntityRepository
         ?string $status = null,
         ?DateTime $date = null,
         ?string $order = null,
-        ?int $companyId = null
+        ?int $companyId = null,
+        ?int $id = null
     ): array {
         $offset = ($page - 1) * $size;
         $query  = $this->createQueryBuilder('a');
@@ -53,6 +54,11 @@ class AppointmentRequestRepository extends ServiceEntityRepository
 
         $query->setFirstResult($offset)
             ->setMaxResults($size);
+
+        if ($id !== null) {
+            $query->andWhere('a.id = :id')
+                ->setParameter('id', $id);
+        }
 
         if ($appointementId !== null) {
             $query->andWhere('a.id = :appointment_id')

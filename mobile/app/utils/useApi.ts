@@ -19,7 +19,7 @@ api.interceptors.request.use(
   (config) => {
     if (currentToken) {
       config.headers.Authorization = `Bearer ${currentToken}`;
-      console.log("➡️ Using token:", currentToken);
+      // console.log("➡️ Using token:", currentToken);
     }
     return config;
   },
