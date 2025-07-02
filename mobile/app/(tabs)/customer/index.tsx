@@ -1,6 +1,6 @@
 import { useSessionContext } from "@/app/context/useSessionContext";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Image, Pressable } from "react-native";
+import { View, StyleSheet, Image, Pressable, ScrollView } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { useApi } from "@/app/utils/useApi";
 import { Feather } from "@expo/vector-icons";
@@ -30,84 +30,95 @@ export const CustomerHome = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <ToolBarCustomer />
-      <View
-        style={{
-          marginTop: 5,
-          justifyContent: "flex-start",
-          alignItems: "flex-start",
-          width: "90%",
-        }}
-      >
-        <Text variant="titleLarge" style={styles.textTitle}>
-          Bonjour {sessionData?.first_name} {sessionData?.last_name}
-        </Text>
-        <Text variant="bodyMedium" style={styles.textSubTitle}>
-          Bienvenue sur votre compte client en ligne
-        </Text>
-      </View>
-      <View style={styles.interventionBlock}>
-        <Pressable style={styles.button} onPress={() => router.push("/customer/interventions")}>
-          <Image
-            source={require("../../assets/images/tool_test 1.png")}
-            style={styles.icon}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>INTERVENTIONS</Text>
-            <View style={styles.row}>
-              <Text style={styles.subTitle}>
-                Ajouter ou consulter mes interventions
-              </Text>
-              <Feather name="chevron-right" size={20} color="#fff" />
+    <View style={{ flex: 1 }}>
+      <ToolBarCustomer
+        rightContent={
+          <Pressable
+            onPress={() => {
+              router.push("/customer/profil");
+            }}
+          >
+            <Feather name="user" size={24} color="#344260" />
+          </Pressable>
+        }
+      />
+      <ScrollView>
+        <View style={styles.container}>
+          <Text variant="titleLarge" style={styles.textTitle}>
+            Bonjour {sessionData?.first_name} {sessionData?.last_name}
+          </Text>
+          <View style={styles.interventionBlock}>
+            <Pressable
+              style={styles.button}
+              onPress={() => router.push("/customer/interventions")}
+            >
+              <Image
+                source={require("../../assets/images/tool_test 1.png")}
+                style={styles.icon}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.title}>INTERVENTIONS</Text>
+                <View style={styles.row}>
+                  <Text style={styles.subTitle}>
+                    Ajouter ou consulter mes interventions
+                  </Text>
+                  <Feather name="chevron-right" size={20} color="#fff" />
+                </View>
+              </View>
+            </Pressable>
+            <View style={styles.rowButtons}>
+              <Button
+                mode="outlined"
+                icon={() => <Feather name="calendar" size={20} color="#000" />}
+                onPress={() => {}}
+                style={styles.buttonUnder}
+                labelStyle={styles.label}
+                contentStyle={styles.contentUnder}
+              >
+                Calendrier
+              </Button>
+              <View style={styles.verticalDivider} />
+              <Button
+                mode="outlined"
+                icon={() => <Feather name="clock" size={20} color="#000" />}
+                onPress={() => {}}
+                style={styles.buttonUnder}
+                labelStyle={styles.label}
+                contentStyle={styles.contentUnder}
+              >
+                Historique
+              </Button>
             </View>
           </View>
-        </Pressable>
-        <View style={styles.rowButtons}>
-          <Button
-            mode="outlined"
-            icon={() => <Feather name="calendar" size={20} color="#000" />}
-            onPress={() => {}}
-            style={styles.buttonUnder}
-            labelStyle={styles.label}
-            contentStyle={styles.contentUnder}
-          >
-            Calendrier
-          </Button>
-          <View style={styles.verticalDivider} />
-          <Button
-            mode="outlined"
-            icon={() => <Feather name="clock" size={20} color="#000" />}
-            onPress={() => {}}
-            style={styles.buttonUnder}
-            labelStyle={styles.label}
-            contentStyle={styles.contentUnder}
-          >
-            Historique
-          </Button>
+          <View style={styles.rowButtonsSide}>
+            <Pressable
+              style={styles.buttonSide}
+              onPress={() => router.push("/customer/equipments")}
+            >
+              <Image
+                source={require("../../assets/images/equipment.png")}
+                style={styles.iconSide}
+              />
+              <Text variant="titleLarge" style={styles.titleSide}>
+                EQUIPEMENTS
+              </Text>
+            </Pressable>
+            <Pressable
+              style={styles.buttonSide}
+              onPress={() => router.push("/customer/profil")}
+            >
+              <Image
+                source={require("../../assets/images/settings.png")}
+                style={styles.iconSide}
+              />
+              <Text variant="titleLarge" style={styles.titleSide}>
+                PROFIL
+              </Text>
+            </Pressable>
+          </View>
+          <EquipmentCardHome equipment={equipment} />
         </View>
-      </View>
-      <View style={styles.rowButtonsSide}>
-        <Pressable style={styles.buttonSide} onPress={() => router.push("/customer/equipments")}>
-          <Image
-            source={require("../../assets/images/equipment.png")}
-            style={styles.iconSide}
-          />
-          <Text variant="titleLarge" style={styles.titleSide}>
-            EQUIPEMENTS
-          </Text>
-        </Pressable>
-        <Pressable style={styles.buttonSide} onPress={() => router.push("/customer/profil")}>
-          <Image
-            source={require("../../assets/images/settings.png")}
-            style={styles.iconSide}
-          />
-          <Text variant="titleLarge" style={styles.titleSide}>
-            PROFIL
-          </Text>
-        </Pressable>
-      </View>
-      <EquipmentCardHome equipment={equipment} />
+      </ScrollView>
     </View>
   );
 };
@@ -116,7 +127,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    backgroundColor: "#FFFFFF"
+    backgroundColor: "#FFFFFF",
+    marginBottom: 50,
   },
   text: {
     color: "#000",
@@ -126,6 +138,8 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "bold",
     marginBottom: 10,
+    width: "90%",
+    alignSelf: "center",
   },
   textSubTitle: {
     color: "#364A63",

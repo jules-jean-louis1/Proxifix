@@ -3,6 +3,7 @@ import {
   FlatList,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -21,6 +22,7 @@ import { AppSelectInput } from "@/app/components/inputs/AppSelectInput";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { EquipmentModalForm } from "@/app/components/equipment/EquipmentModalForm";
+import { FAB } from "react-native-paper";
 
 const EquipmentsPage = () => {
   const [equipments, setEquipments] = useState<
@@ -35,13 +37,10 @@ const EquipmentsPage = () => {
   const sessionData = sessionCtx?.session;
   const api = useApi();
 
-
   useEffect(() => {
     (async () => {
       try {
-        const response = await api.get(
-          `/equipment?user_id=${sessionData?.id}`
-        );
+        const response = await api.get(`/equipment?user_id=${sessionData?.id}`);
         setEquipments(response.data);
         const typeEquipmentResponse = await api.get("/type-equipment");
         setTypeEquipment(typeEquipmentResponse.data);
@@ -80,46 +79,65 @@ const EquipmentsPage = () => {
       </View>
     );
   }
+  if (equipments.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.loadingText}>Aucun équipement trouvé.</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tous mes équipements</Text>
+      <ScrollView>
+        <FlatList
+          data={equipments}
+          keyExtractor={(item) => item.id!.toString()}
+          renderItem={({ item }) => (
+            <Pressable
+              style={styles.equipmentItem}
+              onPress={() => {
+                router.push(`/customer/equipment/${item.id}`);
+              }}
+            >
+              <Text style={styles.equipmentName}>{item.name}</Text>
+              <Text style={styles.equipmentBrand}>{item.brand?.name}</Text>
+              <Text style={styles.equipmentOS}>
+                {item.operating_system?.name}
+              </Text>
+              <Text style={styles.equipmentType}>
+                {item.type_equipment?.name}
+              </Text>
+              <Text style={styles.equipmentDate}>
+                {format(new Date(item.created_at!), "dd MMMM yyyy à HH:mm", {
+                  locale: fr,
+                })}
+              </Text>
+            </Pressable>
+          )}
+        />
+      </ScrollView>
       <EquipmentModalForm
-          type="create"
-          brands={brands}
-          typeEquipment={typeEquipment}
-          os={os}
-          setEquipments={setEquipments}
-          />
-      {equipments.length === 0 && (
-        <Text style={styles.loadingText}>Aucun équipement trouvé.</Text>
-      )}
-      <FlatList
-        data={equipments}
-        keyExtractor={(item) => item.id!.toString()}
-        renderItem={({ item }) => (
-          <Pressable style={styles.equipmentItem} onPress={() => {router.push(`/customer/equipment/${item.id}`)}}>
-            <Text style={styles.equipmentName}>{item.name}</Text>
-            <Text style={styles.equipmentBrand}>{item.brand?.name}</Text>
-            <Text style={styles.equipmentOS}>
-              {item.operating_system?.name}
-            </Text>
-            <Text style={styles.equipmentType}>
-              {item.type_equipment?.name}
-            </Text>
-            <Text style={styles.equipmentDate}>
-              {format(new Date(item.created_at!), "dd MMMM yyyy à HH:mm", {
-                locale: fr,
-              })}
-            </Text>
-          </Pressable>
-        )}
+        type="create"
+        brands={brands}
+        typeEquipment={typeEquipment}
+        os={os}
+        setEquipments={setEquipments}
+        button={
+          <FAB icon="plus" style={styles.fab} label="Ajouter un équipement" />
+        }
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  fab: {
+    position: "absolute",
+    margin: 0,
+    right: 0,
+    bottom: 55,
+  },
   container: {
     flex: 1,
     padding: 16,

@@ -15,6 +15,8 @@ interface EquipmentModalFormProps {
   typeEquipment?: any[];
   os?: any[];
   setEquipments?: (equipment: any) => void;
+  button?: React.ReactElement;
+  onSuccess?: () => void;
 }
 export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
   type,
@@ -23,6 +25,8 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
   brands,
   typeEquipment,
   os,
+  button,
+  onSuccess = () => {},
 }) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const methods = useForm();
@@ -79,14 +83,13 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
 
   return (
     <View>
-      <AppButton
-        type="primary"
-        children={type === "create" ? "Ajouter un équipement" : "Modifier"}
-        onPress={() => {
-          setModalVisible(true);
-        }}
-      />
-
+      {button && (
+        React.cloneElement(button, {
+          onPress: () => {
+            setModalVisible(true);
+          },
+        })
+      )}
       <Modal
         animationType="slide"
         visible={modalVisible}

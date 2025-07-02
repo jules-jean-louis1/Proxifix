@@ -6,7 +6,7 @@ import TabBar from "@/app/components/navigation/TabBar";
 
 export default function CustomerLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "#01358D" }} tabBar={(props) => <TabBar />}>
+    <Tabs screenOptions={{ tabBarActiveTintColor: "#01358D", headerShown: false }} tabBar={(props) => <TabBar />}>
       <Tabs.Screen
         name="index"
         options={{
@@ -20,6 +20,7 @@ export default function CustomerLayout() {
       <Tabs.Screen
         name="interventions/index"
         options={{
+          headerShown: false,
           title: "Interventions",
           tabBarIcon: ({ color }) => (
             <Feather name="list" size={16} color={color} />

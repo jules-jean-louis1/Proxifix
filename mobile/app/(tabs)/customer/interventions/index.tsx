@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, FlatList, ScrollView, ActivityIndicator } from "react-native";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { Feather } from "@expo/vector-icons";
+import {
+  View,
+  StyleSheet,
+  Text,
+  FlatList,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { useApi } from "@/app/utils/useApi";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import { AppointmentModalForm } from "@/app/components/appointment/AppointmentModalForm";
 import { AppointmentCard } from "@/app/components/appointment/AppointmentCard";
 import { InterventionCard } from "@/app/components/intervention/InterventionCard";
-import { MD2Colors } from "react-native-paper";
+import { FAB, MD2Colors } from "react-native-paper";
+import { useRouter } from "expo-router";
+import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
 
 export default function InterventionsPage() {
   const api = useApi();
+  const router = useRouter();
   const sessionCtx = useSessionContext();
   const sessionData = sessionCtx?.session;
   const [interventions, setInterventions] = useState<any>([]);
@@ -33,7 +40,7 @@ export default function InterventionsPage() {
           `/appointment?user_id=${sessionData?.id}`
         );
         setAppointments(appointmentsResponse.data);
-        setFetchData(false)
+        setFetchData(false);
       } catch (error) {
         console.error("Error fetching interventions:", error);
         setError("Impossible de récupérer les interventions.");
@@ -60,29 +67,23 @@ export default function InterventionsPage() {
   }
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <AppointmentModalForm
-            type="create"
-            externalButton={true}
-            title="Créer une intervention"
-            onSuccess={() => setFetchData(!fetchData)}
-          />
-          <Text style={styles.title}>Liste des interventions</Text>
-          <Text style={styles.description}>
-            {interventions.length} intervention
-            {interventions.length > 1 ? "s" : ""} enregistrée
-            {interventions.length > 1 ? "s" : ""}.
-          </Text>
-        </View>
+    <View style={{ flex: 1 }}>
+      <ToolBarCustomer title="Mes interventions" />
+      <ScrollView style={styles.container}>
+        <Text style={styles.dateText}>
+          {interventions.length} intervention
+          {interventions.length > 1 ? "s" : ""} enregistrée
+          {interventions.length > 1 ? "s" : ""}.
+        </Text>
         <View style={styles.listContainer}>
           {interventions && interventions.length !== 0 ? (
             interventions.map((intervention: any) => (
               <InterventionCard
                 key={intervention.id}
                 intervention={intervention}
-                onPress={() => {}}
+                onPress={() => {
+                  router.push(`/customer/intervention/${intervention.id}`);
+                }}
               />
             ))
           ) : (
@@ -90,7 +91,10 @@ export default function InterventionsPage() {
           )}
         </View>
         {appointments && appointments.length !== 0 && (
-          <View style={styles.listContainer}>
+          <View style={styles.listContainerAppointments}>
+            <Text style={styles.dateText}>
+              Demande de rendez-vous
+            </Text>
             {appointments.map((appointment: any) => (
               <AppointmentCard
                 key={appointment.id}
@@ -102,8 +106,15 @@ export default function InterventionsPage() {
             ))}
           </View>
         )}
+      </ScrollView>
+      <View pointerEvents="box-none" style={styles.fabContainer}>
+        <AppointmentModalForm
+          type="create"
+          onSuccess={() => setFetchData(!fetchData)}
+          button={<FAB icon="plus" style={styles.fab} />}
+        />
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -112,10 +123,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F0F3F4",
     padding: 16,
-  },
-  header: {
-    alignItems: "center",
-    marginBottom: 20,
   },
   title: {
     fontSize: 24,
@@ -128,13 +135,16 @@ const styles = StyleSheet.create({
     color: "#5B6880",
   },
   listContainer: {
-    flex: 1,
     marginBottom: 20,
   },
+  listContainerAppointments: {
+    marginBottom: 150,
+  },
   dateText: {
-    fontSize: 13,
-    color: "#4BC0C0",
+    fontSize: 15,
+    color: "#344260",
     fontWeight: "bold",
+    marginBottom: 10,
   },
   icon: {
     paddingLeft: 5,
@@ -168,5 +178,16 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 18,
     textAlign: "center",
+  },
+  fabContainer: {
+    position: "absolute",
+    right: 0,
+    bottom: 60,
+    width: "100%",
+    alignItems: "flex-end",
+    zIndex: 100,
+  },
+  fab: {
+    margin: 16,
   },
 });

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { Children, FC, useEffect, useState } from "react";
 import { Modal, View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { AppButton } from "../buttons/AppButton";
 import { Form, FormProvider, useForm } from "react-hook-form";
@@ -16,16 +16,14 @@ import { APPOINTMENT_STATUS } from "@/app/utils/intervention";
 interface AppointmentModalFormProps {
   type: "create" | "update";
   id?: any;
-  externalButton?: boolean;
-  title?: string;
+  button?: React.ReactElement;
   onSuccess?: () => void;
 }
 
 export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
   type,
   id,
-  externalButton = false,
-  title,
+  button,
   onSuccess = () => {},
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -83,7 +81,10 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
       if (type === "create") {
         // console.log("Creating appointment with data:", data);
         await api.post("/appointment", data);
-      } else if (type === "update" && appointment.status === APPOINTMENT_STATUS.PENDING) {
+      } else if (
+        type === "update" &&
+        appointment.status === APPOINTMENT_STATUS.PENDING
+      ) {
         // console.log("Updating appointment with data:", data);
         await api.put(`/appointment/${appointment?.id}`, data);
       }
@@ -105,24 +106,10 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
 
   return (
     <View>
-      {externalButton ? (
-        <AppButton
-          type="primary"
-          children={title}
-          onPress={() => {
-            setModalVisible(true);
-          }}
-        />
-      ) : (
-        <TouchableOpacity
-          onPress={() => {
-            setModalVisible(true);
-          }}
-          style={{ padding: 10, backgroundColor: "#008062", borderRadius: 5 }}
-        >
-          <Text style={{ color: "#fff" }}>{title}</Text>
-        </TouchableOpacity>
-      )}
+      {button &&
+        React.cloneElement(button, {
+          onPress: () => setModalVisible(true),
+        })}
 
       <Modal
         animationType="slide"
@@ -143,18 +130,17 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
             >
               <Feather name="x" size={24} color={"#000"} />
             </TouchableOpacity>
-          </View>
-          <View style={styles.modalContent}>
             <Text style={styles.title}>
               {type === "create"
                 ? "Créer un rendez-vous"
                 : "Modifier un rendez-vous"}
             </Text>
+            <View style={{ width: 24 }}></View>
+          </View>
+          <View style={styles.modalContent}>
             <FormProvider {...methods}>
               <AppSelectInput
                 nameField="company_id"
-                label="Choisir une entreprise"
-                placeholder="Sélectionner une entreprise"
                 defaultValue={appointment?.company?.id}
                 options={companies!.map((company: any) => ({
                   label: company.name,
@@ -186,8 +172,6 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
               />
               <AppSelectInput
                 nameField="equipment_id"
-                label="Choisir un équipement"
-                placeholder="Sélectionner un équipement"
                 defaultValue={appointment?.equipment?.id}
                 options={equipments!.map((equipment: any) => ({
                   label: equipment.name,
@@ -197,12 +181,22 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
               />
               {appointment &&
                 type === "update" &&
-                appointment.status === "pending" && (
+                appointment.status === APPOINTMENT_STATUS.PENDING && (
                   <AppButton
                     type="secondary"
                     children="Supprimer"
                     onPress={async () => {
                       await api.delete(`/appointment/${id}`);
+                      setModalVisible(false);
+                      methods.reset();
+                    }}
+                  />
+                )}
+                {type === "create" && (
+                  <AppButton
+                    type="secondary"
+                    children="Annuler"
+                    onPress={() => {
                       setModalVisible(false);
                       methods.reset();
                     }}
@@ -229,7 +223,8 @@ const styles = StyleSheet.create({
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 16,
+    alignItems: "center",
+    padding: 12,
   },
   modalContent: {
     flex: 1,
@@ -237,8 +232,7 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: "center",
-    fontSize: 24,
-    marginBottom: 20,
+    fontSize: 18,
     color: "#344260",
   },
 });

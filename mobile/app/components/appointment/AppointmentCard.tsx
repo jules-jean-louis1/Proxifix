@@ -30,8 +30,11 @@ export const AppointmentCard: FC<{
           <AppointmentModalForm
             type="update"
             id={appointment.id}
-            externalButton={false}
-            title="Modifier"
+            button={
+              <TouchableOpacity>
+                <Text style={styles.companyName}>Modifier</Text>
+              </TouchableOpacity>
+            }
           />
         )}
       </Card.Actions>

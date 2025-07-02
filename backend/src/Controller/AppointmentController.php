@@ -297,7 +297,19 @@ final class AppointmentController extends AbstractController
     #[Route('/appointment/{id}', name: 'get_one_appointment', methods: ['GET'])]
     public function getOneAppointment(int $id, EntityManagerInterface $em)
     {
+        $user = $this->getUser();
+        if (! $user instanceof User) {
+            return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
+        }
+        $userId = $user->getId();
+
         $appointment = $em->getRepository(AppointmentRequest::class)->find($id);
+
+        if ($user->getRoles() === ['ROLE_CUSTOMER']) {
+            if ($appointment->getUser()->getId() !== $userId) {
+                return $this->json(["error" => "Access denied"], Response::HTTP_FORBIDDEN);
+            }
+        }
 
         if (! $appointment) {
             return $this->json(["error" => "Appointment not found."], Response::HTTP_NOT_FOUND);
