@@ -59,8 +59,8 @@ final class CompanyController extends AbstractController
         $company->setOpenHours($data["open_hours"] ?? "");
 
         // Specializations
-        if (isset($data['specialization'])) {
-            $specializations = $data['specialization'];
+        if (isset($data['Specialization'])) {
+            $specializations = $data['Specialization'];
             error_log("Specializations received: " . json_encode($specializations));
             if (is_array($specializations)) {
                 foreach ($specializations as $spec) {

@@ -73,7 +73,7 @@ class Company
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'company')]
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'company', onDelete: 'SET NULL')]
     private Collection $users;
 
     /**
@@ -133,6 +133,9 @@ class Company
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(["company:read", "company:get_list"])]
     private ?string $mobile = null;
+
+    #[ORM\Column(options: ['default' => false])]
+    private ?bool $is_delete = null;
 
     public function __construct()
     {
@@ -536,6 +539,18 @@ class Company
     public function setMobile(?string $mobile): static
     {
         $this->mobile = $mobile;
+
+        return $this;
+    }
+
+    public function isDelete(): ?bool
+    {
+        return $this->is_delete;
+    }
+
+    public function setIsDelete(bool $is_delete): static
+    {
+        $this->is_delete = $is_delete;
 
         return $this;
     }

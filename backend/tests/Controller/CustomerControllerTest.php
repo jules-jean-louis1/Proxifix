@@ -13,4 +13,17 @@ final class CustomerControllerTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
     }
+    public function testLogin(): void
+    {
+        $client = static::createClient();
+        $client->request('POST', '/api/auth/login', [
+        'headers' => ['Content-Type' => 'application/json'],
+            'json' => [
+                'email' => 'customer@test.com',
+                'password' => 'customerpass',
+            ],
+        ]);
+
+        $this->assertResponseIsSuccessful();
+    }
 }

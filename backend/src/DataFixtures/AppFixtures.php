@@ -30,12 +30,15 @@ class AppFixtures extends Fixture
         $company->setName('Tech Solutions');
         $company->setAbout('Tech Solutions est une entreprise spécialisée dans la réparation et la maintenance de matériel informatique. Nous offrons des services de qualité pour les particuliers et les entreprises.');
         $company->setType(Company::SARL);
-        $company->setAddress('123 Rue de l\'Innovation');
+        $company->setAddress('123 Rue de l\\\'Innovation');
         $company->setZipCode('75001');
         $company->setLogo('logo.png');
         $company->setPhone('0123456789');
         $company->setMobile('0987654321');
         $company->setWebsite('https://www.techsolutions.com');
+        $company->setCity('Paris');
+        $company->setCreatedAt(new \DateTimeImmutable());
+        $company->setUpdatedAt(new \DateTimeImmutable());
         // Create a default user admin
         $adminUser = new User();
         $adminUser->setEmail('admin@techsolutions.com');
@@ -93,6 +96,38 @@ class AppFixtures extends Fixture
             $specialization->addCompany($company);
             $manager->persist($specialization);
         }
+
+        $superAdmin = new User();
+        $superAdmin->setEmail('superadmin@test.com');
+        $superAdmin->setRoles(['ROLE_SUPER_ADMIN']);
+        $superAdmin->setFirstName('Super');
+        $superAdmin->setLastName('Admin');
+        $superAdmin->setPassword($this->passwordHasher->hashPassword($superAdmin, 'superadminpass'));
+        $manager->persist($superAdmin);
+
+        $admin = new User();
+        $admin->setEmail('admin@test.com');
+        $admin->setRoles(['ROLE_ADMIN']);
+        $admin->setFirstName('Admin');
+        $admin->setLastName('User');
+        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'adminpass'));
+        $manager->persist($admin);
+
+        $customer = new User();
+        $customer->setEmail('customer@test.com');
+        $customer->setRoles(['ROLE_CUSTOMER']);
+        $customer->setFirstName('Customer');
+        $customer->setLastName('User');
+        $customer->setPassword($this->passwordHasher->hashPassword($customer, 'customerpass'));
+        $manager->persist($customer);
+
+        $technician = new User();
+        $technician->setEmail('technician@test.com');
+        $technician->setRoles(['ROLE_TECHNICIAN']);
+        $technician->setFirstName('Technician');
+        $technician->setLastName('User');
+        $technician->setPassword($this->passwordHasher->hashPassword($technician, 'technicianpass'));
+        $manager->persist($technician);
 
         $manager->flush();
     }

@@ -32,7 +32,7 @@ class CompanySpecialization
     /**
      * @var Collection<int, Company>
      */
-    #[ORM\ManyToMany(targetEntity: Company::class, mappedBy: 'specialization')]
+    #[ORM\ManyToMany(targetEntity: Company::class, mappedBy: "specializations", cascade: ["persist"])]
     private Collection $companies;
 
     public function __construct()
