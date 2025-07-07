@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import {
   FlatList,
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { format } from "date-fns";
@@ -15,14 +13,10 @@ import { useApi } from "@/app/utils/useApi";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import React from "react";
 import { components } from "@/app/types/types";
-import { AppButton } from "@/app/components/buttons/AppButton";
-import { FormProvider, useForm } from "react-hook-form";
-import { AppTextField } from "@/app/components/inputs/AppTextField";
-import { AppSelectInput } from "@/app/components/inputs/AppSelectInput";
-import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { EquipmentModalForm } from "@/app/components/equipment/EquipmentModalForm";
 import { FAB } from "react-native-paper";
+import {ToolBarCustomer} from "@/app/components/navigation/ToolBarCustomer";
 
 const EquipmentsPage = () => {
   const [equipments, setEquipments] = useState<
@@ -88,7 +82,8 @@ const EquipmentsPage = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={{flex: 1}}>
+      <ToolBarCustomer title={"Mes équipements"} />
       <ScrollView>
         <FlatList
           data={equipments}

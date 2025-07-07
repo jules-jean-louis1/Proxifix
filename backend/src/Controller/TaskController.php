@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Entity\Intervention;
 use App\Entity\Task;
+use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -98,9 +99,15 @@ final class TaskController extends AbstractController
         ], 200);
     }
     #[Route('/task', name: 'app_task_list', methods: ['GET'])]
-    public function list(EntityManagerInterface $em): JsonResponse
+    public function get(Request $request, TaskRepository $taskRepository): JsonResponse
     {
-        $tasks = $em->getRepository(Task::class)->findAll();
+        $id = $request->get('id');
+        $companyId = $request->get('company_id');
+        $name = $request->get('name');
+        $page = $request->get('page') ?? 1;
+        $size = $request->get('size') ?? 25;
+        $order = $request->get('order');
+        $tasks = $taskRepository->getTasks($id,$companyId,$name,$page,$size,$order);
         if (! $tasks) {
             return new JsonResponse(['error' => 'No tasks found'], 404);
         }

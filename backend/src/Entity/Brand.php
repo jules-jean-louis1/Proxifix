@@ -30,11 +30,22 @@ class Brand
     private Collection $equipment;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['equipment:details', 'brand:get_all'])]
     private ?string $logo = null;
+
+    #[ORM\Column]
+    #[Groups(['equipment:details', 'brand:get_all'])]
+    private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\Column]
+    #[Groups(['equipment:details', 'brand:get_all'])]
+    private ?\DateTimeImmutable $updated_at = null;
 
     public function __construct()
     {
         $this->equipment = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -92,6 +103,30 @@ class Brand
     public function setLogo(?string $logo): static
     {
         $this->logo = $logo;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    {
+        $this->updated_at = $updated_at;
 
         return $this;
     }

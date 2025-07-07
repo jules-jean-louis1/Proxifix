@@ -29,6 +29,9 @@ class TypeEquipment
     #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'type_equipment')]
     private Collection $equipment;
 
+    #[ORM\ManyToOne(inversedBy: 'typeEquipment')]
+    private ?Company $Company = null;
+
     public function __construct()
     {
         $this->equipment = new ArrayCollection();
@@ -77,6 +80,18 @@ class TypeEquipment
                 $equipment->setTypeEquipment(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->Company;
+    }
+
+    public function setCompany(?Company $Company): static
+    {
+        $this->Company = $Company;
 
         return $this;
     }

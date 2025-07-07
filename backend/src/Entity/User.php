@@ -27,13 +27,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
-    #[
-        Assert\Regex(
-            pattern: '/^[a-zA-Z0-9_]+$/',
-            message: "The username can only contain letters, numbers and underscores"
-        )
-    ]
+    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\Email]
     #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?string $email = null;
 

@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
-use ApiPlatform\OpenApi\Model\Response;
 use App\Entity\Company;
+use App\Entity\CompanySpecialization;
+use App\Entity\Task;
+use App\Entity\TypeEquipment;
+use App\Entity\TypeIntervention;
 use App\Entity\User;
 use App\Repository\CompanyRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,118 +21,289 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class CompanyController extends AbstractController
 {
     #[IsGranted("ROLE_SUPER_ADMIN")]
-    #[Route("/company", name: "app_company", methods: ["POST"])]
+    #[Route("/company", name: "app_company_post", methods: ["POST"])]
     public function create(
         Request $request,
         EntityManagerInterface $entityManager
     ): JsonResponse {
-        $payload = $request->getPayload();
+        $data = json_decode($request->getContent(), true);
 
-        $type = $payload->get("type");
+        // Validation des données requises
+        $name = $data["name"] ?? null;
+        if (!$name) {
+            return $this->json(["error" => "Company name is required"], 400);
+        }
+
+        $type = $data["type"] ?? null;
         if (!$this->isTypeExist($type)) {
             return $this->json(["errors" => "Type does not exist."], 404);
         }
 
         $company = new Company();
-        $company->setName($payload->get("name"));
-        $company->setType($payload->get("type") ?? "");
-        $company->setAddress($payload->get("address") ?? "");
-        $company->setCity($payload->get("city") ?? "");
-        $company->setZipCode($payload->get("zip_code") ?? "");
-        $company->setWebsite($payload->get("website") ?? "");
-        $company->setAbout($payload->get("about") ?? "");
+        $company->setName($data["name"] ?? "");
+        $company->setType($data["type"] ?? "");
+        $company->setAddress($data["address"] ?? "");
+        $company->setCity($data["city"] ?? "");
+        $company->setZipCode($data["zip_code"] ?? "");
+        $company->setWebsite($data["website"] ?? "");
+        $company->setAbout($data["about"] ?? "");
         $company->setCreatedAt(new \DateTimeImmutable());
         $company->setUpdatedAt(new \DateTimeImmutable());
-        $company->setIsApproved($payload->get("is_approved"));
+        $company->setLogo($data["logo"] ?? "");
+        $company->setIsApproved($data["is_approved"] ?? false);
+        $company->setPhone($data["phone"] ?? "");
+        $company->setMobile($data["mobile"] ?? "");
 
-        if ($payload->get("user_id")) {
-            $user = $entityManager
-                ->getRepository(User::class)
-                ->find($payload->get("user_id"));
-            if (!$user) {
-                return $this->json(["error" => "User not found"], 404);
+        // Ajout open_days et open_hours
+        $company->setOpenDays($data["open_days"] ?? "");
+        $company->setOpenHours($data["open_hours"] ?? "");
+
+        // Specializations
+        if (isset($data['specialization'])) {
+            $specializations = $data['specialization'];
+            error_log("Specializations received: " . json_encode($specializations));
+            if (is_array($specializations)) {
+                foreach ($specializations as $spec) {
+                    $specializationEntity = null;
+                    if (is_array($spec)) {
+                        if (isset($spec['id'])) {
+                            $specializationEntity = $entityManager
+                                ->getRepository(CompanySpecialization::class)
+                                ->find($spec['id']);
+                        } elseif (isset($spec['slug'])) {
+                            $specializationEntity = $entityManager
+                                ->getRepository(CompanySpecialization::class)
+                                ->findOneBy(['slug' => $spec['slug']]);
+                        }
+                    } elseif (is_numeric($spec)) {
+                        $specializationEntity = $entityManager
+                            ->getRepository(CompanySpecialization::class)
+                            ->find($spec);
+                    } elseif (is_string($spec)) {
+                        $specializationEntity = $entityManager
+                            ->getRepository(CompanySpecialization::class)
+                            ->findOneBy(['slug' => $spec]);
+                    }
+                    if ($specializationEntity) {
+                        $company->addSpecialization($specializationEntity);
+                    } else {
+                        error_log("Specialization not found: " . json_encode($spec));
+                    }
+                }
+            } 
+        }
+        // Ajout des users
+        if (isset($data["users"])) {
+            $users = $data["users"];
+            if (is_array($users)) {
+                foreach ($users as $userData) {
+                    if (is_numeric($userData)) {
+                        $user = $entityManager->getRepository(User::class)->find($userData);
+                        if (!$user) {
+                            return $this->json(["error" => "User with ID $userData not found"], 404);
+                        }
+                        if ($user->getRoles() === ["ROLE_CUSTOMER"]) {
+                            return $this->json(
+                                ["error" => "Customer cannot be part of a company"],
+                                400
+                            );
+                        }
+                        $company->addUser($user);
+                    } elseif (is_array($userData) && isset($userData['email']) && isset($userData['password'])) {
+                        // Créer un nouvel utilisateur si les données sont fournies
+                        $user = new User();
+                        $user->setEmail($userData['email']);
+                        $user->setPassword($userData['password']);
+                        $user->setFirstName($userData['first_name'] ?? '');
+                        $user->setLastName($userData['last_name'] ?? '');
+                        $user->setRoles($userData['roles'] ?? ['ROLE_TECHNICIAN']); // Par défaut, on ajoute le rôle technicien
+                        $user->setCreatedAt(new \DateTimeImmutable());
+                        $user->setUpdatedAt(new \DateTimeImmutable());
+                        $entityManager->persist($user);
+                        $company->addUser($user);
+                    }
+                }
             }
-            if ($user->getRoles() === ["ROLE_CUSTOMER"]) {
-                return $this->json(
-                    ["error" => "Customer cannot be part of a company"],
-                    400
-                );
+        }
+
+        // TypeEquipment : toujours créer une nouvelle entrée
+        if (isset($data["type_equipments"])) {
+            $typeEquipment = $data["type_equipments"];
+            if (is_array($typeEquipment)) {
+                foreach ($typeEquipment as $typeEquipmentData) {
+                    $newTypeEquipment = new TypeEquipment();
+                    if (is_array($typeEquipmentData) && isset($typeEquipmentData['name'])) {
+                        $newTypeEquipment->setName($typeEquipmentData['name']);
+                    } else {
+                        $newTypeEquipment->setName((string)$typeEquipmentData);
+                    }
+                    $newTypeEquipment->setCompany($company);
+                    $entityManager->persist($newTypeEquipment);
+                    $company->addTypeEquipment($newTypeEquipment);
+                }
             }
-            $company->addUser($user);
+        }
+        // TypeIntervention : toujours créer une nouvelle entrée
+        if (isset($data["type_interventions"])) {
+            $typeInterventions = $data["type_interventions"];
+            if (is_array($typeInterventions)) {
+                foreach ($typeInterventions as $typeInterventionData) {
+                    $typeIntervention = new TypeIntervention();
+                    if (is_array($typeInterventionData) && isset($typeInterventionData['name'])) {
+                        $typeIntervention->setName($typeInterventionData['name']);
+                    } else {
+                        $typeIntervention->setName((string)$typeInterventionData);
+                    }
+                    $typeIntervention->setCompany($company);
+                    $typeIntervention->setCreatedAt(new \DateTimeImmutable());
+                    $typeIntervention->setUpdatedAt(new \DateTimeImmutable());
+                    $entityManager->persist($typeIntervention);
+                    $company->addTypeIntervention($typeIntervention);
+                }
+            }
+        }
+
+        if (isset($data["tasks"])) {
+            $tasks = $data["tasks"];
+            if (is_array($tasks)) {
+                foreach ($tasks as $taskData) {
+                    if (is_array($taskData) && isset($taskData['name'])) {
+                        $task = new Task();
+                        $task->setName($taskData['name']);
+                        $task->setDescription($taskData['description'] ?? '');
+                        $task->setPrice($taskData['price'] ?? 0);
+                        $task->setCompany($company);
+                        $entityManager->persist($task);
+                        $company->addTask($task);
+                    } elseif (is_numeric($taskData)) {
+                        $task = $entityManager->getRepository(Task::class)->find($taskData);
+                        if ($task) {
+                            $company->addTask($task);
+                        }
+                    }
+                }
+            }
         }
 
         $entityManager->persist($company);
         $entityManager->flush();
 
-        return $this->json($company, 201);
+        return $this->json($company, 201, [], ['groups' => 'company:read']);
     }
+
     #[IsGranted("ROLE_ADMIN")]
-    #[Route("/company/{id}", name: "app_company_update", methods: ["PUT"])]
+    #[Route("/company/{id}", name: "app_company_update", methods: ["PUT", "PATCH"])]
     public function update(
         Request $request,
         EntityManagerInterface $entityManager,
         int $id
     ): JsonResponse {
-        $payload = $request->getPayload();
+        $data = json_decode($request->getContent(), true);
         $company = $entityManager->getRepository(Company::class)->find($id);
 
-        // Récupérer l'utilisateur courant
         /** @var User $currentUser */
         $currentUser = $this->getUser();
-
-        // Vérifier si l'utilisateur courant est lié à la company
-        if (!$company->getUsers()->contains($currentUser)) {
-            return $this->json(["error" => "You are not a member of this company"], 403);
-        }
 
         if (!$company) {
             return $this->json(["error" => "Company not found"], 404);
         }
-        $name = $payload->get("name");
-        if (isset($name)) {
-            $company->setName($name);
-        }
-        $about = $payload->get("about");
-        if (isset($about)) {
-            $company->setAbout($about);
-        }
-        $type = $payload->get("type");
-        if (isset($type)) {
-            $company->setType($type);
-        }
-        $address = $payload->get("address");
-        if (isset($address)) {
-            $company->setAddress($address);
-        }
-        $city = $payload->get("city");
-        if (isset($city)) {
-            $company->setCity($city);
-        }
-        $zipCode = $payload->get("zip_code");
-        if (isset($zipCode)) {
-            $company->setZipCode($zipCode);
-        }
-        $website = $payload->get("website");
-        if (isset($website)) {
-            $company->setWebsite($website);
-        }
-        $is_approved = $payload->get("is_approved");
-        if (isset($is_approved)) {
-            $company->setIsApproved($is_approved);
+
+        if (!$company->getUsers()->contains($currentUser) && !$this->isGranted('ROLE_SUPER_ADMIN')) {
+            return $this->json(["error" => "You are not a member of this company"], 403);
         }
 
-        $userId = $payload->get("user_id");
-        if (isset($userId)) {
-            $user = $entityManager->getRepository(User::class)->find($userId);
-            if (!$user) {
-                return $this->json(["error" => "User not found"], 404);
+        // Champs simples
+        foreach ([
+            "name", "about", "type", "address", "city", "zip_code", "website", "open_days", "open_hours", "phone", "mobile", "logo", "is_approved"
+        ] as $field) {
+            if (array_key_exists($field, $data)) {
+                $setter = "set" . str_replace(" ", "", ucwords(str_replace("_", " ", $field)));
+                $company->$setter($data[$field]);
             }
-            $company->addUser($user);
         }
 
+        // Specializations
+        if (array_key_exists('specialization', $data)) {
+            $company->getSpecialization()->clear();
+            $specializations = $data['specialization'];
+            if (is_array($specializations)) {
+                foreach ($specializations as $spec) {
+                    $specializationEntity = null;
+                    if (is_numeric($spec)) {
+                        $specializationEntity = $entityManager->getRepository(CompanySpecialization::class)->find($spec);
+                    } elseif (is_string($spec)) {
+                        $specializationEntity = $entityManager->getRepository(CompanySpecialization::class)->findOneBy(['slug' => $spec]);
+                    }
+                    if ($specializationEntity) {
+                        $company->addSpecialization($specializationEntity);
+                    }
+                }
+            }
+        }
+
+        // Users
+        if (array_key_exists('users', $data)) {
+            $company->getUsers()->clear();
+            $users = $data['users'];
+            if (is_array($users)) {
+                foreach ($users as $userId) {
+                    // On ne traite que les IDs numériques pour l'update
+                    if (is_numeric($userId)) {
+                        $user = $entityManager->getRepository(User::class)->find($userId);
+                        if ($user && $user->getRoles() !== ["ROLE_CUSTOMER"]) {
+                            $company->addUser($user);
+                        }
+                    }
+                }
+            }
+        }
+
+        // TypeEquipments
+        if (array_key_exists('type_equipments', $data)) {
+            $company->getTypeEquipment()->clear();
+            $typeEquipments = $data['type_equipments'];
+            if (is_array($typeEquipments)) {
+                foreach ($typeEquipments as $typeEquipmentId) {
+                    $type = $entityManager->getRepository(TypeEquipment::class)->find($typeEquipmentId);
+                    if ($type) {
+                        $company->addTypeEquipment($type);
+                    }
+                }
+            }
+        }
+
+        // TypeInterventions
+        if (array_key_exists('type_interventions', $data)) {
+            $company->getTypeInterventions()->clear();
+            $typeInterventions = $data['type_interventions'];
+            if (is_array($typeInterventions)) {
+                foreach ($typeInterventions as $typeInterventionId) {
+                    $type = $entityManager->getRepository(TypeIntervention::class)->find($typeInterventionId);
+                    if ($type) {
+                        $company->addTypeIntervention($type);
+                    }
+                }
+            }
+        }
+
+        // Tasks
+        if (array_key_exists('tasks', $data)) {
+            $company->getTasks()->clear();
+            $tasks = $data['tasks'];
+            if (is_array($tasks)) {
+                foreach ($tasks as $taskId) {
+                    $task = $entityManager->getRepository(Task::class)->find($taskId);
+                    if ($task) {
+                        $company->addTask($task);
+                    }
+                }
+            }
+        }
+
+        $company->setUpdatedAt(new \DateTimeImmutable());
         $entityManager->flush();
 
-        return $this->json($company, 200);
+        return $this->json($company, 200, [], ['groups' => 'company:read']);
     }
 
     #[IsGranted("ROLE_SUPER_ADMIN")]
@@ -208,6 +382,7 @@ final class CompanyController extends AbstractController
     }
 
     #[Route('/company-registration', name: 'register_company', methods: ['POST'])]
+    // This route allows users to register a new company
     public function registerCompany(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         $payload = $request->getPayload();
@@ -229,6 +404,34 @@ final class CompanyController extends AbstractController
         $company->setWebsite($payload->get('website'));
         $company->setAbout($payload->get('about'));
         $company->setType($payload->get('type') ?? Company::MICRO_ENTERPRISE);
+        $company->setIsApproved(false);
+        $company->addUser($user);
+        // Add specializations if provided
+        if ($payload->has('specialization')) {
+            $specializations = $payload->get('specialization');
+            
+            // Gestion du cas où c'est un tableau ou une chaîne unique
+            if (is_array($specializations)) {
+                foreach ($specializations as $specializationSlug) {
+                    if (is_string($specializationSlug) || is_numeric($specializationSlug)) {
+                        $specializationEntity = $em->getRepository(CompanySpecialization::class)
+                            ->findOneBy(['slug' => $specializationSlug]);
+                        if ($specializationEntity) {
+                            $company->addSpecialization($specializationEntity);
+                        }
+                    }
+                }
+            } elseif (is_string($specializations) || is_numeric($specializations)) {
+                // Cas où une seule spécialisation est fournie
+                $specializationEntity = $em->getRepository(CompanySpecialization::class)
+                    ->findOneBy(['slug' => $specializations]);
+                if ($specializationEntity) {
+                    $company->addSpecialization($specializationEntity);
+                }
+            }
+        }
+        $company->setOpenDays($payload->get('open_days') ?? "");
+        $company->setOpenHours($payload->get('open_hours') ?? "");
         $company->setCreatedAt(new \DateTimeImmutable());
         $company->setUpdatedAt(new \DateTimeImmutable());
 
@@ -279,51 +482,34 @@ final class CompanyController extends AbstractController
 
         return $this->json(["success" => "Company disapproved successfully"], 200);
     }
-    #[Route('/api/company/pending', name: 'app_company_pending', methods: ['GET'])]
-    public function getPendingCompanies(
-        EntityManagerInterface $entityManagerInterface
-    ): JsonResponse {
-        $companies = $entityManagerInterface
-            ->getRepository(Company::class)
-            ->findBy(['isApproved' => false]);
 
-        if (!$companies) {
-            return $this->json(["error" => "No pending companies found"], 404);
-        }
-
-        $data = array_map(function (Company $company) {
-            return [
-                "id" => $company->getId(),
-                "name" => $company->getName(),
-                "about" => $company->getAbout(),
-                "type" => $company->getType(),
-                "address" => $company->getAddress(),
-                "city" => $company->getCity(),
-                "zip_code" => $company->getZipCode(),
-                "website" => $company->getWebsite(),
-                "is_approved" => $company->getIsApproved(),
-                "created_at" => $company->getCreatedAt()?->format('Y-m-d\TH:i:sP'),
-                "updated_at" => $company->getUpdatedAt()?->format('Y-m-d\TH:i:sP'),
-            ];
-        }, $companies);
-
-        return $this->json($data, 200);
-    }
-
-    #[Route('/company', name: 'app_company', methods: ['GET'])]
+    #[Route('/company', name: 'app_company_get', methods: ['GET'])]
     public function getCompanies(CompanyRepository $companyRepository, Request $request): JsonResponse
     {
         $reqId    = $request->query->get('id');
-        $reqPending = $request->query->get('pending') === 'true';
+        $reqPending = $request->query->get('pending') === 'true' ? true : false;
+        $reqSpecialization = $request->query->get('specialization');
         $reqPage  = $request->query->get('page') ?? 1;
         $reqSize  = $request->query->get('size') ?? 25;
         $reqName  = $request->query->get('name');
         $reqOrder = $request->query->get('order') ?? "ASC";
 
-        $companies = $companyRepository->getCompanies($reqId !== null ? intval($reqId) : null, $reqPending, $reqPage, $reqSize, $reqName, $reqOrder);
+        $companies = $companyRepository->getCompanies($reqId !== null ? intval($reqId) : null, $reqPending, $reqSpecialization, $reqPage, $reqSize, $reqName, $reqOrder);
 
         return $this->json($companies, 200, [], ['groups' => 'company:read']);
 
     }
 
+    //CompanySpecialization
+    #[Route('/api/company-specialization', name: 'app_company_specialization_get', methods: ['GET'])]
+    public function getCompanySpecializations(
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $specializations = $entityManager->getRepository(CompanySpecialization::class)->findAll();
+        if (!$specializations) {
+            return $this->json(["error" => "No specializations found"], 404);
+        }
+
+        return $this->json($specializations, 200, [], ['groups' => 'company:read']);
+    }
 }

@@ -182,7 +182,7 @@ final class AppointmentController extends AbstractController
                 $intervention->setCompany($appointment->getCompany());
                 $intervention->setDescription($payload['description'] ?? $appointment->getDescription());
                 $intervention->setTitle($payload['title'] ?? $appointment->getTitle());
-                $intervention->setStatus($em->getRepository(Status::class)->findOneBy(['name' => $status]));
+                $intervention->setStatus($payload['status'] ?? Intervention::PENDING);
                 $intervention->setTypeIntervention($typeIntervention);
                 $intervention->setUser($appointment->getUser());
                 $intervention->setCreatedAt(new DateTimeImmutable());

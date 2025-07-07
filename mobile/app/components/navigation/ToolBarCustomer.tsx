@@ -1,4 +1,3 @@
-import { useSession } from "@/app/context/ctx";
 import { Feather } from "@expo/vector-icons";
 import { View, StyleSheet, Pressable, Text } from "react-native";
 import React from "react";
@@ -16,8 +15,6 @@ export const ToolBarCustomer: React.FC<ToolBarCustomerProps> = ({
   onBackPress,
   rightContent,
 }) => {
-  const { signOut } = useSession();
-
   return (
     <View style={styles.container}>
       <View style={styles.left}>

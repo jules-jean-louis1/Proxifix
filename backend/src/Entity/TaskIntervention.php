@@ -26,6 +26,19 @@ class TaskIntervention
     #[ORM\JoinColumn(nullable: false)]
     private ?Intervention $intervention = null;
 
+    #[ORM\Column]
+    #[Groups(['intervention:details'])]
+    private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\Column]
+    #[Groups(['intervention:details'])]
+    private ?\DateTimeImmutable $update_at = null;
+
+    public function __construct()
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->update_at = new \DateTimeImmutable();
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -57,6 +70,30 @@ class TaskIntervention
     public function setIntervention(?Intervention $intervention): self
     {
         $this->intervention = $intervention;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUpdateAt(): ?\DateTimeImmutable
+    {
+        return $this->update_at;
+    }
+
+    public function setUpdateAt(\DateTimeImmutable $update_at): static
+    {
+        $this->update_at = $update_at;
 
         return $this;
     }

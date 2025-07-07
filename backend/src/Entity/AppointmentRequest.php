@@ -69,7 +69,6 @@ class AppointmentRequest
 
     public function __construct()
     {
-        $this->status = self::PENDING;
         $this->created_at = new \DateTimeImmutable();
     }
 

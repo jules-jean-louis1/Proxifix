@@ -1,9 +1,10 @@
 import { useApi } from "@/app/utils/useApi";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { EquipmentModalForm } from "@/app/components/equipment/EquipmentModalForm";
+import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
 
 export default function EquipmentDetails() {
   const { id } = useLocalSearchParams();
@@ -13,6 +14,7 @@ export default function EquipmentDetails() {
   const [os, setOs] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const api = useApi();
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -55,82 +57,91 @@ export default function EquipmentDetails() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.section}>
-        <Text style={styles.title}>Détails de l'équipement</Text>
-        <View style={styles.row}>
-          <Feather name="monitor" size={20} color="#01358D" />
-          <Text style={styles.infoText}>{equipment.name}</Text>
-        </View>
-        <View style={styles.row}>
-          <Feather name="tag" size={20} color="#01358D" />
-          <Text style={styles.infoText}>{equipment.type_equipment?.name}</Text>
-        </View>
-        <View style={styles.row}>
-          <Feather name="cpu" size={20} color="#01358D" />
-          <Text style={styles.infoText}>
-            {equipment.operating_system?.name}
-          </Text>
-        </View>
-        <View style={styles.row}>
-          <Feather name="box" size={20} color="#01358D" />
-          <Text style={styles.infoText}>{equipment.brand?.name}</Text>
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.subtitle}>Interventions</Text>
-        {equipment.interventions.length > 0 ? (
-          equipment.interventions.map((intervention: any) => (
-            <View key={intervention.id} style={styles.card}>
-              <Text style={styles.cardTitle}>{intervention.title}</Text>
-              <Text style={styles.cardText}>
-                {intervention.typeIntervention?.name}
-              </Text>
-              <Text style={styles.cardText}>
-                Début : {new Date(intervention.start_date).toLocaleString()}
-              </Text>
-              <Text style={styles.cardText}>
-                Fin : {new Date(intervention.end_date).toLocaleString()}
-              </Text>
-              <Text style={styles.cardText}>
-                Statut : {intervention.status?.name}
-              </Text>
-            </View>
-          ))
-        ) : (
-          <Text style={styles.infoText}>Aucune intervention trouvée.</Text>
-        )}
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.subtitle}>Demandes de rendez-vous</Text>
-        {equipment.appointmentRequests.length > 0 ? (
-          equipment.appointmentRequests.map((request: any) => (
-            <View key={request.id} style={styles.card}>
-              <Text style={styles.cardTitle}>{request.title}</Text>
-              <Text style={styles.cardText}>{request.description}</Text>
-              <Text style={styles.cardText}>
-                Statut :{" "}
-                {request.status === "accepted" ? "Accepté" : "En attente"}
-              </Text>
-            </View>
-          ))
-        ) : (
-          <Text style={styles.infoText}>
-            Aucune demande de rendez-vous trouvée.
-          </Text>
-        )}
-      </View>
-      {/* Actions */}
-      <EquipmentModalForm
-        type="update"
-        equipment={equipment}
-        brands={brands}
-        typeEquipment={typeEquipment}
-        os={os}
+    <View style={{ flex: 1 }}>
+      <ToolBarCustomer
+        title="Détails de l'équipement"
+        showBack={true}
+        onBackPress={() => router.replace("/customer/equipments")}
       />
-    </ScrollView>
+      <ScrollView style={styles.container}>
+        <View style={styles.section}>
+          <Text style={styles.title}>Détails de l'équipement</Text>
+          <View style={styles.row}>
+            <Feather name="monitor" size={20} color="#01358D" />
+            <Text style={styles.infoText}>{equipment.name}</Text>
+          </View>
+          <View style={styles.row}>
+            <Feather name="tag" size={20} color="#01358D" />
+            <Text style={styles.infoText}>
+              {equipment.type_equipment?.name}
+            </Text>
+          </View>
+          <View style={styles.row}>
+            <Feather name="cpu" size={20} color="#01358D" />
+            <Text style={styles.infoText}>
+              {equipment.operating_system?.name}
+            </Text>
+          </View>
+          <View style={styles.row}>
+            <Feather name="box" size={20} color="#01358D" />
+            <Text style={styles.infoText}>{equipment.brand?.name}</Text>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.subtitle}>Interventions</Text>
+          {equipment.interventions.length > 0 ? (
+            equipment.interventions.map((intervention: any) => (
+              <View key={intervention.id} style={styles.card}>
+                <Text style={styles.cardTitle}>{intervention.title}</Text>
+                <Text style={styles.cardText}>
+                  {intervention.typeIntervention?.name}
+                </Text>
+                <Text style={styles.cardText}>
+                  Début : {new Date(intervention.start_date).toLocaleString()}
+                </Text>
+                <Text style={styles.cardText}>
+                  Fin : {new Date(intervention.end_date).toLocaleString()}
+                </Text>
+                <Text style={styles.cardText}>
+                  Statut : {intervention.status?.name}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.infoText}>Aucune intervention trouvée.</Text>
+          )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.subtitle}>Demandes de rendez-vous</Text>
+          {equipment.appointmentRequests.length > 0 ? (
+            equipment.appointmentRequests.map((request: any) => (
+              <View key={request.id} style={styles.card}>
+                <Text style={styles.cardTitle}>{request.title}</Text>
+                <Text style={styles.cardText}>{request.description}</Text>
+                <Text style={styles.cardText}>
+                  Statut :{" "}
+                  {request.status === "accepted" ? "Accepté" : "En attente"}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.infoText}>
+              Aucune demande de rendez-vous trouvée.
+            </Text>
+          )}
+        </View>
+        {/* Actions */}
+        <EquipmentModalForm
+          type="update"
+          equipment={equipment}
+          brands={brands}
+          typeEquipment={typeEquipment}
+          os={os}
+        />
+      </ScrollView>
+    </View>
   );
 }
 

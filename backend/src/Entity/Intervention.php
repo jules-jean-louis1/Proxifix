@@ -13,6 +13,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource]
 class Intervention
 {
+    public const PENDING = "En attente";
+    public const AWAITING_PICKUP = "En attente de récupération";
+    public const IN_PROGRESS = "En traitement";
+    public const COMPLETED = "Complété(e)";
+    public const CANCELLED = "Annulé(e)";
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -56,9 +62,9 @@ class Intervention
     #[Groups(['intervention:details'])]
     private ?Company $company = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\Column(length : 255)]
     #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
-    private ?Status $status = null;
+    private ?string $status = null;
 
     #[ORM\ManyToOne]
     #[Groups(['intervention:read', 'intervention:details'])]
@@ -213,16 +219,20 @@ class Intervention
         return $this;
     }
 
-    public function getStatus(): ?Status
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    public function setStatus(?Status $status): static
+    public function setStatus(?string $status): static
     {
         $this->status = $status;
 
         return $this;
+    }
+    public function isPending(): bool
+    {
+        return $this->status === self::PENDING;
     }
 
     public function getUser(): ?User

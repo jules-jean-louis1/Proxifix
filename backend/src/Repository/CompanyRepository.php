@@ -19,6 +19,7 @@ class CompanyRepository extends ServiceEntityRepository
     public function getCompanies(
         ?int $id = null,
         bool $pending = false,
+        ?int $specializationId = null,
         int $page = 1,
         int $size = 25,
         ?string $name = null,
@@ -36,6 +37,12 @@ class CompanyRepository extends ServiceEntityRepository
 
         if ($pending) {
             $qb->andWhere('c.pending = true');
+        }
+        
+        if ($specializationId !== null) {
+            $qb->join('c.specialization', 's')
+            ->andWhere('s.id = :specializationId')
+            ->setParameter('specializationId', $specializationId);
         }
 
         if ($name !== null) {

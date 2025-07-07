@@ -34,9 +34,19 @@ class OperatingSystem
     #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'operating_system')]
     private Collection $equipment;
 
+    #[ORM\Column]
+    #[Groups(['operatingSystem.create', 'equipment:details', 'operatingSystem.get_one'])]
+    private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\Column]
+    #[Groups(['operatingSystem.create', 'equipment:details', 'operatingSystem.get_one'])]
+    private ?\DateTimeImmutable $updated_at = null;
+
     public function __construct()
     {
         $this->equipment = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
 
 
@@ -83,6 +93,30 @@ class OperatingSystem
                 $equipment->setOperatingSystem(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    {
+        $this->updated_at = $updated_at;
 
         return $this;
     }

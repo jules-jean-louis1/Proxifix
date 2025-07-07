@@ -43,16 +43,12 @@ class InterventionController extends AbstractController
                 ->getRepository(TypeIntervention::class)
                 ->find($payload["type_intervention_id"]);
 
-            $status = $entityManager
-                ->getRepository(Status::class)
-                ->find($payload["status_id"]);
-
             $user = $entityManager
                 ->getRepository(User::class)
                 ->find($payload["user_id"]);
 
             $intervention->setTypeIntervention($typeIntervention);
-            $intervention->setStatus($status);
+            $intervention->setStatus($payload["status"] ?? Intervention::PENDING);
             $intervention->setUser($user);
 
             if (isset($payload['start_date'])) {
@@ -184,16 +180,8 @@ class InterventionController extends AbstractController
                 $intervention->setTypeIntervention($typeIntervention);
             }
 
-            if (isset($payload["status_id"])) {
-                $status = $entityManager
-                    ->getRepository(Status::class)
-                    ->find($payload["status_id"]);
-
-                if (! $status) {
-                    return $this->json(["error" => "Status not found"], 400);
-                }
-
-                $intervention->setStatus($status);
+            if (isset($payload["status"])) {
+                $intervention->setStatus($payload["status"] ?? Intervention::PENDING);
             }
 
             if (isset($payload["appointment_request_id"])) {
