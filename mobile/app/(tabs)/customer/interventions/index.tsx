@@ -111,7 +111,7 @@ export default function InterventionsPage() {
         <AppointmentModalForm
           type="create"
           onSuccess={() => setFetchData(!fetchData)}
-          button={<FAB icon="plus" style={styles.fab} />}
+          button={<FAB icon="plus" style={styles.fab}  label="Ajouter un rendez-vous"/>}
         />
       </View>
     </View>

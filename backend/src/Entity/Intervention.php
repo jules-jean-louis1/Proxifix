@@ -13,11 +13,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource]
 class Intervention
 {
-    public const PENDING = "En attente";
-    public const AWAITING_PICKUP = "En attente de récupération";
-    public const IN_PROGRESS = "En traitement";
-    public const COMPLETED = "Complété(e)";
-    public const CANCELLED = "Annulé(e)";
+    public const PENDING = "pending";
+    public const AWAITING_PICKUP = "awaiting_pickup";
+    public const IN_PROGRESS = "in_progress";
+    public const COMPLETED = "completed";
+    public const CANCELLED = "cancelled";
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

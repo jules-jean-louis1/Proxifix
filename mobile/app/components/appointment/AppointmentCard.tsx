@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { AppointmentModalForm } from "./AppointmentModalForm";
 import { Card } from "react-native-paper";
-import { APPOINTMENT_STATUS } from "@/app/utils/intervention";
+import { APPOINTMENT_STATUS, getStatusAppointmentCard } from "@/app/utils/intervention";
 
 export const AppointmentCard: FC<{
   appointment: any;
@@ -15,12 +15,13 @@ export const AppointmentCard: FC<{
     month: "2-digit",
     year: "numeric",
   });
+;
 
   return (
     <Card onPress={onPress} style={styles.card}>
       <Card.Title title={title} titleStyle={styles.title} />
       <Card.Content>
-        <Text style={styles.status}>{status}</Text>
+        <Text style={styles.status}>{getStatusAppointmentCard(status)}</Text>
         <View style={styles.details}>
           <Text style={styles.date}>{formattedDate}</Text>
         </View>

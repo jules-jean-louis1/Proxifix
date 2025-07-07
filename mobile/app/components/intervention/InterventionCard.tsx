@@ -3,6 +3,7 @@ import {Pressable, Text, View, StyleSheet} from "react-native";
 import {Feather} from "@expo/vector-icons";
 import {format} from "date-fns";
 import {fr} from "date-fns/locale";
+import { getStatus } from "@/app/utils/intervention";
 
 interface InterventionCardProps {
     intervention?: any,
@@ -70,8 +71,8 @@ export const InterventionCard: React.FC<InterventionCardProps> = ({intervention,
                         />
                     </View>
                     {intervention.status && (
-                        <Text style={styles.status}>
-                            {intervention.status.name}
+                        <Text style={styles.status }>
+                            {getStatus(intervention.status)}
                         </Text>
                     )}
                 </View>

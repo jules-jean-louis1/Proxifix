@@ -7,7 +7,7 @@ export default function Layout() {
   return (
     <SessionProvider>
       <PaperProvider>
-        <Stack>
+        <Stack screenOptions={{ headerShown: false }}>
           {/* PUBLIC_ACCESS */}
           <Stack.Screen name="home" options={{ headerShown : false}} />
           <Stack.Screen name="login" options={{ headerShown: false}} />

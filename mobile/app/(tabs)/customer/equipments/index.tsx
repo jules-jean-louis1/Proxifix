@@ -16,7 +16,7 @@ import { components } from "@/app/types/types";
 import { router } from "expo-router";
 import { EquipmentModalForm } from "@/app/components/equipment/EquipmentModalForm";
 import { FAB } from "react-native-paper";
-import {ToolBarCustomer} from "@/app/components/navigation/ToolBarCustomer";
+import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
 
 const EquipmentsPage = () => {
   const [equipments, setEquipments] = useState<
@@ -82,7 +82,7 @@ const EquipmentsPage = () => {
   }
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <ToolBarCustomer title={"Mes équipements"} />
       <ScrollView>
         <FlatList
@@ -112,26 +112,33 @@ const EquipmentsPage = () => {
           )}
         />
       </ScrollView>
-      <EquipmentModalForm
-        type="create"
-        brands={brands}
-        typeEquipment={typeEquipment}
-        os={os}
-        setEquipments={setEquipments}
-        button={
-          <FAB icon="plus" style={styles.fab} label="Ajouter un équipement" />
-        }
-      />
+      <View pointerEvents="box-none" style={styles.fabContainer}>
+        <EquipmentModalForm
+          type="create"
+          brands={brands}
+          typeEquipment={typeEquipment}
+          os={os}
+          setEquipments={setEquipments}
+          button={
+            <FAB icon="plus" style={styles.fab} label="Ajouter un équipement" />
+          }
+        />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  fab: {
+  fabContainer: {
     position: "absolute",
-    margin: 0,
     right: 0,
-    bottom: 55,
+    bottom: 60,
+    width: "100%",
+    alignItems: "flex-end",
+    zIndex: 100,
+  },
+  fab: {
+    margin: 16,
   },
   container: {
     flex: 1,

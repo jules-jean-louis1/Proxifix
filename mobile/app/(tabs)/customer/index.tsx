@@ -30,7 +30,7 @@ export const CustomerHome = () => {
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#FFF" }}>
       <ToolBarCustomer
         rightContent={
           <Pressable
@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FFFFFF",
     marginBottom: 50,
+    marginTop: 20,
   },
   text: {
     color: "#000",
