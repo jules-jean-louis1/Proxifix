@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Repository;
 
 use App\Entity\Task;
@@ -14,6 +13,33 @@ class TaskRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Task::class);
+    }
+
+    public function getTasks(?int $id, ?int $companyId, ?string $name, ?int $page, ?int $size, ?string $order): array
+    {
+        $offset = ($page - 1) * $size;
+        $query  = $this->createQueryBuilder('t');
+
+        if ($id !== null) {
+            $query->andWhere('t.id = :id')
+                ->setParameter('id', intval($id));
+        }
+        if ($name !== null && $name !== "") {
+            $query->andWhere('LOWER(t.name) LIKE :name')
+                ->setParameter('name', '%' . strtolower($name) . '%');
+        }
+        if ($order !== null) {
+            $query->orderBy('t.name', $order);
+        }
+        // if ($companyId !== null) {
+        //     $query->andWhere('t.company = :company_id')
+        //         ->setParameter('company_id', $companyId);
+        // }
+
+        $query->setFirstResult($offset)
+            ->setMaxResults($size);
+
+        return $query->getQuery()->getResult();
     }
 
     //    /**

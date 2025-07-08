@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class InterventionController extends AbstractController
 {
 
-    #[Route("/intervention/new", name: "app_new_intervention", methods: ["POST"])]
+    #[Route("/intervention", name: "app_new_intervention", methods: ["POST"])]
     public function createInterventionOnly(
         Request $request,
         EntityManagerInterface $entityManager
@@ -43,16 +43,12 @@ class InterventionController extends AbstractController
                 ->getRepository(TypeIntervention::class)
                 ->find($payload["type_intervention_id"]);
 
-            $status = $entityManager
-                ->getRepository(Status::class)
-                ->find($payload["status_id"]);
-
             $user = $entityManager
                 ->getRepository(User::class)
                 ->find($payload["user_id"]);
 
             $intervention->setTypeIntervention($typeIntervention);
-            $intervention->setStatus($status);
+            $intervention->setStatus($payload["status"] ?? Intervention::PENDING);
             $intervention->setUser($user);
 
             if (isset($payload['start_date'])) {
@@ -184,16 +180,8 @@ class InterventionController extends AbstractController
                 $intervention->setTypeIntervention($typeIntervention);
             }
 
-            if (isset($payload["status_id"])) {
-                $status = $entityManager
-                    ->getRepository(Status::class)
-                    ->find($payload["status_id"]);
-
-                if (! $status) {
-                    return $this->json(["error" => "Status not found"], 400);
-                }
-
-                $intervention->setStatus($status);
+            if (isset($payload["status"])) {
+                $intervention->setStatus($payload["status"] ?? Intervention::PENDING);
             }
 
             if (isset($payload["appointment_request_id"])) {
@@ -301,38 +289,44 @@ class InterventionController extends AbstractController
             200
         );
     }
-    #[Route("/admin/interventions/{page}/{order}/{status}", name: "app_intervention_list", methods: ["GET"], defaults: ['page' => 1, 'order' => 'DESC', 'status' => 'all'])]
-    public function getInterventionsList(int $page, string $order, string $status, InterventionRepository $interventionRepository): JsonResponse
+
+    #[Route('/intervention', name: 'app_intervention_list', methods: ['GET'])]
+    public function getInterventions(Request $request, InterventionRepository $interventionRepository): JsonResponse
     {
-        $user = $this->getUser();
-        if (! $user instanceof User) {
-            return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
-        }
+        $reqId                 = $request->query->get('id');
+        $reqPage               = $request->query->get('page');
+        $reqSize               = $request->query->get('size');
+        $reqOrder              = $request->query->get('order');
+        $reqStatus             = $request->query->get('status');
+        $reqUserId             = $request->query->get('user_id');
+        $reqTypeInterventionId = $request->query->get('type_intervention_id');
+        $reqCompanyId          = $request->query->get('company_id');
 
-        if ($user->getCompany() === null) {
-            return $this->json(['error' => 'No Company found for this user'], Response::HTTP_BAD_REQUEST);
-        }
-        $allowedStatus = [Status::PENDING, Status::AWAITING_PICKUP, Status::CANCELLED, Status::COMPLETED, Status::IN_PROGRESS, "all"];
-
-        $companyId = $user->getCompany()->getId();
-        $limit     = 10;
-
-        $interventions = $interventionRepository->findByCompanyId($companyId, $page, $limit, $order, $status);
-
+        $interventions = $interventionRepository->getInterventions(
+            $reqId,
+            $reqUserId,
+            $reqCompanyId,
+            $reqStatus,
+            $reqPage,
+            $reqOrder,
+            $reqTypeInterventionId,
+            $reqSize,
+        );
         return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
     }
-
-    #[Route("/intervention/customer/{userId}", name: "app_intervention_customer_list", methods: ["GET"])]
-    public function getInterventionsByCustomer(
-        int $userId,
+    #[Route('/intervention/{id}', name: 'app_intervention_details', methods: ['GET'])]
+    public function getInterventionDetails(
+        int $id,
         EntityManagerInterface $entityManager
     ): JsonResponse {
-
-        $interventions = $entityManager
+        $intervention = $entityManager
             ->getRepository(Intervention::class)
-            ->findBy(['user' => $userId]);
+            ->find($id);
+        if (! $intervention) {
+            return $this->json(["error" => "Intervention not found"], 404);
+        }
 
-        return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
+        return $this->json($intervention, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
+
     }
-
 }

@@ -35,10 +35,18 @@ class TypeIntervention
 
     #[ORM\OneToMany(mappedBy: 'typeIntervention', targetEntity: AppointmentRequest::class)]
     private Collection $appointmentRequests;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\ManyToOne(inversedBy: 'typeInterventions')]
+    private ?Company $Company = null;
     public function __construct()
     {
         $this->appointmentRequests = new ArrayCollection();
         $this->interventions = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
     public function getId(): ?int
     {
@@ -128,6 +136,30 @@ class TypeIntervention
                 $appointmentRequest->setTypeIntervention(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->Company;
+    }
+
+    public function setCompany(?Company $Company): static
+    {
+        $this->Company = $Company;
 
         return $this;
     }

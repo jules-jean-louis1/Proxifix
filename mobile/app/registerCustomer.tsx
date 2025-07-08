@@ -5,10 +5,12 @@ import { useForm, FormProvider } from "react-hook-form";
 import { AppButton } from "./components/buttons/AppButton";
 import { AppTextField } from "./components/inputs/AppTextField";
 import { useApi } from "./utils/useApi";
+import { useRouter } from "expo-router";
 
 export default function RegisterForm() {
   const methods = useForm();
   const { handleSubmit } = methods;
+  const router = useRouter();
   const api = useApi();
 
   const onSubmit = async (data: any) => {
@@ -18,7 +20,7 @@ export default function RegisterForm() {
         Alert.alert("Erreur", "Problème lors de l'inscription.");
         return;
       }
-      Alert.alert("Inscription réussie", "Votre compte a été créé.");
+      router.replace('/loginCustomer');
     } catch (error) {
       Alert.alert("Erreur", "Problème lors de l'inscription.");
     }

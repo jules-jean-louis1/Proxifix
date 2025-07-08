@@ -1,9 +1,9 @@
 export enum Intervention_Status {
-  "PENDING" = "En attente",
-  "AWAITING" = "En attente de récupération",
-  "IN_PROGRESS" = "En traitement",
-  "COMPLETED" = "Complété(e)",
-  "CANCELED" = "Annulé(e)",
+  "PENDING" = "pending",
+  "AWAITING" = "awaiting_pickup",
+  "IN_PROGRESS" = "in_progress",
+  "COMPLETED" = "completed",
+  "CANCELED" = "canceled",
 }
 
 export const INTERVENTION_STATUS = {
@@ -31,10 +31,43 @@ export const getStatusColor = (status: string) => {
   }
 };
 
-export const getStatusInterventionCard = (intervention: any): string => {
-    console.log("intervention", intervention);
-  const getNewest = intervention.sort((a: any, b: any) => {
-    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-  });
-  return getNewest[0].status.name;
+export const getStatus = (intervention: any): string => {
+  switch (intervention.status) {
+    case INTERVENTION_STATUS.PENDING:
+      return "En attente";
+    case INTERVENTION_STATUS.AWAITING:
+      return "En attente de récupération";
+    case INTERVENTION_STATUS.IN_PROGRESS:
+      return "En traitement";
+    case INTERVENTION_STATUS.COMPLETED:
+      return "Complété(e)";
+    case INTERVENTION_STATUS.CANCELED:
+      return "Annulé(e)";
+    default:
+      return "";
+  }
 };
+
+export enum Appointment_Status {
+  "pending" = "pending",
+  "accepted" = "accepted",
+  "rejected" = "rejected",
+}
+export const APPOINTMENT_STATUS = {
+  PENDING: Appointment_Status.pending,
+  ACCEPTED: Appointment_Status.accepted,
+  REJECTED: Appointment_Status.rejected,
+} as const;
+
+export const getStatusAppointmentCard = (status: string):string => {
+  switch (status) {
+    case APPOINTMENT_STATUS.PENDING:
+      return "En attente";
+    case APPOINTMENT_STATUS.ACCEPTED:
+      return "Accepté";
+    case APPOINTMENT_STATUS.REJECTED:
+      return "Rejeté";
+    default:
+      return "Statut inconnu";
+  }
+}

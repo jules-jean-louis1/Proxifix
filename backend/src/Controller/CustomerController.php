@@ -11,22 +11,25 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api')]
 final class CustomerController extends AbstractController
 {
+    #[IsGranted('ROLE_TECHNICIAN')]
     #[Route('/customer/{id}', name: 'app_customer_edit', methods: ['PATCH'])]
     public function editCustomer(
-        int $id,
-        Request $request,
-        EntityManagerInterface $entityManager,
+        int                         $id,
+        Request                     $request,
+        EntityManagerInterface      $entityManager,
         UserPasswordHasherInterface $passwordHasher
-    ): JsonResponse {
+    ): JsonResponse
+    {
         try {
-            $payload  = $request->getPayload();
-            $customerUser     = $entityManager->getRepository(User::class)->find($id);
+            $payload = $request->getPayload();
+            $customerUser = $entityManager->getRepository(User::class)->find($id);
 
-            if (! $customerUser) {
+            if (!$customerUser) {
                 return $this->json(['error' => 'Customer not found'], Response::HTTP_NOT_FOUND);
             }
 
@@ -88,12 +91,13 @@ final class CustomerController extends AbstractController
         }
     }
 
+    #[IsGranted('ROLE_TECHNICIAN')]
     #[Route('/customer/{id}', name: 'app_customer_delete', methods: ['DELETE'])]
     public function delete(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
         $customerUser = $entityManagerInterface->getRepository(User::class)->find($id);
 
-        if (! $customerUser) {
+        if (!$customerUser) {
             return $this->json(['error' => 'Customer not found'], Response::HTTP_NOT_FOUND);
         }
 
@@ -103,36 +107,68 @@ final class CustomerController extends AbstractController
         return $this->json(['message' => 'Customer deleted'], Response::HTTP_OK);
     }
 
+    #[IsGranted('ROLE_TECHNICIAN')]
     #[Route('/customer/{id}', name: 'app_customer_show', methods: ['GET'])]
     public function show(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
         $customerUser = $entityManagerInterface->getRepository(User::class)->find($id);
 
-        if (! $customerUser) {
+        if (!$customerUser) {
             return $this->json(['error' => 'Customer not found'], Response::HTTP_NOT_FOUND);
         }
 
         return $this->json($customerUser, Response::HTTP_OK, [], ["groups" => "user:details", "equipment:details"]);
     }
 
-    #[Route('/customers', name: 'app_customers_list', methods: ['GET'])]
-    public function list(UserRepository $userRepository, Request $request): JsonResponse
-    {
-        $page   = $request->query->getInt('page', 1);
-        $limit  = $request->query->getInt('limit', 10);
-    
-        $customerUsers = $userRepository->customerList($page, $limit);
-    
-        return $this->json($customerUsers, Response::HTTP_OK, [], ["groups" => "user:details", "equipment:details"]);
-    }
-
-    #[Route('/customer-search', name: 'app_customer_search', methods: ['GET'])]
+    #[IsGranted('ROLE_TECHNICIAN')]
+    #[Route('/customer', name: 'app_customer_search', methods: ['GET'])]
     public function search(Request $request, UserRepository $userRepository): JsonResponse
     {
-        $query = $request->query->get('query');
+        $query = $request->get('query');
+        $id = $request->get('id');
+        $order = $request->get('order');
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 25);
 
-        $customer = $userRepository->searchCustomer($query);
+        $customer = $userRepository->getUsers($id, $query, $page, $limit, $order);
 
-        return $this->json($customer, Response::HTTP_OK);
+        return $this->json($customer, Response::HTTP_OK, [], ["groups" => "user:details", "equipment:details"]);
+    }
+
+    #[IsGranted('ROLE_TECHNICIAN')]
+    #[Route('/customer', name: 'app_customer_edit', methods: ['POST'])]
+    public function addCustomer(Request $request, EntityManagerInterface $entityManagerInterface, UserPasswordHasherInterface $passwordHasher): JsonResponse
+    {
+        $payload = $request->getPayload();
+        $email = $payload->get('email');
+        $firstName = $payload->get('first_name');
+        $lastName = $payload->get('last_name');
+        $password = $payload->get('password');
+
+        if (!$email && !$firstName && !$lastName && !$password) {
+            return $this->json(['error' => 'Missing required fields'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $existingUser = $entityManagerInterface->getRepository(User::class)->findOneBy(['email' => $email]);
+        if ($existingUser) {
+            return $this->json(['error' => 'Email already exists'], Response::HTTP_CONFLICT);
+        }
+
+        $customer = new User();
+        $customer->setEmail($email);
+        $customer->setFirstName($firstName);
+        $customer->setLastName($lastName);
+        $customer->setPassword($passwordHasher->hashPassword($customer, $password));
+        $customer->setCity($payload->get('city') ?? null);
+        $customer->setZipCode($payload->get('zip_code') ?? null);
+        $customer->setPhone($payload->get('phone') ?? null);
+        $customer->setAddress($payload->get('address') ?? null);
+        $customer->setRoles([User::ROLE_CUSTOMER]);
+        $customer->setCreatedAt(new \DateTimeImmutable());
+        $customer->setUpdatedAt(new \DateTimeImmutable());
+        $entityManagerInterface->persist($customer);
+        $entityManagerInterface->flush();
+
+        return $this->json(['message' => 'Customer created'], Response::HTTP_CREATED);
     }
 }

@@ -1,30 +1,31 @@
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { useSession } from "../context/ctx";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
+import { useSessionContext } from "../context/useSessionContext";
 
-function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
+export default function MainLayout() {
   const { session, isLoading } = useSession();
+  const sessionCtx = useSessionContext();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!isLoading && !session) {
-      router.replace("../loginCustomer");
-    }
-  }, [isLoading, session]);
+    setIsAdmin(sessionCtx?.getIsAdmin() ?? false);
+  }, [sessionCtx]);
 
   if (isLoading) {
-    // Afficher un écran de chargement pendant que la session est vérifiée
     return null;
   }
 
-  return <>{children}</>;
-}
+  if (!session) {
+    return <Stack.Screen name="loginCustomer" />;
+  }
 
-export default function MainLayout() {
   return (
-    <ProtectedLayout>
-      <Stack screenOptions={{headerShown : false}} />
-    </ProtectedLayout>
+    <Stack screenOptions={{ headerShown: false }}>
+      {!isAdmin && <Stack.Screen name="customer" options={{ headerShown: false }} />}
+
+      {isAdmin && <Stack.Screen name="admin" options={{ headerShown: false }} />}
+    </Stack>
   );
 }

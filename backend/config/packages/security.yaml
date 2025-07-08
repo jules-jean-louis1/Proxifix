@@ -6,6 +6,7 @@ security:
         ROLE_CUSTOMER: ['ROLE_CUSTOMER']
         ROLE_TECHNICIAN: ['ROLE_TECHNICIAN']
         ROLE_ADMIN: ['ROLE_ADMIN', 'ROLE_TECHNICIAN']
+        ROLE_SUPER_ADMIN: ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_TECHNICIAN']
 
     providers:
         user:
@@ -49,18 +50,19 @@ security:
         #- { path: ^/api/register, roles: ROLE_ADMIN }
         - { path: ^/api/customer, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/customer, roles: ROLE_TECHNICIAN }
-        - { path: ^/api/brands, roles: ROLE_TECHNICIAN }
         - { path: ^/api/equipment, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/intervention, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/admin/interventions, roles: ROLE_TECHNICIAN }
-        - { path: ^/api/operating_system, roles: ROLE_TECHNICIAN }
-        - { path: ^/api/company, roles: ROLE_ADMIN }
+        - { path: ^/api/operating-system, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/company, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/task, roles: ROLE_ADMIN }
         - { path: ^/api/task/intervention, roles: ROLE_ADMIN }
         - { path: ^/api/appointment/free-slots, roles: IS_AUTHENTICATED_FULLY}
         - { path: ^/api/appointment, roles : IS_AUTHENTICATED_FULLY}
         - { path: ^/api/customer/appointment, roles: IS_AUTHENTICATED_FULLY}
         - { path: ^/api/admin/appointment, roles: ROLE_TECHNICIAN}
+        - { path: ^/api/brand, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/user, roles: ROLE_TECHNICIAN }
 
 when@test:
     doctrine:

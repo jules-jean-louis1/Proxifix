@@ -13,6 +13,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource]
 class Intervention
 {
+    public const PENDING = "pending";
+    public const AWAITING_PICKUP = "awaiting_pickup";
+    public const IN_PROGRESS = "in_progress";
+    public const COMPLETED = "completed";
+    public const CANCELLED = "cancelled";
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -53,23 +59,19 @@ class Intervention
     private ?TypeIntervention $typeIntervention = null;
 
     #[ORM\ManyToOne(inversedBy: "interventions")]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[Groups(['intervention:details'])]
     private ?Company $company = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\Column(length : 255)]
     #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
-    private ?Status $status = null;
+    private ?string $status = null;
 
     #[ORM\ManyToOne]
     #[Groups(['intervention:read', 'intervention:details'])]
     private ?User $user = null;
 
-    #[
-        ORM\OneToMany(
-            mappedBy: "intervention",
-            targetEntity: TaskIntervention::class
-        )
-    ]
+    #[ORM\OneToMany(mappedBy: "intervention", targetEntity: TaskIntervention::class)]
     #[Groups(['intervention:read', 'intervention:details'])]
     private Collection $taskInterventions;
     
@@ -86,6 +88,8 @@ class Intervention
     public function __construct()
     {
         $this->taskInterventions = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -213,16 +217,20 @@ class Intervention
         return $this;
     }
 
-    public function getStatus(): ?Status
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    public function setStatus(?Status $status): static
+    public function setStatus(?string $status): static
     {
         $this->status = $status;
 
         return $this;
+    }
+    public function isPending(): bool
+    {
+        return $this->status === self::PENDING;
     }
 
     public function getUser(): ?User

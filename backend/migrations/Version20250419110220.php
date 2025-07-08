@@ -28,7 +28,8 @@ final class Version20250419110220 extends AbstractMigration
         $this->addSql('ALTER TABLE appointment_request ADD approved_by_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE appointment_request ADD title VARCHAR(255) DEFAULT NULL');
         $this->addSql('ALTER TABLE appointment_request ALTER COLUMN equipment_id DROP NOT NULL');
-        $this->addSql('ALTER TABLE appointment_request ALTER COLUMN equipment_id DEFAULT NULL');
+        $this->addSql('ALTER TABLE appointment_request ALTER COLUMN equipment_id DROP NOT NULL');
+        $this->addSql('ALTER TABLE appointment_request ALTER COLUMN equipment_id DROP DEFAULT');
         $this->addSql('ALTER TABLE appointment_request ADD CONSTRAINT FK_AAB4BDB72D234F6A FOREIGN KEY (approved_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('CREATE INDEX IDX_AAB4BDB72D234F6A ON appointment_request (approved_by_id)');
         $this->addSql('ALTER TABLE intervention ADD appointment_request_id INT DEFAULT NULL');

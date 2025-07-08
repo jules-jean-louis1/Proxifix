@@ -1,40 +1,73 @@
-import { useSession } from "@/app/context/ctx";
 import { Feather } from "@expo/vector-icons";
-import { View, StyleSheet, Pressable } from "react-native";
-import { IconButton } from "react-native-paper";
+import { View, StyleSheet, Pressable, Text } from "react-native";
+import React from "react";
 
-export const ToolBarCustomer = () => {
-  const { signOut } = useSession();
+interface ToolBarCustomerProps {
+  title?: string;
+  showBack?: boolean;
+  onBackPress?: () => void;
+  rightContent?: React.ReactNode;
+}
+
+export const ToolBarCustomer: React.FC<ToolBarCustomerProps> = ({
+  title = "",
+  showBack = false,
+  onBackPress,
+  rightContent,
+}) => {
   return (
-    <View style={style.container}>
-      <View style={style.subContainer}>
-        <Pressable
-          onPress={() => signOut()}
-          style={{
-            backgroundColor: "#F5F5F8",
-            padding: 10,
-            borderRadius: 50,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Feather
-            name="user"
-            size={24}
-            color="black"
-          />
-        </Pressable>
+    <View style={styles.container}>
+      <View style={styles.left}>
+        {showBack && (
+          <Pressable onPress={onBackPress} style={styles.iconButton}>
+            <Feather name="arrow-left" size={24} color="#344260" />
+          </Pressable>
+        )}
       </View>
+      <View style={{ flex: 1, alignItems: "center" }}>
+        {title ? <Text style={styles.title}>{title}</Text> : null}
+      </View>
+      <View style={styles.right}>{rightContent}</View>
     </View>
   );
 };
 
-const style = StyleSheet.create({
-  container: {
+const styles = StyleSheet.create({
+  containerHome: {
     width: "100%",
     backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
+  },
+  container: {
+    width: "100%",
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: "#283276",
+  },
+  left: {
+    width: 40,
+    alignItems: "flex-start",
+  },
+  right: {
+    width: 40,
+    alignItems: "flex-end",
+  },
+  iconButton: {
+    padding: 6,
+    borderRadius: 20,
+  },
+  title: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "light",
+    color: "#344260",
   },
   subContainer: {
     paddingVertical: 5,

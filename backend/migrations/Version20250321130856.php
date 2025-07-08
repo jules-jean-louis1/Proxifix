@@ -22,6 +22,7 @@ final class Version20250321130856 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('DROP SEQUENCE customer_id_seq CASCADE');
         $this->addSql('ALTER TABLE customer DROP CONSTRAINT fk_81398e09a76ed395');
+        $this->addSql('ALTER TABLE equipment DROP CONSTRAINT IF EXISTS fk_D338D5839395C3F3');
         $this->addSql('DROP TABLE customer');
         $this->addSql('ALTER TABLE company ALTER about DROP NOT NULL');
         $this->addSql('ALTER TABLE company ALTER type DROP NOT NULL');

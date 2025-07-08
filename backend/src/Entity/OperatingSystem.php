@@ -19,13 +19,13 @@ class OperatingSystem
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['equipment:details'])]
+    #[Groups(['operatingSystem.get_one','equipment:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 3, max: 255)]
     #[Assert\Regex(pattern: '/^[a-zA-Z0-9_]+$/', message: 'The name can only contain letters, numbers and underscores')]
-    #[Groups(['operatingSystem.create', 'equipment:details'])]
+    #[Groups(['operatingSystem.create', 'equipment:details', 'operatingSystem.get_one'])]
     private ?string $name = null;
 
     /**
@@ -34,9 +34,19 @@ class OperatingSystem
     #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'operating_system')]
     private Collection $equipment;
 
+    #[ORM\Column]
+    #[Groups(['operatingSystem.create', 'equipment:details', 'operatingSystem.get_one'])]
+    private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\Column]
+    #[Groups(['operatingSystem.create', 'equipment:details', 'operatingSystem.get_one'])]
+    private ?\DateTimeImmutable $updated_at = null;
+
     public function __construct()
     {
         $this->equipment = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
 
 
@@ -83,6 +93,30 @@ class OperatingSystem
                 $equipment->setOperatingSystem(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    {
+        $this->updated_at = $updated_at;
 
         return $this;
     }

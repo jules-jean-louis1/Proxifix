@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[ApiResource]
@@ -14,19 +15,26 @@ class Task
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["task:read", "task:write", "intervention:details", "task:get_list", "company:read", "company:get_list"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["task:read", "task:write", "intervention:details", "task:get_list", "company:read", "company:get_list"])]
     private ?string $name = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
+    #[Groups(["task:read", "task:write", "intervention:details", "task:get_list", "company:read", "company:get_list"])]
     private ?float $price = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(["task:read", "task:write", "intervention:details", "task:get_list", "company:read", "company:get_list"])]
     private ?string $description = null;
 
     #[ORM\OneToMany(mappedBy: 'task', targetEntity: TaskIntervention::class)]
     private $taskInterventions;
+
+    #[ORM\ManyToOne(inversedBy: 'tasks')]
+    private ?Company $Company = null;
 
     public function getId(): ?int
     {
@@ -85,6 +93,18 @@ class Task
     public function removeTaskIntervention(TaskIntervention $taskIntervention): self
     {
         $this->taskInterventions->removeElement($taskIntervention);
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->Company;
+    }
+
+    public function setCompany(?Company $Company): static
+    {
+        $this->Company = $Company;
 
         return $this;
     }

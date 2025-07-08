@@ -49,7 +49,7 @@ class Equipment
     private ?TypeEquipment $type_equipment = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[Groups(['equipment:details', "user:details"])]
     private ?OperatingSystem $operating_system = null;
 
@@ -68,10 +68,16 @@ class Equipment
     #[Groups(['equipment:details'])]
     private Collection $appointmentRequests;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
+    private ?string $reference = null;
+
     public function __construct()
     {
         $this->interventions = new ArrayCollection();
         $this->appointmentRequests = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -216,6 +222,18 @@ class Equipment
             }
         }
     
+        return $this;
+    }
+
+    public function getReference(): ?string
+    {
+        return $this->reference;
+    }
+
+    public function setReference(?string $reference): static
+    {
+        $this->reference = $reference;
+
         return $this;
     }
 }

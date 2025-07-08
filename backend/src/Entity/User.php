@@ -18,6 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\UniqueConstraint(name: "UNIQ_IDENTIFIER_EMAIL", fields: ["email"])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
     public const ROLE_ADMIN = "ROLE_ADMIN";
     public const ROLE_TECHNICIAN = "ROLE_TECHNICIAN";
     public const ROLE_CUSTOMER = "ROLE_CUSTOMER";
@@ -27,13 +28,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
-    #[
-        Assert\Regex(
-            pattern: '/^[a-zA-Z0-9_]+$/',
-            message: "The username can only contain letters, numbers and underscores"
-        )
-    ]
+    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\Email]
     #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private ?string $email = null;
 
@@ -45,6 +41,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[
         Assert\Choice(
             choices: [
+                self::ROLE_SUPER_ADMIN,
                 self::ROLE_ADMIN,
                 self::ROLE_TECHNICIAN,
                 self::ROLE_TECHNICIAN,
@@ -91,32 +88,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: "users")]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[Groups(["user:customer:read", "user:details"])]
     private ?Company $company = null;
 
     /**
      * @var Collection<int, Equipment>
      */
-    #[
-        ORM\OneToMany(
-            targetEntity: Equipment::class,
-            mappedBy: "user",
-            cascade: ["remove"]
-        )
-    ]
+    #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: "user", cascade: ["remove"])]
     #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private Collection $equipment;
 
     /**
      * @var Collection<int, AppointmentRequest>
      */
-    #[
-        ORM\OneToMany(
-            targetEntity: AppointmentRequest::class,
-            mappedBy: "user",
-            orphanRemoval: true
-        )
-    ]
+    #[ORM\OneToMany(targetEntity: AppointmentRequest::class, mappedBy: "user", orphanRemoval: true)]
     #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private Collection $appointmentRequests;
 

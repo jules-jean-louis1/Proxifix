@@ -6,28 +6,37 @@ use App\Entity\Equipment;
 use App\Entity\OperatingSystem;
 use App\Entity\TypeEquipment;
 use App\Entity\User;
+use App\Repository\EquipmentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/equipment')]
+#[Route('/api')]
 class EquipmentController extends AbstractController
 {
-    #[Route('/create', name: 'app_equipment_create', methods: ['POST'])]
+    #[Route('/equipment', name: 'app_equipment_create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $payload = $request->getPayload();
 
-        $user        = $entityManager->getRepository(User::class)->find($payload->get('user_id'));
+        if (! $payload->has('name') || ! $payload->has('user_id') || ! $payload->has('brand_id')) {
+            return new JsonResponse(['error' => 'Name, user_id, type_equipment_id and brand_id are required'], 400);
+        }
+
+        $user            = $entityManager->getRepository(User::class)->find($payload->get('user_id'));
         $typeEquipment   = $entityManager->getRepository(TypeEquipment::class)->find($payload->get('type_equipment_id'));
-        $operatingSystem = $entityManager->getRepository(OperatingSystem::class)->find($payload->get('operating_system_id'));
         $brand           = $entityManager->getRepository(Brand::class)->find($payload->get('brand_id'));
+        $operatingSystem = null;
+        if ($payload->has('operating_system_id') && $payload->get('operating_system_id') !== null) {
+            $operatingSystem = $entityManager->getRepository(OperatingSystem::class)->find($payload->get('operating_system_id'));
+        }
 
         $equipment = new Equipment();
         $equipment->setName($payload->get('name') ?? '');
-        $equipment->setUser($user ?? null);
+        $equipment->setUser($user);
+        $equipment->setReference($payload->get('reference') ?? null);
         $equipment->setTypeEquipment($typeEquipment);
         $equipment->setOperatingSystem($operatingSystem);
         $equipment->setBrand($brand);
@@ -37,10 +46,11 @@ class EquipmentController extends AbstractController
         $entityManager->persist($equipment);
         $entityManager->flush();
 
-        return $this->json([$equipment], 201);
+        return $this->json($equipment, 201, [], ['groups' => 'equipment:details']);
+
     }
 
-    #[Route('/{id}', name: 'app_equipment_edit', methods: ['PUT'])]
+    #[Route('/equipment/{id}', name: 'app_equipment_edit', methods: ['PUT', 'PATCH'])]
     public function edit(Request $request, EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
         $payload = $request->getPayload();
@@ -50,14 +60,18 @@ class EquipmentController extends AbstractController
         if (! $equipment) {
             return new JsonResponse(['error' => 'Equipment not found'], 404);
         }
+        // $intervention = $equipment->getInterventions();
+        // if ($intervention) {
+        //     return new JsonResponse(['error' => 'Cannot edit equipment with interventions'], 400);
+        // }
 
         $name = $payload->get('name') ?? null;
         if (isset($name)) {
             $equipment->setName($payload->get('name'));
         }
-        $userId = $payload->get('user_id') ?? null;
+        $customerId = $payload->get('user_id') ?? null;
         if (isset($customerId)) {
-            $user = $entityManagerInterface->getRepository(User::class)->find($userId);
+            $user = $entityManagerInterface->getRepository(User::class)->find($customerId);
             $equipment->setUser($user);
         }
         $typeEquipmentId = $payload->get('type_equipment_id') ?? null;
@@ -75,15 +89,33 @@ class EquipmentController extends AbstractController
             $brand = $entityManagerInterface->getRepository(Brand::class)->find($brandId);
             $equipment->setBrand($brand);
         }
+        $reference = $payload->get('reference') ?? null;
+        if (isset($reference)) {
+            $equipment->setReference($payload->get('reference'));
+        }
 
         $equipment->setUpdatedAt(new \DateTimeImmutable());
 
         $entityManagerInterface->flush();
 
-        return new JsonResponse($equipment, 200);
+        $equipmentData = [
+            'id' => $equipment->getId(),
+            'name' => $equipment->getName(),
+            'reference' => $equipment->getReference(),
+            'brand' => [
+                'id' => $equipment->getBrand()->getId(),
+                'name' => $equipment->getBrand()->getName()
+            ],
+            'type_equipment' => [
+                'id' => $equipment->getTypeEquipment()->getId(),
+                'name' =>$equipment->getTypeEquipment()->getName()
+            ]
+        ];
+
+        return new JsonResponse($equipmentData, 200);
     }
 
-    #[Route('/{id}', name: 'app_equipment_delete', methods: ['DELETE'])]
+    #[Route('/equipment/{id}', name: 'app_equipment_delete', methods: ['DELETE'])]
     public function delete(EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
         $equipment = $entityManagerInterface->getRepository(Equipment::class)->find($id);
@@ -92,23 +124,47 @@ class EquipmentController extends AbstractController
             return new JsonResponse(['error' => 'Equipment not found'], 404);
         }
 
+        $intervention = $equipment->getInterventions();
+        if ($intervention) {
+            return new JsonResponse(['error' => 'Cannot delete equipment with interventions'], 400);
+        }
+
         $entityManagerInterface->remove($equipment);
         $entityManagerInterface->flush();
 
         return new JsonResponse(['message' => 'Equipment deleted'], 200);
     }
-    #[Route('/customer/{userId}', name:'app_equipment_customer_list', methods: ['GET'])]
-    public function getEquipmentUser(int $userId, EntityManagerInterface $em): JsonResponse
+    #[Route('/customer/$customerId}', name: 'app_equipment_customer_list', methods: ['GET'])]
+    public function getEquipmentUser(int $customerId, EntityManagerInterface $em): JsonResponse
     {
-        $equipments = $em->getRepository(Equipment::class)->findByUserId($userId);
-    
+        $equipments = $em->getRepository(Equipment::class)->findByUserId($customerId);
+
         if (empty($equipments)) {
-            return new JsonResponse(['error' => 'No equipment found for this user'], 404);
+            return new JsonResponse(['error' => 'No equipment found for this user'], 204);
         }
-    
+
         return $this->json($equipments, 200, [], ['groups' => 'equipment:details']);
     }
-    #[Route('/{id}', name: 'app_equipment_get_one', methods: ['GET'])]
+    
+    #[Route('/equipment', name: 'app_equipment_get', methods: ['GET'])]
+    public function getEquipments(Request $request, EquipmentRepository $equipmentRepository)
+    {
+        $reqId              = $request->query->get('id');
+        $reqUserId          = $request->query->get('user_id');
+        $reqBrandId         = $request->query->get('brand_id');
+        $reqTypeEquipmentId = $request->query->get('type_equipment_id');
+        $reqPage            = $request->query->get('page') ?? 1;
+        $reqSize            = $request->query->get('size') ?? 25;
+        $reqName            = $request->query->get('name');
+        $reqOrder           = $request->query->get('order') ?? "ASC";
+        $reqReference       = $request->query->get('reference') ?? "";
+
+        $equipments = $equipmentRepository->getEquipments($reqId, $reqUserId, $reqBrandId, $reqTypeEquipmentId, $reqPage, $reqSize, $reqName, $reqOrder, $reqReference);
+
+        return $this->json($equipments, 200, [], ['groups' => 'equipment:details']);
+    }
+
+    #[Route('/equipment/{id}', name: 'app_equipment_get_one', methods: ['GET'])]
     public function getOneEquipment(int $id, EntityManagerInterface $em) {
         $equipment = $em->getRepository(Equipment::class)->findOneBy(['id' => $id]);
 

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Repository;
 
 use App\Entity\Equipment;
@@ -29,6 +28,51 @@ class EquipmentRepository extends ServiceEntityRepository
             ->setParameter('userId', $userId)
             ->getQuery()
             ->getResult();
+    }
+
+    public function getEquipments(?int $id, ?int $userId, ?int $brandId, ?int $typeEquipmentId, ?int $page, ?int $size, ?string $name, ?string $order = 'ASC', ?string $reference = ""): array
+    {
+        $offset = ($page - 1) * $size;
+        $query  = $this->createQueryBuilder('e');
+
+        if ($order !== null) {
+            $query->orderBy('e.name', $order);
+        }
+
+        $query->setFirstResult($offset)
+            ->setMaxResults($size);
+
+        if ($id !== null) {
+            $query->andWhere('e.id = :id')
+                ->setParameter('id', intval($id));
+        }
+
+        if ($userId !== null) {
+            $query->andWhere('e.user = :user_id')
+                ->setParameter('user_id', intval($userId));
+        }
+
+        if ($brandId !== null) {
+            $query->andWhere('e.brand = :brand_id')
+                ->setParameter('brand_id', intval($brandId));
+        }
+
+        if ($typeEquipmentId !== null) {
+            $query->andWhere('e.type_equipment = :type_equipment_id')
+                ->setParameter('type_equipment_id', intval($typeEquipmentId));
+        }
+
+        if ($name !== null) {
+            $query->andWhere('LOWER(e.name) LIKE :name')
+                ->setParameter('name', '%' . strtolower($name) . '%');
+        }
+
+        if ($reference !== "") {
+            $query->andWhere('e.reference = :reference')
+                ->setParameter('reference', $reference);
+        }
+
+        return $query->getQuery()->getResult();
     }
     //    /**
     //     * @return Equipment[] Returns an array of Equipment objects

@@ -1,9 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import {
-  getStatusColor,
-  getStatusInterventionCard,
-} from "@/app/utils/intervention";
+import { View, Text, StyleSheet, Pressable } from "react-native";
+import { getStatus, getStatusColor } from "@/app/utils/intervention";
+import { router } from "expo-router";
 
 interface EquipmentCardHomeProps {
   equipment: any[];
@@ -17,44 +15,54 @@ export const EquipmentCardHome: React.FC<EquipmentCardHomeProps> = ({
   }
 
   return (
-    <View style={styles.equipmentCard}>
-      <Text style={styles.titleSide}>Vos équipements informatique</Text>
-      <View style={styles.equipmentCardContainer}>
-        {equipment.slice(0, 4).map((e: any, index: number) => {
-          const status =
-            e.interventions && e.interventions.length > 0
-              ? getStatusInterventionCard(e.interventions)
-              : "No data";
-          const statusColor = getStatusColor(status);
-
-          return (
-            <View style={styles.card} key={index}>
-              <Text style={styles.name}>{e.name}</Text>
-              {e.interventions && e.interventions.length > 0 && (
-                <Text style={[styles.status, { color: statusColor }]}>
-                  {status}
-                </Text>
-              )}
-            </View>
-          );
-        })}
+    <View style={{ width: "100%", alignItems: "center", marginTop: 20 }}>
+      <View style={styles.header}>
+        <Text style={styles.titleSide}>Vos équipements</Text>
+        <Pressable onPress={() => router.push("/customer/equipments")}>
+          <Text>Voir plus</Text>
+        </Pressable>
+      </View>
+      <View style={styles.equipmentCard}>
+        <View style={styles.equipmentCardContainer}>
+          {equipment.slice(0, 4).map((e: any, index: number) => {
+            const status =
+              e.interventions && e.interventions.length > 0
+                ? getStatus(e.interventions[0])
+                : "No data";
+            const statusColor = getStatusColor(e.interventions[0]?.status);
+            return (
+              <View style={styles.card} key={index}>
+                <Text style={styles.name}>{e.name}</Text>
+                {e.interventions && e.interventions.length > 0 && (
+                  <Text style={[styles.status, { color: statusColor }]}>
+                    {status}
+                  </Text>
+                )}
+              </View>
+            );
+          })}
+        </View>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  header: {
+    width: "90%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
   equipmentCard: {
-    backgroundColor: "#F5F5F8",
     borderRadius: 20,
-    padding: 16,
     marginBottom: 20,
     width: "90%",
     alignSelf: "center",
   },
   equipmentCardContainer: {
     width: "100%",
-    paddingHorizontal: 16,
   },
   card: {
     flexDirection: "row",
@@ -72,9 +80,8 @@ const styles = StyleSheet.create({
   titleSide: {
     color: "#637381",
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: 12,
     textTransform: "uppercase",
-    marginBottom: 16,
   },
   name: {
     fontSize: 18,

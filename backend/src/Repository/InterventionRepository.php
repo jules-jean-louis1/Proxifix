@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Repository;
 
 use App\Entity\Intervention;
@@ -16,7 +15,7 @@ class InterventionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Intervention::class);
     }
-        /**
+    /**
      * Récupère les interventions pour un utilisateur donné.
      *
      * @param int $userId
@@ -36,47 +35,47 @@ class InterventionRepository extends ServiceEntityRepository
     public function findByCompanyId(int $companyId, int $page, int $limit, string $order, ?string $status): array
     {
         $offset = ($page - 1) * $limit;
-    
+
         $qb = $this->createQueryBuilder('i')
             ->where('i.company = :companyId')
             ->setParameter('companyId', $companyId)
             ->orderBy('i.created_at', $order)
             ->setFirstResult($offset)
             ->setMaxResults($limit);
-    
+
         if ($status !== "all") {
             $qb->leftJoin('i.status', 's')
-               ->andWhere('s.name = :status')
-               ->setParameter('status', $status);
+                ->andWhere('s.name = :status')
+                ->setParameter('status', $status);
         }
-    
+
         return $qb->getQuery()->getResult();
     }
 
     public function getFreeSlots(\DateTime $date, ?int $companyId = null, ?int $interval_min = null): array
     {
         $conn = $this->getEntityManager()->getConnection();
-    
+
         $query = <<<SQL
-            SELECT * 
+            SELECT *
             FROM get_free_slots(:date, :company_id, :interval)
         SQL;
-    
+
         $result = $conn->executeQuery($query, [
-            'date' => $date->format('Y-m-d'),
+            'date'       => $date->format('Y-m-d'),
             'company_id' => $companyId ?? 0,
-            'interval' => $interval_min ?? 60,
+            'interval'   => $interval_min ?? 60,
         ]);
-    
+
         return $result->fetchAllAssociative();
     }
 
-    public function isSlotsAvailable(int $companyId, string|DateTimeImmutable $start_date, string|DateTimeImmutable $end_date = null): bool
+    public function isSlotsAvailable(int $companyId, string | DateTimeImmutable $start_date, string | DateTimeImmutable $end_date = null): bool
     {
 
         $start_date = $start_date instanceof DateTimeImmutable ? $start_date : new DateTimeImmutable($start_date);
-        $end_date = $end_date instanceof DateTimeImmutable ? $end_date : $start_date->add(new \DateInterval('PT1H')); // Par défaut, 1 heure
-    
+        $end_date   = $end_date instanceof DateTimeImmutable ? $end_date : $start_date->add(new \DateInterval('PT1H')); // Par défaut, 1 heure
+
         $qb = $this->createQueryBuilder('i')
             ->select('COUNT(i.id)')
             ->where('i.company = :companyId')
@@ -85,10 +84,58 @@ class InterventionRepository extends ServiceEntityRepository
             ->setParameter('companyId', $companyId)
             ->setParameter('start_date', $start_date)
             ->setParameter('end_date', $end_date);
-    
+
         $count = $qb->getQuery()->getSingleScalarResult();
-    
+
         return $count == 0;
+    }
+
+    public function getInterventions(
+        ?int $id = null,
+        ?int $userId = null,
+        ?int $companyId = null,
+        ?string $status = null,
+        ?int $page = 1,
+        ?string $order = 'ASC',
+        ?int $typeInterventionId = null,
+        ?int $size = 10
+    ): array {
+        $offset = ($page - 1) * $size;
+        $query  = $this->createQueryBuilder('i');
+
+        if ($order !== null) {
+            $query->orderBy('i.created_at', $order);
+        }
+        $query->setFirstResult($offset)
+            ->setMaxResults($size);
+
+        if ($id !== null) {
+            $query->andWhere('i.id = :id')
+                ->setParameter('id', intval($id));
+        }
+
+        if ($userId !== null) {
+            $query->andWhere('i.user = :user_id')
+                ->setParameter('user_id', intval($userId));
+        }
+
+        if ($companyId !== null) {
+            $query->andWhere('i.company = :company_id')
+                ->setParameter('company_id', intval($companyId));
+        }
+
+        if ($status !== null && $status !== "all") {
+            $query->leftJoin('i.status', 's')
+                ->andWhere('s.name = :status')
+                ->setParameter('status', $status);
+        }
+
+        if ($typeInterventionId !== null) {
+            $query->andWhere('i.typeIntervention = :type_intervention_id')
+                ->setParameter('type_intervention_id', intval($typeInterventionId));
+        }
+
+        return $query->getQuery()->getResult();
     }
     //    /**
     //     * @return Intervention[] Returns an array of Intervention objects

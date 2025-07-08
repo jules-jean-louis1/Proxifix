@@ -19,19 +19,29 @@ class AdminRegistrationController extends AbstractController
     {
         $payload = $request->getPayload();
 
+        // Validation des données requises
+        $email = $payload->get('email');
+        $firstName = $payload->get('first_name');
+        $lastName = $payload->get('last_name');
+        $password = $payload->get('password');
+
+        if (!$email || !$firstName || !$lastName || !$password) {
+            return new JsonResponse(['error' => 'Missing required fields'], 400);
+        }
+
         $user = new User();
-        $user->setEmail($payload->get('email'));
-        $user->setFirstName($payload->get('first_name'));
-        $user->setLastName($payload->get('last_name'));
-        $user->setRoles(['ROLE_USER']);
-        $plaintextPassword = $payload->get('password');
-        $hashedPassword = $passwordHasher->hashPassword(
-            $user,
-            $plaintextPassword
-        );
+        $user->setEmail($email);
+        $user->setFirstName($firstName);
+        $user->setLastName($lastName);
+        $user->setCreatedAt(new \DateTimeImmutable());
+        $user->setUpdatedAt(new \DateTimeImmutable());
+        
+        $hashedPassword = $passwordHasher->hashPassword($user, $password);
         $user->setPassword($hashedPassword);
+        
         $role = $payload->get('roles') ?? User::ROLE_TECHNICIAN;
         $user->setRoles([$role]);
+        
         $entityManager->persist($user);
         $entityManager->flush();
 
