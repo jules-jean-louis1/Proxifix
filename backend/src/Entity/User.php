@@ -18,6 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\UniqueConstraint(name: "UNIQ_IDENTIFIER_EMAIL", fields: ["email"])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
     public const ROLE_ADMIN = "ROLE_ADMIN";
     public const ROLE_TECHNICIAN = "ROLE_TECHNICIAN";
     public const ROLE_CUSTOMER = "ROLE_CUSTOMER";
@@ -40,6 +41,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[
         Assert\Choice(
             choices: [
+                self::ROLE_SUPER_ADMIN,
                 self::ROLE_ADMIN,
                 self::ROLE_TECHNICIAN,
                 self::ROLE_TECHNICIAN,
@@ -86,6 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: "users")]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[Groups(["user:customer:read", "user:details"])]
     private ?Company $company = null;
 

@@ -25,21 +25,21 @@ class Company
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["company:read","user:details", "intervention:details", "company:get_list"])]
+    #[Groups(["company:read", "user:details", "intervention:details", "company:get_list"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["company:read","user:details", "intervention:details", "company:get_list"])]
+    #[Groups(["company:read", "user:details", "intervention:details", "company:get_list"])]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255, nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(["company:read", "intervention:details", "company:get_list"])]
     private ?string $about = null;
 
-    #[ORM\Column(length: 255, nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(["company:read", "company:get_list"])]
     private ?string $type = null;
-    
+
     #[ORM\Column(length: 255)]
     #[Groups(["company:read", "company:get_list"])]
     private ?string $address = null;
@@ -52,7 +52,7 @@ class Company
     #[Groups(["company:read", "company:get_list"])]
     private ?string $zip_code = null;
 
-    #[ORM\Column(length: 255, nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(["company:read", "company:get_list"])]
     private ?string $website = null;
 
@@ -73,7 +73,7 @@ class Company
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'company', onDelete: 'SET NULL')]
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'company')]
     private Collection $users;
 
     /**

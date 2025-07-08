@@ -36,7 +36,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function customerList(int $page, int $limit): array
     {
         $offset = ($page - 1) * $limit;
-    
+
         return $this->createQueryBuilder('u')
             ->where("JSON_GET_TEXT(u.roles, 0) = :role")
             ->setParameter('role', 'ROLE_CUSTOMER')
@@ -46,7 +46,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
-    public function searchCustomer(string $searchQuery) 
+    public function searchCustomer(string $searchQuery)
     {
         return $this->createQueryBuilder('u')
             ->where("JSON_GET_TEXT(u.roles, 0) = :role")
@@ -56,6 +56,31 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->setParameter('searchQuery', $searchQuery)
             ->getQuery()
             ->getResult();
+    }
+
+    public function getCustomers(?int $id, ?string $searchQuery = "", ?int $page = 1, ?int $size = 25, ?string $order = "")
+    {
+        $query = $this->createQueryBuilder('u')
+            ->setFirstResult(($page - 1) * $size)
+            ->setMaxResults($size);
+
+        if ($searchQuery) {
+            $query->andWhere('UPPER(u.first_name) LIKE UPPER(:searchQuery)')
+                ->orWhere('UPPER(u.last_name) LIKE UPPER(:searchQuery)')
+                ->orWhere('UPPER(u.email) LIKE UPPER(:searchQuery)')
+                ->setParameter('searchQuery', '%' . $searchQuery . '%');
+        }
+
+        if ($order) {
+            $query->orderBy('u.:order', 'ASC')
+                ->setParameter('order', $order);
+        }
+
+        if ($id) {
+            $query->andWhere('u.id = :id')
+                ->setParameter('id', $id);
+        }
+        return $query->getQuery()->getResult();
     }
     //    /**
     //     * @return User[] Returns an array of User objects

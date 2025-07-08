@@ -54,6 +54,7 @@ class AppointmentRequest
     private ?User $user = null;
 
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Company $company = null;
 
     #[ORM\ManyToOne]

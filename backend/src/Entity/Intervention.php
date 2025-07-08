@@ -59,6 +59,7 @@ class Intervention
     private ?TypeIntervention $typeIntervention = null;
 
     #[ORM\ManyToOne(inversedBy: "interventions")]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[Groups(['intervention:details'])]
     private ?Company $company = null;
 

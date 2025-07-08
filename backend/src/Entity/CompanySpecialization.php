@@ -33,6 +33,7 @@ class CompanySpecialization
      * @var Collection<int, Company>
      */
     #[ORM\ManyToMany(targetEntity: Company::class, mappedBy: "specializations", cascade: ["persist"])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private Collection $companies;
 
     public function __construct()
