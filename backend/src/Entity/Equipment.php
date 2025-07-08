@@ -49,7 +49,7 @@ class Equipment
     private ?TypeEquipment $type_equipment = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[Groups(['equipment:details', "user:details"])]
     private ?OperatingSystem $operating_system = null;
 

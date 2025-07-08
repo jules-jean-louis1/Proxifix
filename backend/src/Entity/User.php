@@ -95,26 +95,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Equipment>
      */
-    #[
-        ORM\OneToMany(
-            targetEntity: Equipment::class,
-            mappedBy: "user",
-            cascade: ["remove"]
-        )
-    ]
+    #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: "user", cascade: ["remove"])]
     #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private Collection $equipment;
 
     /**
      * @var Collection<int, AppointmentRequest>
      */
-    #[
-        ORM\OneToMany(
-            targetEntity: AppointmentRequest::class,
-            mappedBy: "user",
-            orphanRemoval: true
-        )
-    ]
+    #[ORM\OneToMany(targetEntity: AppointmentRequest::class, mappedBy: "user", orphanRemoval: true)]
     #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
     private Collection $appointmentRequests;
 

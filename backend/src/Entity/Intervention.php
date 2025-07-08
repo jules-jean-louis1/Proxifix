@@ -71,12 +71,7 @@ class Intervention
     #[Groups(['intervention:read', 'intervention:details'])]
     private ?User $user = null;
 
-    #[
-        ORM\OneToMany(
-            mappedBy: "intervention",
-            targetEntity: TaskIntervention::class
-        )
-    ]
+    #[ORM\OneToMany(mappedBy: "intervention", targetEntity: TaskIntervention::class)]
     #[Groups(['intervention:read', 'intervention:details'])]
     private Collection $taskInterventions;
     

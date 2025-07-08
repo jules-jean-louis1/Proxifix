@@ -22,7 +22,7 @@ class TaskIntervention
     #[Groups(['intervention:details'])]
     private ?Task $task = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'taskInterventions')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Intervention $intervention = null;
 
