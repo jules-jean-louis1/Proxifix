@@ -36,6 +36,7 @@ class EquipmentController extends AbstractController
         $equipment = new Equipment();
         $equipment->setName($payload->get('name') ?? '');
         $equipment->setUser($user);
+        $equipment->setReference($payload->get('reference') ?? null);
         $equipment->setTypeEquipment($typeEquipment);
         $equipment->setOperatingSystem($operatingSystem);
         $equipment->setBrand($brand);
@@ -49,7 +50,7 @@ class EquipmentController extends AbstractController
 
     }
 
-    #[Route('/equipment/{id}', name: 'app_equipment_edit', methods: ['PUT'])]
+    #[Route('/equipment/{id}', name: 'app_equipment_edit', methods: ['PUT', 'PATCH'])]
     public function edit(Request $request, EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
         $payload = $request->getPayload();
@@ -68,9 +69,9 @@ class EquipmentController extends AbstractController
         if (isset($name)) {
             $equipment->setName($payload->get('name'));
         }
-        $userId = $payload->get('user_id') ?? null;
+        $customerId = $payload->get('user_id') ?? null;
         if (isset($customerId)) {
-            $user = $entityManagerInterface->getRepository(User::class)->find($userId);
+            $user = $entityManagerInterface->getRepository(User::class)->find($customerId);
             $equipment->setUser($user);
         }
         $typeEquipmentId = $payload->get('type_equipment_id') ?? null;
@@ -88,12 +89,30 @@ class EquipmentController extends AbstractController
             $brand = $entityManagerInterface->getRepository(Brand::class)->find($brandId);
             $equipment->setBrand($brand);
         }
+        $reference = $payload->get('reference') ?? null;
+        if (isset($reference)) {
+            $equipment->setReference($payload->get('reference'));
+        }
 
         $equipment->setUpdatedAt(new \DateTimeImmutable());
 
         $entityManagerInterface->flush();
 
-        return new JsonResponse($equipment, 200);
+        $equipmentData = [
+            'id' => $equipment->getId(),
+            'name' => $equipment->getName(),
+            'reference' => $equipment->getReference(),
+            'brand' => [
+                'id' => $equipment->getBrand()->getId(),
+                'name' => $equipment->getBrand()->getName()
+            ],
+            'type_equipment' => [
+                'id' => $equipment->getTypeEquipment()->getId(),
+                'name' =>$equipment->getTypeEquipment()->getName()
+            ]
+        ];
+
+        return new JsonResponse($equipmentData, 200);
     }
 
     #[Route('/equipment/{id}', name: 'app_equipment_delete', methods: ['DELETE'])]
@@ -115,10 +134,10 @@ class EquipmentController extends AbstractController
 
         return new JsonResponse(['message' => 'Equipment deleted'], 200);
     }
-    #[Route('/customer/{userId}', name: 'app_equipment_customer_list', methods: ['GET'])]
-    public function getEquipmentUser(int $userId, EntityManagerInterface $em): JsonResponse
+    #[Route('/customer/$customerId}', name: 'app_equipment_customer_list', methods: ['GET'])]
+    public function getEquipmentUser(int $customerId, EntityManagerInterface $em): JsonResponse
     {
-        $equipments = $em->getRepository(Equipment::class)->findByUserId($userId);
+        $equipments = $em->getRepository(Equipment::class)->findByUserId($customerId);
 
         if (empty($equipments)) {
             return new JsonResponse(['error' => 'No equipment found for this user'], 204);
@@ -138,8 +157,9 @@ class EquipmentController extends AbstractController
         $reqSize            = $request->query->get('size') ?? 25;
         $reqName            = $request->query->get('name');
         $reqOrder           = $request->query->get('order') ?? "ASC";
+        $reqReference       = $request->query->get('reference') ?? "";
 
-        $equipments = $equipmentRepository->getEquipments($reqId, $reqUserId, $reqBrandId, $reqTypeEquipmentId, $reqPage, $reqSize, $reqName, $reqOrder);
+        $equipments = $equipmentRepository->getEquipments($reqId, $reqUserId, $reqBrandId, $reqTypeEquipmentId, $reqPage, $reqSize, $reqName, $reqOrder, $reqReference);
 
         return $this->json($equipments, 200, [], ['groups' => 'equipment:details']);
     }

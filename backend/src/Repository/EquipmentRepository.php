@@ -30,7 +30,7 @@ class EquipmentRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getEquipments(?int $id, ?int $userId, ?int $brandId, ?int $typeEquipmentId, ?int $page, ?int $size, ?string $name, ?string $order = 'ASC'): array
+    public function getEquipments(?int $id, ?int $userId, ?int $brandId, ?int $typeEquipmentId, ?int $page, ?int $size, ?string $name, ?string $order = 'ASC', ?string $reference = ""): array
     {
         $offset = ($page - 1) * $size;
         $query  = $this->createQueryBuilder('e');
@@ -65,6 +65,11 @@ class EquipmentRepository extends ServiceEntityRepository
         if ($name !== null) {
             $query->andWhere('LOWER(e.name) LIKE :name')
                 ->setParameter('name', '%' . strtolower($name) . '%');
+        }
+
+        if ($reference !== "") {
+            $query->andWhere('e.reference = :reference')
+                ->setParameter('reference', $reference);
         }
 
         return $query->getQuery()->getResult();

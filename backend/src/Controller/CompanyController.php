@@ -493,8 +493,9 @@ final class CompanyController extends AbstractController
         $reqSize  = $request->query->get('size') ?? 25;
         $reqName  = $request->query->get('name');
         $reqOrder = $request->query->get('order') ?? "ASC";
+        $reqIsDeleted = $request->query->get('is_deleted') === 'true' ? true : false;
 
-        $companies = $companyRepository->getCompanies($reqId !== null ? intval($reqId) : null, $reqPending, $reqSpecialization, $reqPage, $reqSize, $reqName, $reqOrder);
+        $companies = $companyRepository->getCompanies($reqId !== null ? intval($reqId) : null, $reqPending, $reqSpecialization, $reqPage, $reqSize, $reqName, $reqOrder, $reqIsDeleted);
 
         return $this->json($companies, 200, [], ['groups' => 'company:read']);
 

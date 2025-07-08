@@ -88,6 +88,8 @@ class Intervention
     public function __construct()
     {
         $this->taskInterventions = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?int

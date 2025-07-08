@@ -130,7 +130,7 @@ final class CustomerController extends AbstractController
         $page = $request->get('page', 1);
         $limit = $request->get('limit', 25);
 
-        $customer = $userRepository->getCustomers($id, $query, $page, $limit, $order);
+        $customer = $userRepository->getUsers($id, $query, $page, $limit, $order);
 
         return $this->json($customer, Response::HTTP_OK, [], ["groups" => "user:details", "equipment:details"]);
     }

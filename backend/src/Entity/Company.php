@@ -135,7 +135,7 @@ class Company
     private ?string $mobile = null;
 
     #[ORM\Column(options: ['default' => false])]
-    private ?bool $is_delete = null;
+    private ?bool $is_delete = false;
 
     public function __construct()
     {

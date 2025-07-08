@@ -45,6 +45,8 @@ class TypeIntervention
     {
         $this->appointmentRequests = new ArrayCollection();
         $this->interventions = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
     public function getId(): ?int
     {

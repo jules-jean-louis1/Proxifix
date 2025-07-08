@@ -62,6 +62,7 @@ security:
         - { path: ^/api/customer/appointment, roles: IS_AUTHENTICATED_FULLY}
         - { path: ^/api/admin/appointment, roles: ROLE_TECHNICIAN}
         - { path: ^/api/brand, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/user, roles: ROLE_TECHNICIAN }
 
 when@test:
     doctrine:

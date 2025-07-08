@@ -76,6 +76,8 @@ class Equipment
     {
         $this->interventions = new ArrayCollection();
         $this->appointmentRequests = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?int

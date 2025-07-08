@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 use App\Entity\Brand;
 use App\Entity\Company;
 use App\Entity\CompanySpecialization;
+use App\Entity\Equipment;
 use App\Entity\OperatingSystem;
 use App\Entity\Task;
 use App\Entity\TypeEquipment;
@@ -37,6 +38,7 @@ class AppFixtures extends Fixture
         $company->setMobile('0987654321');
         $company->setWebsite('https://www.techsolutions.com');
         $company->setCity('Paris');
+        $company->setIsDelete(false);
         $company->setCreatedAt(new \DateTimeImmutable());
         $company->setUpdatedAt(new \DateTimeImmutable());
         // Create a default user admin
@@ -88,7 +90,7 @@ class AppFixtures extends Fixture
             $manager->persist($typeIntervention);
         }
 
-        $specializations = ['Informatique', 'Téléphonie', 'Réseau', 'Sécurité', 'Bureautique', 'Domotique'];
+        $specializations = ['Informatique', 'Téléphonie', 'Réseau', 'Sécurité', 'Bureautique', 'Domotique', 'Maintenance', 'Photocopieur'];
         foreach ($specializations as $specializationName) {
             $specialization = new CompanySpecialization();
             $specialization->setLabel($specializationName);
@@ -113,14 +115,8 @@ class AppFixtures extends Fixture
         $admin->setPassword($this->passwordHasher->hashPassword($admin, 'adminpass'));
         $manager->persist($admin);
 
-        $customer = new User();
-        $customer->setEmail('customer@test.com');
-        $customer->setRoles(['ROLE_CUSTOMER']);
-        $customer->setFirstName('Customer');
-        $customer->setLastName('User');
-        $customer->setPassword($this->passwordHasher->hashPassword($customer, 'customerpass'));
-        $manager->persist($customer);
-
+        
+        // Create a technician user
         $technician = new User();
         $technician->setEmail('technician@test.com');
         $technician->setRoles(['ROLE_TECHNICIAN']);
@@ -128,6 +124,25 @@ class AppFixtures extends Fixture
         $technician->setLastName('User');
         $technician->setPassword($this->passwordHasher->hashPassword($technician, 'technicianpass'));
         $manager->persist($technician);
+        
+        for ($i = 1; $i <= 10; $i++) {
+            $customer = new User();
+            $customer->setEmail('customer' . $i . '@test.com');
+            $customer->setRoles(['ROLE_CUSTOMER']);
+            $customer->setFirstName('Customer' . $i);
+            $customer->setLastName('User');
+            $customer->setPassword($this->passwordHasher->hashPassword($customer, 'customerpass'));
+            $manager->persist($customer);
+        }
+
+        for ($i = 1; $i <= 5; $i++) {
+            $equipment = new Equipment();
+            $equipment->setName('Equipment ' . $i);
+            $equipment->setReference('SN' . str_pad($i, 5, '0', STR_PAD_LEFT));
+            $equipment->setUser($customer);
+            $manager->persist($equipment);
+        }
+        
 
         $manager->flush();
     }

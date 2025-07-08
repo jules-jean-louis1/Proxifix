@@ -80,7 +80,7 @@ final class CompanyControllerTest extends ApiTestCase
     public function testGetCompany(): void
     {
         $token = $this->getToken('superadmin@test.com', 'superadminpass');
-        $id    = $GLOBALS['COMPANY_ID'] ?? 1;
+        $id    = $GLOBALS['COMPANY_ID'] ?? 2;
         $this->client->request('GET', '/api/company?id=' . $id, [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
         ]);
@@ -111,7 +111,7 @@ final class CompanyControllerTest extends ApiTestCase
     {
         $client = $this->client;
         $token  = $this->getToken('superadmin@test.com', 'superadminpass');
-        $id     = $GLOBALS['COMPANY_ID'] ?? 1;
+        $id     = $GLOBALS['COMPANY_ID'] ?? 2;
         $client->request('PATCH', '/api/company/' . $id, [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
             'CONTENT_TYPE'       => 'application/json',
@@ -132,7 +132,7 @@ final class CompanyControllerTest extends ApiTestCase
     {
         $client = $this->client;
         $token = $this->getToken('superadmin@test.com', 'superadminpass');
-        $id = $GLOBALS['COMPANY_ID'] ?? 12;
+        $id = $GLOBALS['COMPANY_ID'] ?? 2;
         $client->request('DELETE', '/api/company/' . $id, [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
             'CONTENT_TYPE'       => 'application/json',

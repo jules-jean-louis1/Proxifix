@@ -58,7 +58,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
-    public function getCustomers(?int $id, ?string $searchQuery = "", ?int $page = 1, ?int $size = 25, ?string $order = "")
+    public function getUsers(?int $id, ?string $searchQuery = "", ?int $page = 1, ?int $size = 25, ?string $order = "", ?string $role = "ROLE_CUSTOMER"): array
     {
         $query = $this->createQueryBuilder('u')
             ->setFirstResult(($page - 1) * $size)
@@ -79,6 +79,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         if ($id) {
             $query->andWhere('u.id = :id')
                 ->setParameter('id', $id);
+        }
+
+        if ($role) {
+            $query->andWhere('JSON_GET_TEXT(u.roles, 0) = :role')
+                ->setParameter('role', $role);
         }
         return $query->getQuery()->getResult();
     }
