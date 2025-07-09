@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -36,14 +37,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var <string> The user roles
      */
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::JSON)]
     #[Assert\NotBlank]
     #[
         Assert\Choice(
             choices: [
                 self::ROLE_SUPER_ADMIN,
                 self::ROLE_ADMIN,
-                self::ROLE_TECHNICIAN,
+                self::ROLE_CUSTOMER,
                 self::ROLE_TECHNICIAN,
             ],
             message: "Choose a valid role."
@@ -124,17 +125,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $address = null;
 
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
         $this->equipment = new ArrayCollection();
         $this->appointmentRequests = new ArrayCollection();
+    }
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     #[ORM\PreUpdate]

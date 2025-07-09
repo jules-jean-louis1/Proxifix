@@ -32,12 +32,12 @@ class TaskIntervention
 
     #[ORM\Column]
     #[Groups(['intervention:details'])]
-    private ?\DateTimeImmutable $update_at = null;
+    private ?\DateTimeImmutable $updated_at = null;
 
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
-        $this->update_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
     public function getId(): ?int
     {
@@ -86,14 +86,14 @@ class TaskIntervention
         return $this;
     }
 
-    public function getUpdateAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->update_at;
+        return $this->updated_at;
     }
 
-    public function setUpdateAt(\DateTimeImmutable $update_at): static
+    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
     {
-        $this->update_at = $update_at;
+        $this->updated_at = $updated_at;
 
         return $this;
     }

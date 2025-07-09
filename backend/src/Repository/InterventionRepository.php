@@ -52,7 +52,7 @@ class InterventionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getFreeSlots(\DateTime $date, ?int $companyId = null, ?int $interval_min = null): array
+    public function getFreeSlots(\DateTime $date, ?int $companyId = null, ?int $interval_min = null, ?string $startTime, ?string $endTime, ?string $role): array
     {
         $conn = $this->getEntityManager()->getConnection();
 
@@ -62,9 +62,9 @@ class InterventionRepository extends ServiceEntityRepository
         SQL;
 
         $result = $conn->executeQuery($query, [
-            'date'       => $date->format('Y-m-d'),
-            'company_id' => $companyId ?? 0,
-            'interval'   => $interval_min ?? 60,
+            'p_date'       => $date->format('Y-m-d'),
+            'p_company_id' => $companyId ?? 0,
+            'p_interval_minutes'   => $interval_min ?? 60,
         ]);
 
         return $result->fetchAllAssociative();

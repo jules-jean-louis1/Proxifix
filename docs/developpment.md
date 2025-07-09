@@ -1,4 +1,4 @@
-# Développement de l'application Proaxive
+# Développement de l'application
 
 ## Installation et Configuration
 
