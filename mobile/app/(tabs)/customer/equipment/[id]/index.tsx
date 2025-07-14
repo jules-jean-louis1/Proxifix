@@ -62,6 +62,7 @@ export default function EquipmentDetails() {
         title="Détails de l'équipement"
         showBack={true}
         onBackPress={() => router.replace("/customer/equipments")}
+        bottomBar
       />
       <ScrollView style={styles.container}>
         <View style={styles.section}>

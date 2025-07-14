@@ -21,7 +21,7 @@ class EquipmentController extends AbstractController
     {
         $payload = $request->getPayload();
 
-        if (! $payload->has('name') || ! $payload->has('user_id') || ! $payload->has('brand_id')) {
+        if (! $payload->has('name') || ! $payload->has('user_id') || ! $payload->has('brand_id') || ! $payload->has('type_equipment_id')) {
             return new JsonResponse(['error' => 'Name, user_id, type_equipment_id and brand_id are required'], 400);
         }
 
@@ -37,6 +37,7 @@ class EquipmentController extends AbstractController
         $equipment->setName($payload->get('name') ?? '');
         $equipment->setUser($user);
         $equipment->setReference($payload->get('reference') ?? null);
+        $equipment->setModel($payload->get('model') ?? null);
         $equipment->setTypeEquipment($typeEquipment);
         $equipment->setOperatingSystem($operatingSystem);
         $equipment->setBrand($brand);
@@ -94,6 +95,10 @@ class EquipmentController extends AbstractController
             $equipment->setReference($payload->get('reference'));
         }
 
+        $model = $payload->get('model') ?? null;
+        if (isset($model)) {
+            $equipment->setReference($payload->get('model'));
+        }
         $equipment->setUpdatedAt(new \DateTimeImmutable());
 
         $entityManagerInterface->flush();
@@ -102,6 +107,7 @@ class EquipmentController extends AbstractController
             'id' => $equipment->getId(),
             'name' => $equipment->getName(),
             'reference' => $equipment->getReference(),
+            'model' => $equipment->getModel(),
             'brand' => [
                 'id' => $equipment->getBrand()->getId(),
                 'name' => $equipment->getBrand()->getName()

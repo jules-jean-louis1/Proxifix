@@ -135,7 +135,7 @@ class Company
     private ?string $mobile = null;
 
     #[ORM\Column(options: ['default' => false])]
-    private ?bool $is_delete = false;
+    private ?bool $is_deleted = false;
 
     public function __construct()
     {
@@ -545,12 +545,12 @@ class Company
 
     public function isDelete(): ?bool
     {
-        return $this->is_delete;
+        return $this->is_deleted;
     }
 
-    public function setIsDelete(bool $is_delete): static
+    public function setIsDelete(bool $is_deleted): static
     {
-        $this->is_delete = $is_delete;
+        $this->is_deleted = $is_deleted;
 
         return $this;
     }

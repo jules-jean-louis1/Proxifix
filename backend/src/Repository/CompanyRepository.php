@@ -53,9 +53,11 @@ class CompanyRepository extends ServiceEntityRepository
         }
 
         if ($isDeleted) {
-            $qb->andWhere('c.is_deleted = true');
+            $qb->andWhere('c.is_deleted = :is_deleted')
+                ->setParameter('is_deleted', $isDeleted);
         } else {
-            $qb->andWhere('c.is_deleted = false');
+            $qb->andWhere('c.is_deleted = :is_deleted')
+            ->setParameter('is_deleted', $isDeleted);
         }
 
         return $qb->getQuery()->getResult();

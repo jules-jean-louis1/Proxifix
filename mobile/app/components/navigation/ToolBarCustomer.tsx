@@ -7,6 +7,7 @@ interface ToolBarCustomerProps {
   showBack?: boolean;
   onBackPress?: () => void;
   rightContent?: React.ReactNode;
+  bottomBar?: boolean;
 }
 
 export const ToolBarCustomer: React.FC<ToolBarCustomerProps> = ({
@@ -14,14 +15,17 @@ export const ToolBarCustomer: React.FC<ToolBarCustomerProps> = ({
   showBack = false,
   onBackPress,
   rightContent,
+  bottomBar = false,
 }) => {
   return (
-    <View style={styles.container}>
+    <View style={[bottomBar ? styles.container : styles.containerBarLess]}>
       <View style={styles.left}>
-        {showBack && (
+        {showBack ? (
           <Pressable onPress={onBackPress} style={styles.iconButton}>
             <Feather name="arrow-left" size={24} color="#344260" />
           </Pressable>
+        ) : (
+          <View style={styles.iconButton} />
         )}
       </View>
       <View style={{ flex: 1, alignItems: "center" }}>
@@ -50,6 +54,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#283276",
   },
+  containerBarLess: {
+    width: "100%",
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    justifyContent: "space-between",
+  },
   left: {
     width: 40,
     alignItems: "flex-start",
@@ -61,6 +74,10 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 6,
     borderRadius: 20,
+    height: 36,
+    width: 36, 
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
     flex: 1,

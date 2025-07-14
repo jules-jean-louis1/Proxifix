@@ -24,7 +24,6 @@ export const AppSelectInput: React.FC<AppSelectInputProps> = ({
 
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
       <Controller
         control={control}
         name={nameField}
@@ -40,7 +39,6 @@ export const AppSelectInput: React.FC<AppSelectInputProps> = ({
               onValueChange={onChange}
               isSearchable
               primaryColor="purple"
-              // Ajoute ici d'autres props de customisation si besoin
             />
             {error && <Text style={styles.errorText}>{error.message}</Text>}
           </>

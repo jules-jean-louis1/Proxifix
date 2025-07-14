@@ -14,11 +14,10 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 final class ProfileController extends AbstractController
 {
     #[Route('/api/profile', name: 'app_user', methods: ['GET'])]
-    public function profile(TokenStorageInterface $tokenStorage): JsonResponse
+    public function profile(): JsonResponse
     {
 
         // Récupérer l'utilisateur connecté
-        $this->token = $tokenStorage->getToken();
         $user = $this->getUser();
 
         // Vérifier si l'utilisateur est authentifié
@@ -35,6 +34,7 @@ final class ProfileController extends AbstractController
             'address' => $user->getAddress(),
             'city' => $user->getCity(),
             'zip_code' => $user->getZipCode(),
+            'created_at' => $user->getCreatedAt(),
         ];
 
         return new JsonResponse($userData, JsonResponse::HTTP_OK);

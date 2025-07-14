@@ -72,6 +72,10 @@ class Equipment
     #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
     private ?string $reference = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['equipment:details'])]
+    private ?string $model = null;
+
     public function __construct()
     {
         $this->interventions = new ArrayCollection();
@@ -233,6 +237,18 @@ class Equipment
     public function setReference(?string $reference): static
     {
         $this->reference = $reference;
+
+        return $this;
+    }
+
+    public function getModel(): ?string
+    {
+        return $this->model;
+    }
+
+    public function setModel(?string $model): static
+    {
+        $this->model = $model;
 
         return $this;
     }

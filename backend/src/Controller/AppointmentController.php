@@ -18,13 +18,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 #[Route('/api')]
 final class AppointmentController extends AbstractController
 {
     #[Route('/appointment', name: 'get_appointment', methods: ['GET'])]
-    public function getAppointment(Request $request, AppointmentRequestRepository $appointmentRequestRepository, EntityManagerInterface $em, TokenStorageInterface $tokenStorage): JsonResponse
+    public function getAppointment(Request $request, AppointmentRequestRepository $appointmentRequestRepository, EntityManagerInterface $em): JsonResponse
     {
         $idRequest            = $request->query->get('id');
         $userIdRequest        = $request->query->get('user_id');
@@ -36,7 +35,6 @@ final class AppointmentController extends AbstractController
         $orderRequest         = $request->query->get('order') ?? 'ASC';
         $companyIdRequest     = $request->query->get('company_id');
 
-        $this->token = $tokenStorage->getToken();
         $user = $this->getUser();
         
         if ($user instanceof User && in_array(User::ROLE_CUSTOMER, $user->getRoles(), true)) {
@@ -72,17 +70,27 @@ final class AppointmentController extends AbstractController
     public function getAvailableSlots(Request $req, InterventionRepository $interventionRepository): JsonResponse
     {
         $date      = $req->query->get('date');
-        $companyId = $req->query->get('companyId');
+        $companyId = $req->query->get('company_id') ?? $req->query->get('companyId'); // Support both formats
         $interval  = $req->query->get('interval');
         $startTime = $req->query->get('start_time');
-        $endTime = $req->query->get('end_time');
-        $role = $req->query->get('role');
+        $endTime   = $req->query->get('end_time');
+        $role      = $req->query->get('role');
 
         if (! $date) {
             return $this->json(['error' => 'date is required'], Response::HTTP_BAD_REQUEST);
         }
-        $date  = new \DateTime($date);
-        $slots = $interventionRepository->getFreeSlots($date, $companyId, $interval, $startTime, $endTime, $role);
+        
+        try {
+            $dateObj = new \DateTime($date);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'Invalid date format'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Convert to proper types
+        $intervalMin = $interval ? (int) $interval : 60;
+        $companyIdInt = $companyId ? (int) $companyId : null;
+
+        $slots = $interventionRepository->getFreeSlots($dateObj, $companyIdInt, $intervalMin, $startTime, $endTime, $role);
 
         return $this->json($slots, Response::HTTP_OK);
     }

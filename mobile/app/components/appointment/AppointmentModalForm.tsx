@@ -1,45 +1,60 @@
-import React, { Children, FC, useEffect, useState } from "react";
-import { Modal, View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { FC, useEffect, useState } from "react";
+import {
+  Modal,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { AppButton } from "../buttons/AppButton";
-import { Form, FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import { useApi } from "@/app/utils/useApi";
 import { AppSelectInput } from "../inputs/AppSelectInput";
 import { Feather } from "@expo/vector-icons";
-import { AppDateInput } from "../inputs/AppDateInput";
 import { AppTextField } from "../inputs/AppTextField";
-import { format } from "date-fns";
-import { AppDateInputField } from "../inputs/AppDateInputField";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
 import { APPOINTMENT_STATUS } from "@/app/utils/intervention";
+import { CreateEquipmentModal } from "../equipment/CreateEquipmentModal";
+import { TimeSlotPicker } from "./TimeSlotPicker";
 
 interface AppointmentModalFormProps {
-  type: "create" | "update";
+  mode: "create" | "update";
   id?: any;
   button?: React.ReactElement;
   onSuccess?: () => void;
 }
 
 export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
-  type,
+  mode,
   id,
   button,
   onSuccess = () => {},
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [equipments, setEquipments] = useState([]);
-  const [companies, setCompanies] = useState([]);
-  const [freeSlots, setFreeSlots] = useState<any>();
+  const [equipments, setEquipments] = useState<any[]>([]);
+  const [companies, setCompanies] = useState<any[]>([]);
   const [appointment, setAppointment] = useState<any>();
-  const methods = useForm();
+  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<{
+    start: string;
+    end: string;
+  } | null>(null);
+  const methods = useForm({
+    defaultValues: {
+      equipment_id: "",
+      company_id: "",
+      title: "",
+      description: "",
+      date: "",
+    }
+  });
   const { handleSubmit } = methods;
   const sessionCtx = useSessionContext();
   const api = useApi();
   const sessionData = sessionCtx?.session;
-
-  const companyId = methods.getValues().company_id;
-  const date = methods.getValues().date;
 
   useEffect(() => {
     (async () => {
@@ -62,41 +77,56 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
   }, [modalVisible]);
 
   useEffect(() => {
-    (async () => {
-      if (!companyId && !date) return;
-      try {
-        const formatDate = format(new Date(date), "yyyy-MM-dd");
-        const response = await api.get(
-          `/appointment/free-slots?company_id=${companyId}&date=${formatDate}&interval=60`
-        );
-        setFreeSlots?.(response.data);
-      } catch (error) {
-        console.error("Error fetching interventions:", error);
+    if (appointment && mode === "update") {
+
+      methods.setValue("equipment_id", appointment.equipment?.id || "");
+      methods.setValue("company_id", appointment.company?.id || "");
+      methods.setValue("title", appointment.title || "");
+      methods.setValue("description", appointment.description || "");
+      methods.setValue("date", appointment.date || "");
+      
+      // Initialiser les états pour le TimeSlotPicker
+      if (appointment.date) {
+        const appointmentDate = new Date(appointment.date);
+        setSelectedDateTime(appointmentDate);
+        
+        const startTime = appointmentDate.toTimeString().slice(0, 8);
+
+        const endDate = new Date(appointmentDate.getTime() + 60 * 60 * 1000);
+        const endTime = endDate.toTimeString().slice(0, 8);
+        
+        setSelectedTimeSlot({ start: startTime, end: endTime });
       }
-    })();
-  }, [companyId]);
+    }
+  }, [appointment, mode, methods]);
 
   const onSubmit = async (data: any) => {
     try {
-      if (type === "create") {
-        // console.log("Creating appointment with data:", data);
-        await api.post("/appointment", data);
+      // Utiliser la date et l'heure sélectionnées du TimeSlotPicker
+      const submitData = {
+        ...data,
+        date: selectedDateTime ? selectedDateTime.toISOString() : data.date,
+      };
+
+      if (mode === "create") {
+        await api.post("/appointment", submitData);
       } else if (
-        type === "update" &&
+        mode === "update" &&
         appointment.status === APPOINTMENT_STATUS.PENDING
       ) {
-        // console.log("Updating appointment with data:", data);
-        await api.put(`/appointment/${appointment?.id}`, data);
+        await api.put(`/appointment/${appointment?.id}`, submitData);
       }
       setModalVisible(false);
       onSuccess();
       methods.reset();
+      setSelectedDateTime(null);
+      setSelectedTimeSlot(null);
     } catch (error) {
       console.error("Error saving appointment:", error);
     }
   };
 
-  if (modalVisible && (isLoading || !equipments.length || !companies.length)) {
+  if (modalVisible && isLoading) {
     return (
       <View style={{ padding: 20 }}>
         <ActivityIndicator animating={true} color={MD2Colors.red800} />
@@ -131,56 +161,79 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
               <Feather name="x" size={24} color={"#000"} />
             </TouchableOpacity>
             <Text style={styles.title}>
-              {type === "create"
+              {mode === "create"
                 ? "Créer un rendez-vous"
                 : "Modifier un rendez-vous"}
             </Text>
             <View style={{ width: 24 }}></View>
           </View>
-          <View style={styles.modalContent}>
+          <ScrollView style={styles.modalContent}>
             <FormProvider {...methods}>
+              <View style={styles.equipmentSection}>
+                <Text style={styles.sectionTitle}>Équipement</Text>
+                <View style={styles.equipmentRow}>
+                  <View style={styles.equipmentSelect}>
+                    <AppSelectInput
+                      nameField="equipment_id"
+                      label="Sélectionner un equipment"
+                      options={equipments!.map((equipment: any) => ({
+                        label: equipment.name,
+                        value: equipment.id,
+                      }))}
+                      rules={{ required: "Ce champ est requis" }}
+                    />
+                  </View>
+                  <CreateEquipmentModal
+                    trigger={
+                      <TouchableOpacity style={styles.iconButton}>
+                        <Feather name="plus" size={20} color="#007AFF" />
+                      </TouchableOpacity>
+                    }
+                    onSuccess={(newEquipment) => {
+                      setEquipments((prev) => [...prev, newEquipment]);
+                      methods.setValue("equipment_id", newEquipment.id);
+                    }}
+                  />
+                </View>
+              </View>
               <AppSelectInput
                 nameField="company_id"
-                defaultValue={appointment?.company?.id}
+                label="Selectionner une entreprise"
                 options={companies!.map((company: any) => ({
                   label: company.name,
                   value: company.id,
                 }))}
                 rules={{ required: "Ce champ est requis" }}
               />
-              <AppDateInputField
-                nameField="date"
-                label="Date de l'intervention"
-                defaultValue={
-                  appointment?.date ? new Date(appointment.date) : new Date()
+              <TimeSlotPicker
+                companyId={
+                  mode === "create"
+                    ? methods.watch("company_id")
+                    : appointment?.company.id
                 }
-                placeholder="Sélectionner une date"
-                rules={{ required: "Ce champ est requis" }}
+                onSlotSelect={(date, startTime, endTime) => {
+                  setSelectedDateTime(date);
+                  setSelectedTimeSlot({ start: startTime, end: endTime });
+                  methods.setValue("date", date.toISOString());
+                }}
+                selectedDate={selectedDateTime || undefined}
+                selectedTime={selectedTimeSlot?.start}
               />
               <AppTextField
                 nameField="title"
                 label="Titre"
-                defaultValue={appointment?.title}
                 placeholder="Entrez le titre de l'intervention"
                 rules={{ required: "Le titre est requis" }}
               />
               <AppTextField
                 nameField="description"
                 label="Description"
-                defaultValue={appointment?.description}
                 placeholder="Entrez la description de l'intervention"
-              />
-              <AppSelectInput
-                nameField="equipment_id"
-                defaultValue={appointment?.equipment?.id}
-                options={equipments!.map((equipment: any) => ({
-                  label: equipment.name,
-                  value: equipment.id,
-                }))}
-                rules={{ required: "Ce champ est requis" }}
+                multiline
+                numberOfLines={3}
               />
               {appointment &&
-                type === "update" &&
+                mode === "update" &&
                 appointment.status === APPOINTMENT_STATUS.PENDING && (
                   <AppButton
                     type="secondary"
@@ -192,23 +245,24 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                     }}
                   />
                 )}
-                {type === "create" && (
-                  <AppButton
+              {mode === "create" && (                  <AppButton
                     type="secondary"
                     children="Annuler"
                     onPress={() => {
                       setModalVisible(false);
                       methods.reset();
+                      setSelectedDateTime(null);
+                      setSelectedTimeSlot(null);
                     }}
                   />
-                )}
+              )}
               <AppButton
                 type="primary"
                 children="Enregistrer"
                 onPress={handleSubmit(onSubmit)}
               />
             </FormProvider>
-          </View>
+          </ScrollView>
         </View>
       </Modal>
     </View>
@@ -234,5 +288,29 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 18,
     color: "#344260",
+  },
+  equipmentSection: {
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#344260",
+    marginBottom: 8,
+  },
+  equipmentRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  equipmentSelect: {
+    flex: 1,
+  },
+  iconButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: "#F0F8FF",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

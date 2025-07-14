@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250709094000 extends AbstractMigration
+final class Version20250711192812 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,6 +20,8 @@ final class Version20250709094000 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('ALTER TABLE company RENAME COLUMN is_delete TO is_deleted');
+        $this->addSql('ALTER TABLE equipment ADD COLUMN model VARCHAR(255) DEFAULT NULL');
         $this->addSql('ALTER TABLE task_intervention RENAME COLUMN update_at TO updated_at');
         $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer);');
         $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer, time, time, text) CASCADE;');
@@ -85,6 +87,8 @@ final class Version20250709094000 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
+        $this->addSql('ALTER TABLE equipment DROP COLUMN model');
+        $this->addSql('ALTER TABLE company RENAME COLUMN is_deleted TO is_delete');
         $this->addSql('ALTER TABLE task_intervention RENAME COLUMN updated_at TO update_at');
         $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer);');
         $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer, time, time, text) CASCADE;');

@@ -58,7 +58,7 @@ class InterventionRepository extends ServiceEntityRepository
 
         $query = <<<SQL
             SELECT *
-            FROM get_free_slots(:date, :company_id, :interval)
+            FROM get_free_slots(:p_date, :p_company_id, :p_interval_minutes)
         SQL;
 
         $result = $conn->executeQuery($query, [

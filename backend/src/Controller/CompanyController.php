@@ -502,7 +502,7 @@ final class CompanyController extends AbstractController
     }
 
     //CompanySpecialization
-    #[Route('/api/company-specialization', name: 'app_company_specialization_get', methods: ['GET'])]
+    #[Route('/company-specialization', name: 'app_company_specialization_get', methods: ['GET'])]
     public function getCompanySpecializations(
         EntityManagerInterface $entityManager
     ): JsonResponse {
