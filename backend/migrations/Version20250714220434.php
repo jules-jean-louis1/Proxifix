@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250711192812 extends AbstractMigration
+final class Version20250714220434 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,7 +21,15 @@ final class Version20250711192812 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE company RENAME COLUMN is_delete TO is_deleted');
-        $this->addSql('ALTER TABLE equipment ADD COLUMN model VARCHAR(255) DEFAULT NULL');
+        $this->addSql('ALTER TABLE equipment ADD model VARCHAR(255) DEFAULT NULL');
+        $this->addSql('ALTER TABLE intervention DROP CONSTRAINT fk_d11814aba76ed395');
+        $this->addSql('DROP INDEX idx_d11814aba76ed395');
+        $this->addSql('ALTER TABLE intervention ADD technician_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE intervention RENAME COLUMN user_id TO customer_id');
+        $this->addSql('ALTER TABLE intervention ADD CONSTRAINT FK_D11814AB9395C3F3 FOREIGN KEY (customer_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE intervention ADD CONSTRAINT FK_D11814ABE6C5D496 FOREIGN KEY (technician_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('CREATE INDEX IDX_D11814AB9395C3F3 ON intervention (customer_id)');
+        $this->addSql('CREATE INDEX IDX_D11814ABE6C5D496 ON intervention (technician_id)');
         $this->addSql('ALTER TABLE task_intervention RENAME COLUMN update_at TO updated_at');
         $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer);');
         $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer, time, time, text) CASCADE;');
@@ -87,10 +95,19 @@ final class Version20250711192812 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE equipment DROP COLUMN model');
+        $this->addSql('ALTER TABLE equipment DROP model');
         $this->addSql('ALTER TABLE company RENAME COLUMN is_deleted TO is_delete');
-        $this->addSql('ALTER TABLE task_intervention RENAME COLUMN updated_at TO update_at');
+        $this->addSql('ALTER TABLE intervention DROP CONSTRAINT FK_D11814AB9395C3F3');
+        $this->addSql('ALTER TABLE intervention DROP CONSTRAINT FK_D11814ABE6C5D496');
+        $this->addSql('DROP INDEX IDX_D11814AB9395C3F3');
+        $this->addSql('DROP INDEX IDX_D11814ABE6C5D496');
+        $this->addSql('ALTER TABLE intervention ADD user_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE intervention DROP customer_id');
+        $this->addSql('ALTER TABLE intervention DROP technician_id');
+        $this->addSql('ALTER TABLE intervention ADD CONSTRAINT fk_d11814aba76ed395 FOREIGN KEY (user_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('CREATE INDEX idx_d11814aba76ed395 ON intervention (user_id)');
         $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer);');
+        $this->addSql('ALTER TABLE task_intervention RENAME COLUMN updated_at TO update_at');
         $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer, time, time, text) CASCADE;');
         $this->addSql("CREATE OR REPLACE FUNCTION get_free_slots(
                                 p_date DATE,

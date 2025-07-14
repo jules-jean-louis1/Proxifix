@@ -5,7 +5,6 @@ use App\Entity\AppointmentRequest;
 use App\Entity\Company;
 use App\Entity\Equipment;
 use App\Entity\Intervention;
-use App\Entity\Status;
 use App\Entity\Task;
 use App\Entity\TaskIntervention;
 use App\Entity\TypeIntervention;
@@ -47,9 +46,25 @@ class InterventionController extends AbstractController
                 ->getRepository(User::class)
                 ->find($payload["user_id"]);
 
+            if (isset($payload["technician_id"])) {
+                $technician = $entityManager->getRepository(User::class)->find($payload["technician_id"]);
+                if (!$technician) {
+                    return $this->json(["error" => "Technician not found"], Response::HTTP_BAD_REQUEST);
+                }
+                
+                // Vérifier que c'est bien un technicien/admin
+                $roles = $technician->getRoles();
+                if (!in_array('ROLE_TECHNICIAN', $roles) && !in_array('ROLE_ADMIN', $roles)) {
+                    return $this->json(["error" => "User is not a technician or admin"], Response::HTTP_BAD_REQUEST);
+                }
+                
+                $intervention->setTechnician($technician);
+                $intervention->setStatus(Intervention::ASSIGNED);
+            }
+
             $intervention->setTypeIntervention($typeIntervention);
             $intervention->setStatus($payload["status"] ?? Intervention::PENDING);
-            $intervention->setUser($user);
+            $intervention->setCustomer($user);
 
             if (isset($payload['start_date'])) {
                 $intervention->setStartDate(new \DateTimeImmutable($payload["start_date"]));
@@ -328,5 +343,55 @@ class InterventionController extends AbstractController
 
         return $this->json($intervention, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
 
+    }
+    #[Route("/intervention/{id}/assign", name: "app_intervention_assign", methods: ["PATCH"])]
+    public function assignTechnician(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        int $id
+    ): JsonResponse {
+        try {
+            $payload = $request->toArray();
+            
+            $intervention = $entityManager->getRepository(Intervention::class)->find($id);
+            if (!$intervention) {
+                return $this->json(["error" => "Intervention not found"], 404);
+            }
+            
+            if (!$intervention->canBeAssigned()) {
+                return $this->json(["error" => "Intervention cannot be assigned in current status"], 400);
+            }
+            
+            if (!isset($payload["technician_id"])) {
+                return $this->json(["error" => "technician_id is required"], 400);
+            }
+            
+            $technician = $entityManager->getRepository(User::class)->find($payload["technician_id"]);
+            if (!$technician) {
+                return $this->json(["error" => "Technician not found"], 400);
+            }
+            
+            // Vérifier que c'est bien un technicien/admin
+            $roles = $technician->getRoles();
+            if (!in_array('ROLE_TECHNICIAN', $roles) && !in_array('ROLE_ADMIN', $roles)) {
+                return $this->json(["error" => "User is not a technician or admin"], 400);
+            }
+            
+            $intervention->setTechnician($technician);
+            $intervention->setStatus(Intervention::ASSIGNED);
+            $intervention->setUpdatedAt(new \DateTimeImmutable());
+            
+            $entityManager->flush();
+            
+            return $this->json([
+                "success" => "Technician assigned successfully",
+                "intervention_id" => $intervention->getId(),
+                "technician_id" => $technician->getId(),
+                "status" => $intervention->getStatus()
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return $this->json(["error" => $e->getMessage()], 400);
+        }
     }
 }

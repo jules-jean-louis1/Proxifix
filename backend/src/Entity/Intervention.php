@@ -14,6 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Intervention
 {
     public const PENDING = "pending";
+    public const ASSIGNED = "assigned";
     public const AWAITING_PICKUP = "awaiting_pickup";
     public const IN_PROGRESS = "in_progress";
     public const COMPLETED = "completed";
@@ -69,7 +70,12 @@ class Intervention
 
     #[ORM\ManyToOne]
     #[Groups(['intervention:read', 'intervention:details'])]
-    private ?User $user = null;
+    private ?User $customer = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['intervention:read', 'intervention:details'])]
+    private ?User $technician = null;
 
     #[ORM\OneToMany(mappedBy: "intervention", targetEntity: TaskIntervention::class)]
     #[Groups(['intervention:read', 'intervention:details'])]
@@ -233,19 +239,51 @@ class Intervention
         return $this->status === self::PENDING;
     }
 
-    public function getUser(): ?User
+    public function isAssigned(): bool
     {
-        return $this->user;
+        return $this->status === self::ASSIGNED && $this->technician !== null;
     }
 
-    public function setUser(?User $user): static
+    public function isInProgress(): bool
     {
-        $this->user = $user;
+        return $this->status === self::IN_PROGRESS;
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->status === self::COMPLETED;
+    }
+
+    public function canBeAssigned(): bool
+    {
+        return in_array($this->status, [self::PENDING, self::ASSIGNED]);
+    }
+
+    public function getCustomer(): ?User
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(?User $user): static
+    {
+        $this->customer = $user;
 
         return $this;
     }
 
-    public function getTaskInterventions()
+    public function getTechnician(): ?User
+    {
+        return $this->technician;
+    }
+
+    public function setTechnician(?User $technician): static
+    {
+        $this->technician = $technician;
+
+        return $this;
+    }
+
+    public function getTaskInterventions(): ArrayCollection|Collection
     {
         return $this->taskInterventions;
     }

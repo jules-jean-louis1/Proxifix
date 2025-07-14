@@ -52,7 +52,7 @@ class InterventionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getFreeSlots(\DateTime $date, ?int $companyId = null, ?int $interval_min = null, ?string $startTime, ?string $endTime, ?string $role): array
+    public function getFreeSlots(\DateTime $date, ?int $companyId = null, ?int $interval_min = null, ?string $startTime = null, ?string $endTime = null, ?string $role = null): array
     {
         $conn = $this->getEntityManager()->getConnection();
 
