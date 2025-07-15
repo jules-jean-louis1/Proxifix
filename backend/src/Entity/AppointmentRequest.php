@@ -6,14 +6,16 @@ use App\Repository\AppointmentRequestRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AppointmentRequestRepository::class)]
 #[ApiResource]
 class AppointmentRequest
 {
-    public const PENDING  = "pending";
-    public const ACCEPTED = "accepted";
-    public const REJECTED = "rejected";
+    public const PENDING   = "pending";
+    public const CONFIRMED = "confirmed";
+    public const SCHEDULED = "scheduled";
+    public const REJECTED  = "rejected";
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -33,6 +35,15 @@ class AppointmentRequest
     private ?string $description = null;
 
     #[ORM\Column(length : 255)]
+    #[Assert\Choice(
+            choices: [
+                self::REJECTED,
+                self::SCHEDULED,
+                self::CONFIRMED,
+                self::REJECTED,
+            ],
+            message: "Choose a valid status."
+        )]
     #[Groups(["user:details", "equipment:details"])]
     private ?string $status = null;
 

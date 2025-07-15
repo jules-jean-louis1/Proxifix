@@ -1,5 +1,6 @@
 export enum Intervention_Status {
   "PENDING" = "pending",
+  "ASSIGNED" = "assigned",
   "AWAITING" = "awaiting_pickup",
   "IN_PROGRESS" = "in_progress",
   "COMPLETED" = "completed",
@@ -8,6 +9,7 @@ export enum Intervention_Status {
 
 export const INTERVENTION_STATUS = {
   PENDING: Intervention_Status.PENDING,
+  ASSIGNED: Intervention_Status.ASSIGNED,
   AWAITING: Intervention_Status.AWAITING,
   IN_PROGRESS: Intervention_Status.IN_PROGRESS,
   COMPLETED: Intervention_Status.COMPLETED,
@@ -18,6 +20,8 @@ export const getStatusColor = (status: string) => {
   switch (status) {
     case INTERVENTION_STATUS.PENDING:
       return "#FF9800"; // Amber
+    case INTERVENTION_STATUS.ASSIGNED:
+      return "#FF5722"; // Deep Orange
     case INTERVENTION_STATUS.AWAITING:
       return "#2196F3"; // Blue
     case INTERVENTION_STATUS.IN_PROGRESS:
@@ -35,6 +39,8 @@ export const getStatus = (intervention: any): string => {
   switch (intervention.status) {
     case INTERVENTION_STATUS.PENDING:
       return "En attente";
+    case INTERVENTION_STATUS.ASSIGNED:
+      return "Assigné(e)";
     case INTERVENTION_STATUS.AWAITING:
       return "En attente de récupération";
     case INTERVENTION_STATUS.IN_PROGRESS:

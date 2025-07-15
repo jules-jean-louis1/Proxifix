@@ -20,7 +20,7 @@ export default function RegisterForm() {
         Alert.alert("Erreur", "Problème lors de l'inscription.");
         return;
       }
-      router.replace('/loginCustomer');
+      router.push('/loginCustomer');
     } catch (error) {
       Alert.alert("Erreur", "Problème lors de l'inscription.");
     }

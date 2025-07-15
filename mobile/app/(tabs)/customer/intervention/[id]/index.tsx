@@ -36,6 +36,7 @@ export default function InterventionDetailPage() {
         title="Détail de l'intervention"
         showBack={true}
         onBackPress={() => router.replace("/customer/interventions")}
+        bottomBar
       />
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>{intervention.title}</Text>

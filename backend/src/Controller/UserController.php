@@ -145,7 +145,7 @@ final class UserController extends AbstractController
         if (empty($users)) {
             return $this->json(['error' => 'No users found'], Response::HTTP_NOT_FOUND);
         }
-        return $this->json(['success' => 'Users found', 'users' => $users], Response::HTTP_OK, ["groups" => "user:details"]);
+        return $this->json($users, Response::HTTP_OK, ["groups" => "user:details"]);
     }
 
     #[IsGranted("ROLE_ADMIN")]

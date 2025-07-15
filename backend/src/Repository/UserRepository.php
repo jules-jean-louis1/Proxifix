@@ -58,34 +58,40 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
-    public function getUsers(?int $id, ?string $searchQuery = "", ?int $page = 1, ?int $size = 25, ?string $order = "", ?string $role = "ROLE_CUSTOMER"): array
+    public function getUsers(?int $companyId = null, ?string $searchQuery = "", ?int $page = 1, ?int $size = 25, ?string $order = "", ?string $role = "ROLE_CUSTOMER"): array
     {
-        $query = $this->createQueryBuilder('u')
-            ->setFirstResult(($page - 1) * $size)
-            ->setMaxResults($size);
-
+        $sql = 'SELECT u.* FROM "user" u WHERE 1=1';
+        $params = [];
+        
+        if ($companyId !== null) {
+            $sql .= ' AND u.company_id = :companyId';
+            $params['companyId'] = $companyId;
+        }
+        
         if ($searchQuery) {
-            $query->andWhere('UPPER(u.first_name) LIKE UPPER(:searchQuery)')
-                ->orWhere('UPPER(u.last_name) LIKE UPPER(:searchQuery)')
-                ->orWhere('UPPER(u.email) LIKE UPPER(:searchQuery)')
-                ->setParameter('searchQuery', '%' . $searchQuery . '%');
+            $sql .= ' AND (UPPER(u.first_name) LIKE UPPER(:searchQuery) OR UPPER(u.last_name) LIKE UPPER(:searchQuery) OR UPPER(u.email) LIKE UPPER(:searchQuery))';
+            $params['searchQuery'] = '%' . $searchQuery . '%';
         }
-
-        if ($order) {
-            $query->orderBy('u.:order', 'ASC')
-                ->setParameter('order', $order);
-        }
-
-        if ($id) {
-            $query->andWhere('u.id = :id')
-                ->setParameter('id', $id);
-        }
-
+        
         if ($role) {
-            $query->andWhere('JSON_GET_TEXT(u.roles, 0) = :role')
-                ->setParameter('role', $role);
+            $sql .= ' OR CAST(u.roles AS text) LIKE :rolePattern';
+            $params['rolePattern'] = '%"' . $role . '"%';
         }
-        return $query->getQuery()->getResult();
+        
+        $sql .= ' ORDER BY u.created_at DESC LIMIT :size OFFSET :offset';
+        $params['size'] = $size;
+        $params['offset'] = ($page - 1) * $size;
+        
+        $connection = $this->getEntityManager()->getConnection();
+        $result = $connection->executeQuery($sql, $params);
+        
+        // Convertir les résultats en entités User
+        $users = [];
+        foreach ($result->fetchAllAssociative() as $row) {
+            $users[] = $this->find($row['id']);
+        }
+        
+        return $users;
     }
     //    /**
     //     * @return User[] Returns an array of User objects

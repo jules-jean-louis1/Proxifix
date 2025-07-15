@@ -26,7 +26,8 @@ class InterventionRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('i')
             ->leftJoin('i.status', 's')
             ->addSelect('s')
-            ->andWhere('i.user = :userId')
+            ->andWhere('i.customer = :userId')
+            ->orWhere('i.technician = :userId')
             ->setParameter('userId', $userId)
             ->getQuery()
             ->getResult();
@@ -52,19 +53,19 @@ class InterventionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getFreeSlots(\DateTime $date, ?int $companyId = null, ?int $interval_min = null): array
+    public function getFreeSlots(\DateTime $date, ?int $companyId = null, ?int $interval_min = null, ?string $startTime = null, ?string $endTime = null, ?string $role = null): array
     {
         $conn = $this->getEntityManager()->getConnection();
 
         $query = <<<SQL
             SELECT *
-            FROM get_free_slots(:date, :company_id, :interval)
+            FROM get_free_slots(:p_date, :p_company_id, :p_interval_minutes)
         SQL;
 
         $result = $conn->executeQuery($query, [
-            'date'       => $date->format('Y-m-d'),
-            'company_id' => $companyId ?? 0,
-            'interval'   => $interval_min ?? 60,
+            'p_date'       => $date->format('Y-m-d'),
+            'p_company_id' => $companyId ?? 0,
+            'p_interval_minutes'   => $interval_min ?? 60,
         ]);
 
         return $result->fetchAllAssociative();
@@ -93,6 +94,7 @@ class InterventionRepository extends ServiceEntityRepository
     public function getInterventions(
         ?int $id = null,
         ?int $userId = null,
+        ?int $technicianId = null,
         ?int $companyId = null,
         ?string $status = null,
         ?int $page = 1,
@@ -115,10 +117,14 @@ class InterventionRepository extends ServiceEntityRepository
         }
 
         if ($userId !== null) {
-            $query->andWhere('i.user = :user_id')
+            $query->andWhere('i.customer = :user_id')
                 ->setParameter('user_id', intval($userId));
         }
 
+        if ($technicianId !== null) {
+            $query->andWhere('i.technician = :technician_id')
+                ->setParameter('technician_id', intval($technicianId));
+        }
         if ($companyId !== null) {
             $query->andWhere('i.company = :company_id')
                 ->setParameter('company_id', intval($companyId));

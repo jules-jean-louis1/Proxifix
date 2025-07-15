@@ -83,7 +83,12 @@ const EquipmentsPage = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ToolBarCustomer title={"Mes équipements"} />
+      <ToolBarCustomer
+        title={"Mes équipements"}
+        bottomBar
+        showBack
+        onBackPress={() => router.push("/customer")}
+      />
       <ScrollView>
         <FlatList
           data={equipments}

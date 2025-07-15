@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   Text,
-  FlatList,
   ScrollView,
   ActivityIndicator,
 } from "react-native";
@@ -35,10 +34,10 @@ export default function InterventionsPage() {
         const response = await api.get(
           `/intervention?user_id=${sessionData?.id}`
         );
-        setInterventions(response.data);
         const appointmentsResponse = await api.get(
           `/appointment?user_id=${sessionData?.id}`
         );
+        setInterventions(response.data);
         setAppointments(appointmentsResponse.data);
         setFetchData(false);
       } catch (error) {
@@ -68,13 +67,11 @@ export default function InterventionsPage() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ToolBarCustomer title="Mes interventions" />
+      <ToolBarCustomer title="Mes interventions" bottomBar/>
       <ScrollView style={styles.container}>
-        <Text style={styles.dateText}>
-          {interventions.length} intervention
-          {interventions.length > 1 ? "s" : ""} enregistrée
-          {interventions.length > 1 ? "s" : ""}.
-        </Text>
+        <View>
+          <Text style={styles.dateText}>Vos interventions</Text>
+        </View>
         <View style={styles.listContainer}>
           {interventions && interventions.length !== 0 ? (
             interventions.map((intervention: any) => (
@@ -92,16 +89,12 @@ export default function InterventionsPage() {
         </View>
         {appointments && appointments.length !== 0 && (
           <View style={styles.listContainerAppointments}>
-            <Text style={styles.dateText}>
-              Demande de rendez-vous
-            </Text>
+            <Text style={styles.dateText}>Vos demandes</Text>
             {appointments.map((appointment: any) => (
               <AppointmentCard
                 key={appointment.id}
                 appointment={appointment}
-                onPress={() => {
-                  // setModalVisible(true);
-                }}
+                onSuccess={() => setFetchData(!fetchData)}
               />
             ))}
           </View>
@@ -109,9 +102,15 @@ export default function InterventionsPage() {
       </ScrollView>
       <View pointerEvents="box-none" style={styles.fabContainer}>
         <AppointmentModalForm
-          type="create"
+          mode="create"
           onSuccess={() => setFetchData(!fetchData)}
-          button={<FAB icon="plus" style={styles.fab}  label="Ajouter un rendez-vous"/>}
+          button={
+            <FAB
+              icon="plus"
+              style={styles.fab}
+              label="Ajouter un rendez-vous"
+            />
+          }
         />
       </View>
     </View>

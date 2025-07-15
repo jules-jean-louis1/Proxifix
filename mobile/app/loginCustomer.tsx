@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { LoginForm } from "./components/auth/LoginForm";
 import { Divider } from "react-native-paper";
+import { ToolBarCustomer } from "./components/navigation/ToolBarCustomer";
 
 export default function LoginCustomer() {
   const [success, setSuccess] = useState<boolean | null>(null);
@@ -18,37 +19,45 @@ export default function LoginCustomer() {
   }, [success]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.form}>
-        <Text style={styles.title}>
-          Connexion à votre espace client en ligne
-        </Text>
-        <Text style={styles.subtitle}>
-          Pour vous connecter, utilisez votre adresse email fournie au
-          technicien.
-        </Text>
-        {success === false && (
-          <Text style={styles.errorMessage}>
-            Mot de passe ou login incorrect
+    <View style={{ flex: 1 }}>
+      <ToolBarCustomer
+        title={"Espace Client"}
+        bottomBar
+        showBack
+        onBackPress={() => router.push("/")}
+      />
+      <View style={styles.container}>
+        <View style={styles.form}>
+          <Text style={styles.title}>
+            Connexion à votre espace client en ligne
           </Text>
-        )}
-        <LoginForm success={success} setSuccess={setSuccess} />
+          <Text style={styles.subtitle}>
+            Pour vous connecter, utilisez votre adresse email fournie au
+            technicien.
+          </Text>
+          {success === false && (
+            <Text style={styles.errorMessage}>
+              Mot de passe ou login incorrect
+            </Text>
+          )}
+          <LoginForm success={success} setSuccess={setSuccess} />
+          <Text style={styles.inline}>
+            Votre accès est confidentiel, ne le communiquez jamais à autrui.
+          </Text>
+        </View>
+        <View style={styles.containerBar}>
+          <Divider />
+        </View>
         <Text style={styles.inline}>
-          Votre accès est confidentiel, ne le communiquez jamais à autrui.
+          Vous n'avez pas de compte ?{" "}
+          <Text
+            style={{ color: "#E53953", fontWeight: "bold" }}
+            onPress={() => router.push("/registerCustomer")}
+          >
+            Inscrivez-vous
+          </Text>
         </Text>
       </View>
-      <View style={styles.containerBar}>
-        <Divider />
-      </View>
-      <Text style={styles.inline}>
-        Vous n'avez pas de compte ?{" "}
-        <Text
-          style={{ color: "#E53953", fontWeight: "bold" }}
-          onPress={() => router.push("/registerCustomer")}
-        >
-          Inscrivez-vous
-        </Text>
-      </Text>
     </View>
   );
 }
@@ -61,7 +70,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F0F3F4",
   },
   form: {
-    width: "80%",
+    width: "90%",
     padding: 20,
     backgroundColor: "#fff",
     borderRadius: 8,

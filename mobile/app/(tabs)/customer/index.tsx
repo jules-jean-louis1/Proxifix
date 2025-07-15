@@ -35,7 +35,7 @@ export const CustomerHome = () => {
         rightContent={
           <Pressable
             onPress={() => {
-              router.push("/customer/profil");
+              router.push("/customer/settings");
             }}
           >
             <Feather name="user" size={24} color="#344260" />
@@ -105,7 +105,7 @@ export const CustomerHome = () => {
             </Pressable>
             <Pressable
               style={styles.buttonSide}
-              onPress={() => router.push("/customer/profil")}
+              onPress={() => router.push("/customer/settings")}
             >
               <Image
                 source={require("../../assets/images/settings.png")}

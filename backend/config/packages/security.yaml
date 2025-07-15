@@ -40,29 +40,31 @@ security:
                 check_path: jwt_refresh
 
     access_control:
+        # Routes publiques (pas d'authentification requise)
         - { path: ^/api/auth/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
         - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs
         - { path: ^/api/auth/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/auth/customer/register, roles: PUBLIC_ACCESS }
         - { path: ^/api/auth/admin/register, roles: PUBLIC_ACCESS }
-        # TODO: Only authenticated admin can create new admin and technician accounts
-        #- { path: ^/api/register, roles: ROLE_ADMIN }
-        - { path: ^/api/customer, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/api/customer, roles: ROLE_TECHNICIAN }
-        - { path: ^/api/equipment, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/api/intervention, roles: IS_AUTHENTICATED_FULLY }
+        
+        # Routes spécifiques avec des rôles particuliers (plus spécifiques en premier)
         - { path: ^/api/admin/interventions, roles: ROLE_TECHNICIAN }
-        - { path: ^/api/operating-system, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/api/company, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/admin/appointment, roles: ROLE_TECHNICIAN }
         - { path: ^/api/task, roles: ROLE_ADMIN }
         - { path: ^/api/task/intervention, roles: ROLE_ADMIN }
-        - { path: ^/api/appointment/free-slots, roles: IS_AUTHENTICATED_FULLY}
-        - { path: ^/api/appointment, roles : IS_AUTHENTICATED_FULLY}
-        - { path: ^/api/customer/appointment, roles: IS_AUTHENTICATED_FULLY}
-        - { path: ^/api/admin/appointment, roles: ROLE_TECHNICIAN}
-        - { path: ^/api/brand, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/user, roles: ROLE_TECHNICIAN }
+        - { path: ^/api/customer/appointment, roles: IS_AUTHENTICATED_FULLY }
+        
+        # Routes générales nécessitant une authentification
+        - { path: ^/api/customer, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/equipment, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/intervention, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/operating-system, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/company, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/appointment, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/brand, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/type-intervention, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     doctrine:

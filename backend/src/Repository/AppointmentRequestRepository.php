@@ -73,7 +73,7 @@ class AppointmentRequestRepository extends ServiceEntityRepository
                 ->setParameter('date', $date);
         }
         if ($userId !== null) {
-            $query->andWhere('a.user = :user_id')
+            $query->andWhere('a.customer = :user_id')
                 ->setParameter('user_id', $userId);
         }
         if ($companyId !== null) {

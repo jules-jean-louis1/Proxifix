@@ -85,16 +85,16 @@ const TabBar = () => {
 
       <TouchableOpacity
         style={styles.tab}
-        onPress={() => router.push("/customer/profil")}
+        onPress={() => router.push("/customer/settings")}
       >
         <Feather
           name="settings"
           size={18}
-          color={isActive("/customer/profil") ? "#01358D" : "#999"}
+          color={isActive("/customer/settings") ? "#01358D" : "#999"}
         />
         <Text
           style={{
-            color: isActive("/customer/profil") ? "#01358D" : "#999",
+            color: isActive("/customer/settings") ? "#01358D" : "#999",
             fontSize: 12,
             marginTop: 2,
           }}

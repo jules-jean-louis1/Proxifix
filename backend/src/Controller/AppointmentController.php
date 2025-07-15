@@ -5,7 +5,6 @@ use App\Entity\AppointmentRequest;
 use App\Entity\Company;
 use App\Entity\Equipment;
 use App\Entity\Intervention;
-use App\Entity\Status;
 use App\Entity\TypeIntervention;
 use App\Entity\User;
 use App\Repository\AppointmentRequestRepository;
@@ -36,15 +35,15 @@ final class AppointmentController extends AbstractController
         $orderRequest         = $request->query->get('order') ?? 'ASC';
         $companyIdRequest     = $request->query->get('company_id');
 
-        // $user = $this->getUser();
-        // if (! $user instanceof User) {
-        //     return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
-        // }
-        // $userId = $user->getId();
-        // $user   = $em->getRepository(User::class)->find($userId);
-        // if (! $user) {
-        //     return $this->json(['error' => 'User not found'], Response::HTTP_BAD_REQUEST);
-        // }
+        $user = $this->getUser();
+        
+        if ($user instanceof User && in_array(User::ROLE_CUSTOMER, $user->getRoles(), true)) {
+            $userIdRequest = $user->getId();
+        }
+
+        if ($user instanceof User && (in_array(User::ROLE_ADMIN,$user->getRoles(), true) || in_array(User::ROLE_TECHNICIAN,$user->getRoles(), true))) {
+            $companyIdRequest = $user->getCompany()->getId();
+        }
 
         $appointments = $appointmentRequestRepository->getAppointements($pageRequest, $sizeRequest, $userIdRequest, $appointmentIdRequest, $statusRequest, $dateRequest, $orderRequest, $companyIdRequest, $idRequest);
 
@@ -71,17 +70,29 @@ final class AppointmentController extends AbstractController
     public function getAvailableSlots(Request $req, InterventionRepository $interventionRepository): JsonResponse
     {
         $date      = $req->query->get('date');
-        $companyId = $req->query->get('companyId');
+        $companyId = $req->query->get('company_id') ?? $req->query->get('companyId'); // Support both formats
         $interval  = $req->query->get('interval');
+        $startTime = $req->query->get('start_time');
+        $endTime   = $req->query->get('end_time');
+        $role      = $req->query->get('role');
 
         if (! $date) {
             return $this->json(['error' => 'date is required'], Response::HTTP_BAD_REQUEST);
         }
-        $date  = new \DateTime($date);
-        $slots = $interventionRepository->getFreeSlots($date, $companyId, $interval);
+        
+        try {
+            $dateObj = new \DateTime($date);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'Invalid date format'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Convert to proper types
+        $intervalMin = $interval ? (int) $interval : 60;
+        $companyIdInt = $companyId ? (int) $companyId : null;
+
+        $slots = $interventionRepository->getFreeSlots($dateObj, $companyIdInt, $intervalMin, $startTime, $endTime, $role);
 
         return $this->json($slots, Response::HTTP_OK);
-
     }
 
     #[Route('/appointment', name: 'new_appointment_request', methods: ['POST'])]
@@ -124,7 +135,6 @@ final class AppointmentController extends AbstractController
     }
 
     #[IsGranted(User::ROLE_TECHNICIAN)]
-    #[IsGranted(User::ROLE_ADMIN)]
     private function insertAppointmentToIntervention(Request $request, EntityManagerInterface $em, InterventionRepository $interventionRepository, AppointmentRequest $appointment, string $status): JsonResponse
     {
         try {
@@ -139,10 +149,17 @@ final class AppointmentController extends AbstractController
                 $em->commit();
                 return $this->json(['success' => true, 'message' => 'Appointment rejected'], Response::HTTP_OK);
             }
-
-            if ($status === AppointmentRequest::ACCEPTED) {
+            if ($status === AppointmentRequest::CONFIRMED) {
+                $appointment->setStatus(AppointmentRequest::CONFIRMED);
+                $appointment->setUpdatedAt(new DateTimeImmutable());
+                $em->persist($appointment);
+                $em->flush();
+                $em->commit();
+                return $this->json(['success' => true, 'message' => 'Appointment confirmed'], Response::HTTP_OK);
+            }
+            if ($status === AppointmentRequest::SCHEDULED) {
                 // Si déjà accepté ET intervention déjà créée, on ne recrée pas d'intervention
-                if ($appointment->getStatus() === AppointmentRequest::ACCEPTED && $appointment->getIntervention() !== null) {
+                if ($appointment->getStatus() === AppointmentRequest::SCHEDULED && $appointment->getIntervention() !== null) {
                     // Ici tu peux mettre à jour l'intervention existante si besoin
                     $appointment->setUpdatedAt(new DateTimeImmutable());
                     $em->persist($appointment);
@@ -165,7 +182,7 @@ final class AppointmentController extends AbstractController
                 $typeIntervention = $payload['type_intervention_id']
                 ? $em->getRepository(TypeIntervention::class)->find($payload['type_intervention_id'])
                 : $appointment->getTypeIntervention();
-                $startDate = $appointment->getDate();
+                $startDate = isset($payload['new_start_date']) ? new DateTimeImmutable($payload['new_start_date']) : $appointment->getDate();
                 $endDate   = isset($payload['end_date'])
                 ? new DateTimeImmutable($payload['end_date'])
                 : (new DateTimeImmutable($startDate->format('Y-m-d H:i:s')))->add(new DateInterval('PT1H'));
@@ -174,7 +191,7 @@ final class AppointmentController extends AbstractController
                     return $this->json(["error" => "Slot already taken"], Response::HTTP_CONFLICT);
                 }
 
-                $appointment->setStatus(AppointmentRequest::ACCEPTED);
+                $appointment->setStatus(AppointmentRequest::SCHEDULED);
                 $appointment->setUpdatedAt(new DateTimeImmutable());
                 $em->persist($appointment);
 
@@ -184,7 +201,7 @@ final class AppointmentController extends AbstractController
                 $intervention->setTitle($payload['title'] ?? $appointment->getTitle());
                 $intervention->setStatus($payload['status'] ?? Intervention::PENDING);
                 $intervention->setTypeIntervention($typeIntervention);
-                $intervention->setUser($appointment->getUser());
+                $intervention->setCustomer($appointment->getUser());
                 $intervention->setCreatedAt(new DateTimeImmutable());
                 $intervention->setUpdatedAt(new DateTimeImmutable());
                 $intervention->setEquipment($appointment->getEquipment());
@@ -227,7 +244,7 @@ final class AppointmentController extends AbstractController
             return $this->json(["error" => "Appointment not found"], Response::HTTP_NOT_FOUND);
         }
 
-        if ($appointment->getStatus() === AppointmentRequest::ACCEPTED) {
+        if ($appointment->getStatus() === AppointmentRequest::SCHEDULED) {
             return $this->json(['error' => "Cannot edit an appointment who's has been accepted"]);
         }
         $payload = $request->toArray();

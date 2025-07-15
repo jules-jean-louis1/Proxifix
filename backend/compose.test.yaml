@@ -2,7 +2,7 @@ services:
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-mobile_cda}
+      POSTGRES_DB: ${POSTGRES_DB:-mobile_cda_test}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_USER: ${POSTGRES_USER:-admin}
     ports:

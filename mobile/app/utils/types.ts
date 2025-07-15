@@ -7,7 +7,10 @@ export interface SessionToken {
   first_name: string;
   last_name: string;
   email: string;
-  company: string | null;
+  company: {
+    id: number | null;
+    name: string | null;
+  };
   token: string | null;
 }
 

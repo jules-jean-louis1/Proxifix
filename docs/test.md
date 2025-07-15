@@ -1,28 +1,109 @@
-# Cahier de recette (plan de tests fonctionnels)
+# Cahier de recette - Backend
 
-## API Company
 
-### 1.1 Création d’une company (POST /api/company)
-- [ ] Création avec tous les champs obligatoires et optionnels (name, type, address, city, zip_code, etc.)
-- [ ] Ajout de spécialisations par id, par slug, et sous forme d’objet `{id: ...}` ou `{slug: ...}`
-- [ ] Ajout de tâches (création de nouvelles tâches)
-- [ ] Ajout de type_equipments et type_interventions (création systématique)
-- [ ] Ajout d’utilisateurs existants (hors ROLE_CUSTOMER)
-- [ ] Réponse 201 avec le JSON attendu (groupes company:read)
+- [1. Executer les tests](#1-executer-les-tests)
+- [2. Tests Api – Company](#2-tests-api--company)
 
-### 1.2 Gestion des erreurs
-- [ ] Erreur si le type n’existe pas
-- [ ] Erreur si le nom est manquant
-- [ ] Erreur si un utilisateur n’existe pas ou est ROLE_CUSTOMER
-- [ ] Erreur si une spécialisation n’existe pas
+# 1. Exécuter les tests
+Pour exécuter les tests, utilisez la commande suivante dans le terminal :
 
-### 1.3 Lecture (GET)
-- [ ] GET /api/company retourne la liste paginée
-- [ ] GET /api/company/{id} retourne la fiche complète
+```bash
+php bin/phpunit
+```
+Ou bien pour cibler un test spécifique, utilisez :
 
-### 1.4 Mise à jour (PUT)
-- [ ] Modification des champs simples
-- [ ] Modification des spécialisations, tâches, équipements, interventions
+```bash
+php bin/phpunit --filter CompanyControllerTest
+```
 
-### 1.5 Suppression (DELETE)
-- [ ] Suppression d’une company
+Creer la base de données de test si elle n'existe pas :
+```bash
+php bin/console doctrine:database:create --env=test
+```
+
+Ensuite, pour mettre à jour le schéma de la base de données et charger les fixtures, exécutez :
+```bash
+php bin/console doctrine:migrations:migrate --force --env=test
+```
+```bash
+php bin/console doctrine:fixtures:load --env=test
+```
+
+# 2. Tests API – Company
+
+- [1. Création d’une company](#1-création-dune-company-post-apicompany)
+- [2. Gestion des erreurs](#2-gestion-des-erreurs)
+- [3. Lecture (GET)](#3-lecture-get)
+- [4. Mise à jour (PUT / PATCH)](#4-mise-à-jour-put--patch)
+- [5. Suppression](#5-suppression-delete)
+- [6. Extensions à venir](#6-extensions-à-venir-interventions-equipments-appointmentrequest)
+
+---
+
+## 1. Création d’une company (POST /api/company)
+
+- ✅ Vérifie la création complète d’une entreprise avec :
+  - Champs obligatoires : `name`, `type`, `address`, `city`, `zip_code`, etc.
+  - Champs optionnels : `about`, `website`, `logo`, `open_days`, `open_hours`
+  - Ajout de spécialisations via `slug`, `id`, ou `{slug}`, `{id}`
+  - Ajout de tâches avec `name` et `description`
+  - Ajout de `type_equipments` et `type_interventions` avec création automatique
+  - Ajout d’utilisateurs avec rôles, sauf `ROLE_CUSTOMER`
+- 🔄 La réponse doit être `201` avec les champs de l’entreprise (groupes `company:read`)
+
+---
+
+## 2. Gestion des erreurs
+
+- ❌ Teste les erreurs si :
+  - Le champ `type` est invalide ou inexistant
+  - Le champ `name` est manquant
+  - L’un des utilisateurs à ajouter n’existe pas ou est `ROLE_CUSTOMER`
+  - Une spécialisation est invalide ou inexistante
+- 🔄 Les réponses doivent renvoyer les bons codes (`400`, `422`, etc.)
+
+---
+
+## 3. Lecture (GET)
+
+- ✅ `GET /api/company`
+  - Retourne la **liste paginée** de toutes les entreprises
+
+- ✅ `GET /api/company/{id}`
+  - Retourne les **détails complets** d’une entreprise
+
+---
+
+## 4. Mise à jour (PUT / PATCH)
+
+- 🔄 Met à jour :
+  - Les champs simples comme `name`, `about`, etc.
+  - Les spécialisations, tâches, équipements et types d’intervention liés
+- ✅ Vérifie que les changements sont bien persistés
+
+---
+
+## 5. Suppression (DELETE)
+
+- ✅ `DELETE /api/company/{id}`
+  - Supprime l’entreprise correspondante
+  - Code retour attendu : `200`
+  - Vérifie que l’entreprise n’existe plus ensuite
+
+---
+
+## 6. Extensions à venir (Interventions, Equipments, AppointmentRequest)
+
+> Ces sections sont prévues dans les prochains tests :
+
+- 📦 `InterventionControllerTest`
+- ⚙️ `EquipmentControllerTest`
+- 📆 `AppointmentRequestControllerTest`
+
+---
+
+🧪 Tous les tests sont écrits dans `CompanyControllerTest` sous le namespace :
+
+```php
+namespace App\Tests\Controller;
+```
