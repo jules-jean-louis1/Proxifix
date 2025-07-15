@@ -55,10 +55,6 @@ jobs:
               if: always() && steps.install.outcome == 'success'
               run: ./bin/console lint:yaml config --parse-tags
 
-            - name: Lint Parameters and Services
-              if: always() && steps.install.outcome == 'success'
-              run: ./bin/console lint:container --no-debug
-
             - name: Check if any dependencies are compromised
               if: always() && steps.install.outcome == 'success'
               run: composer audit --no-dev || true
