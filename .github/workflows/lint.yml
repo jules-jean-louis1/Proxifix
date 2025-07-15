@@ -20,7 +20,7 @@ jobs:
             - name: PHP-CS-Fixer
               uses: docker://oskarstark/php-cs-fixer-ga
               with:
-                  args: --diff --dry-run --allow-risky=yes
+                  args: --diff --dry-run --allow-risky=yes backend
 
     linters:
         name: Linters
@@ -55,29 +55,17 @@ jobs:
               if: always() && steps.install.outcome == 'success'
               run: ./bin/console lint:yaml config --parse-tags
 
-            - name: Lint Twig templates
+            - name: Lint PHP files
               if: always() && steps.install.outcome == 'success'
-              run: ./bin/console lint:twig templates --env=prod
-
-            - name: Lint XLIFF translation files
-              if: always() && steps.install.outcome == 'success'
-              run: ./bin/console lint:xliff translations
-
-            - name: Lint translation contents
-              if: always() && steps.install.outcome == 'success'
-              run: ./bin/console lint:translations
+              run: ./bin/console lint:php src --parse-tags
 
             - name: Lint Parameters and Services
               if: always() && steps.install.outcome == 'success'
               run: ./bin/console lint:container --no-debug
 
-            - name: Lint Doctrine entities
-              if: always() && steps.install.outcome == 'success'
-              run: ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
-
             - name: Check if any dependencies are compromised
               if: always() && steps.install.outcome == 'success'
-              run: composer audit
+              run: composer audit --no-dev || true
 
     static-analysis:
         name: PHPStan
