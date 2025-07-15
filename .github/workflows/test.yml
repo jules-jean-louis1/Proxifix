@@ -18,15 +18,25 @@ jobs:
       run:
         working-directory: ./backend
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_USER: postgres
+          POSTGRES_DB: proaxive_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 3
+
     strategy:
       matrix:
         operating-system: ["ubuntu-latest"]
         php-version: ["8.3"]
-        include:
-          - operating-system: "macos-latest"
-            php-version: "8.3"
-          - operating-system: "windows-latest"
-            php-version: "8.3"
 
     steps:
       - name: "Checkout code"
@@ -36,7 +46,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           coverage: "none"
-          extensions: "intl, mbstring, pdo_sqlite, zip, sqlite3"
+          extensions: "intl, mbstring, pdo_pgsql, zip"
           php-version: ${{ matrix.php-version }}
           tools: composer:v2
 
@@ -48,8 +58,9 @@ jobs:
 
       - name: "Prepare test database"
         run: |
-          mkdir -p var data
+          mkdir -p var
           cp .env.test.ci .env.test.local
+          php bin/console doctrine:database:create --env=test --if-not-exists
           php bin/console doctrine:migrations:migrate --env=test --no-interaction
           php bin/console doctrine:fixtures:load --env=test --no-interaction
 
