@@ -10,56 +10,44 @@ permissions:
   contents: read
 
 jobs:
-  symfony-tests:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28
-      with:
-        php-version: '8.1'
-        extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, sqlite3
-    - uses: actions/checkout@v4
-    
-    - name: Copy .env.test.local
-      working-directory: ./backend
-      run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
-      
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: backend/vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('backend/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
-            
-    - name: Update Composer
-      working-directory: ./backend
-      run: composer update
+    test:
+        name: "${{ matrix.operating-system }} / PHP ${{ matrix.php-version }}"
+        runs-on: ${{ matrix.operating-system }}
+        continue-on-error: false
 
-    - name: Install Dependencies
-      working-directory: ./backend
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-      
-    - name: Create Database
-      working-directory: ./backend
-      env:
-        DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
-      run: php bin/console doctrine:database:create --if-not-exists
-        
-    - name: Run Doctrine Migrations
-      working-directory: ./backend
-      env:
-        DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
-      run: php bin/console doctrine:migrations:migrate --no-interaction
-      
-    - name: Load Fixtures
-      working-directory: ./backend
-      env:
-        DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
-      run: php bin/console doctrine:fixtures:load --no-interaction
-      
-    - name: Execute tests (Unit and Feature tests) via PHPUnit
-      working-directory: ./backend
-      env:
-        DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
-      run: vendor/bin/phpunit
+        strategy:
+            matrix:
+                operating-system: ['ubuntu-latest']
+                php-version: ['8.2', '8.3', '8.4']
+                include:
+                    - operating-system: 'macos-latest'
+                      php-version: '8.2'
+                    - operating-system: 'windows-latest'
+                      php-version: '8.2'
+
+        steps:
+            - name: "Checkout code"
+              uses: actions/checkout@v4
+
+            - name: "Install PHP with extensions"
+              uses: shivammathur/setup-php@v2
+              with:
+                  coverage: "none"
+                  extensions: "intl, mbstring, pdo_sqlite, zip"
+                  php-version: ${{ matrix.php-version }}
+                  tools: composer:v2
+
+            - name: "Add PHPUnit matcher"
+              run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+            - name: "Install dependencies"
+              run: composer install --ansi --no-interaction --no-progress
+
+            - name: "Build and compile assets"
+              run: |
+                php bin/console importmap:install
+                php bin/console sass:build
+                php bin/console asset-map:compile
+
+            - name: "Run tests"
+              run: vendor/bin/phpunit
