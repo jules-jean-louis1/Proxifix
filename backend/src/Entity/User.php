@@ -15,23 +15,23 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: "`user`")]
-#[ORM\UniqueConstraint(name: "UNIQ_IDENTIFIER_EMAIL", fields: ["email"])]
+#[ORM\Table(name: '`user`')]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
-    public const ROLE_ADMIN = "ROLE_ADMIN";
-    public const ROLE_TECHNICIAN = "ROLE_TECHNICIAN";
-    public const ROLE_CUSTOMER = "ROLE_CUSTOMER";
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
+    public const ROLE_TECHNICIAN = 'ROLE_TECHNICIAN';
+    public const ROLE_CUSTOMER = 'ROLE_CUSTOMER';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\Email]
-    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?string $email = null;
 
     /**
@@ -47,10 +47,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 self::ROLE_CUSTOMER,
                 self::ROLE_TECHNICIAN,
             ],
-            message: "Choose a valid role."
+            message: 'Choose a valid role.'
         )
     ]
-    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private array $roles = [];
 
     /**
@@ -64,66 +64,62 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Length(min: 6, max: 255)]
     private ?string $password = null;
 
-    /**
-     * @var string|null
-     */
-    #[Groups("user:write")]
+    #[Groups('user:write')]
     private ?string $plainPassword = null;
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 255)]
-    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?string $first_name = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 2, max: 255)]
-    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?string $last_name = null;
 
     #[ORM\Column]
-    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: "users")]
+    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    #[Groups(["user:customer:read", "user:details"])]
+    #[Groups(['user:customer:read', 'user:details'])]
     private ?Company $company = null;
 
     /**
      * @var Collection<int, Equipment>
      */
-    #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: "user", cascade: ["remove"])]
-    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
+    #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'user', cascade: ['remove'])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private Collection $equipment;
 
     /**
      * @var Collection<int, AppointmentRequest>
      */
-    #[ORM\OneToMany(targetEntity: AppointmentRequest::class, mappedBy: "user", orphanRemoval: true)]
-    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
+    #[ORM\OneToMany(targetEntity: AppointmentRequest::class, mappedBy: 'user', orphanRemoval: true)]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private Collection $appointmentRequests;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?string $zipcode = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(min: 2, max: 255)]
-    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?string $city = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["user:customer:read", "user:customer:edit-profile", "user:details"])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?string $address = null;
-
 
     public function __construct()
     {
@@ -132,6 +128,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->equipment = new ArrayCollection();
         $this->appointmentRequests = new ArrayCollection();
     }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -162,13 +159,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string)$this->email;
+        return (string) $this->email;
     }
 
     /**
      * @return list<string>
-     * @see UserInterface
      *
+     * @see UserInterface
      */
     public function getRoles(): array
     {
@@ -286,7 +283,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addEquipment(Equipment $equipment): static
     {
-        if (!$this->equipment->contains($equipment)) {
+        if (! $this->equipment->contains($equipment)) {
             $this->equipment->add($equipment);
             $equipment->setUser($this);
         }
@@ -316,9 +313,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addAppointmentRequest(
         AppointmentRequest $appointmentRequest
-    ): static
-    {
-        if (!$this->appointmentRequests->contains($appointmentRequest)) {
+    ): static {
+        if (! $this->appointmentRequests->contains($appointmentRequest)) {
             $this->appointmentRequests->add($appointmentRequest);
             $appointmentRequest->setUser($this);
         }
@@ -328,8 +324,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeAppointmentRequest(
         AppointmentRequest $appointmentRequest
-    ): static
-    {
+    ): static {
         if ($this->appointmentRequests->removeElement($appointmentRequest)) {
             // set the owning side to null (unless already changed)
             if ($appointmentRequest->getUser() === $this) {
@@ -387,5 +382,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
 }

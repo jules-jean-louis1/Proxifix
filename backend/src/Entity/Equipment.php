@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(
             uriTemplate: '/api/equipment/{id}',
             normalizationContext: ['groups' => ['equipment:read', 'equipment:details']]
-        )
+        ),
     ]
 )]
 #[ORM\Entity(repositoryClass: EquipmentRepository::class)]
@@ -26,42 +26,42 @@ class Equipment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
+    #[Groups(['equipment:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
+    #[Groups(['equipment:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
+    #[Groups(['equipment:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
+    #[Groups(['equipment:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
-    #[Groups(['equipment:details', "user:details"])]
+    #[Groups(['equipment:details', 'user:details'])]
     private ?TypeEquipment $type_equipment = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    #[Groups(['equipment:details', "user:details"])]
+    #[Groups(['equipment:details', 'user:details'])]
     private ?OperatingSystem $operating_system = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
-    #[Groups(['equipment:details', "user:details"])]
+    #[Groups(['equipment:details', 'user:details'])]
     private ?Brand $brand = null;
 
     /**
      * @var Collection<int, Intervention>
      */
-    #[ORM\OneToMany(targetEntity: Intervention::class, mappedBy: "equipment")]
-    #[Groups(['equipment:details', "user:details"])]
+    #[ORM\OneToMany(targetEntity: Intervention::class, mappedBy: 'equipment')]
+    #[Groups(['equipment:details', 'user:details'])]
     private Collection $interventions;
 
     #[ORM\OneToMany(mappedBy: 'equipment', targetEntity: AppointmentRequest::class)]
@@ -69,7 +69,7 @@ class Equipment
     private Collection $appointmentRequests;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['equipment:read', 'equipment:details','intervention:details', "user:details"])]
+    #[Groups(['equipment:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?string $reference = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -183,7 +183,7 @@ class Equipment
 
     public function addIntervention(Intervention $intervention): static
     {
-        if (!$this->interventions->contains($intervention)) {
+        if (! $this->interventions->contains($intervention)) {
             $this->interventions->add($intervention);
             $intervention->setEquipment($this);
         }
@@ -206,17 +206,17 @@ class Equipment
     {
         return $this->appointmentRequests;
     }
-    
+
     public function addAppointmentRequest(AppointmentRequest $appointmentRequest): static
     {
-        if (!$this->appointmentRequests->contains($appointmentRequest)) {
+        if (! $this->appointmentRequests->contains($appointmentRequest)) {
             $this->appointmentRequests->add($appointmentRequest);
             $appointmentRequest->setEquipment($this); // Met à jour le côté propriétaire
         }
-    
+
         return $this;
     }
-    
+
     public function removeAppointmentRequest(AppointmentRequest $appointmentRequest): static
     {
         if ($this->appointmentRequests->removeElement($appointmentRequest)) {
@@ -225,7 +225,7 @@ class Equipment
                 $appointmentRequest->setEquipment(null);
             }
         }
-    
+
         return $this;
     }
 

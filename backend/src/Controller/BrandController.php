@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\Brand;
@@ -34,7 +35,7 @@ final class BrandController extends AbstractController
     public function update(Request $request, EntityManagerInterface $entityManagerInterface, int $id): JsonResponse
     {
         $payload = $request->getPayload();
-        $brand   = $entityManagerInterface->getRepository(Brand::class)->find($id);
+        $brand = $entityManagerInterface->getRepository(Brand::class)->find($id);
 
         if (! $brand) {
             return $this->json(['error' => 'Brand not found'], Response::HTTP_NOT_FOUND);
@@ -66,17 +67,17 @@ final class BrandController extends AbstractController
     #[Route('/brand', name: 'app_brand_get', methods: ['GET'])]
     public function get(BrandRepository $brandRepository, Request $request): JsonResponse
     {
-        $reqId    = $request->query->get('id');
-        $reqPage  = $request->query->get('page') ?? 1;
-        $reqSize  = $request->query->get('size') ?? 25;
-        $reqName  = $request->query->get('name');
-        $reqOrder = $request->query->get('order') ?? "ASC";
+        $reqId = $request->query->get('id');
+        $reqPage = $request->query->get('page') ?? 1;
+        $reqSize = $request->query->get('size') ?? 25;
+        $reqName = $request->query->get('name');
+        $reqOrder = $request->query->get('order') ?? 'ASC';
 
-        $brands = $brandRepository->getBrands($reqId !== null ? intval($reqId) : null, $reqPage, $reqSize, $reqName, $reqOrder);
+        $brands = $brandRepository->getBrands(null !== $reqId ? intval($reqId) : null, $reqPage, $reqSize, $reqName, $reqOrder);
 
         $data = array_map(function ($brands) {
             return [
-                'id'   => $brands->getId(),
+                'id' => $brands->getId(),
                 'logo' => $brands->getLogo(),
                 'name' => $brands->getName(),
             ];
@@ -84,5 +85,4 @@ final class BrandController extends AbstractController
 
         return $this->json($data, Response::HTTP_OK);
     }
-
 }

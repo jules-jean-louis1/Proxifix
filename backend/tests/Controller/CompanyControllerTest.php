@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Tests\Controller;
 
 use App\Tests\ApiTestCase;
@@ -6,38 +7,37 @@ use App\Tests\ApiTestCase;
 final class CompanyControllerTest extends ApiTestCase
 {
     /**
-     * Test creation of company
+     * Test creation of company.
      */
-
     public function testCreateCompany(): void
     {
         $client = $this->client;
         // Ensure the client is authenticated as superadmin
         $token = $this->getToken('superadmin@test.com', 'superadminpass');
         $client->request('POST', '/api/company', [], [], [
-            'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
-            'CONTENT_TYPE'       => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.$token,
+            'CONTENT_TYPE' => 'application/json',
         ], json_encode([
-            'name'               => 'Test Company',
-            'about'              => 'This is a test company.',
-            'type'               => 'SAS',
-            'address'            => '123 Test St',
-            'city'               => 'Test City',
-            'zip_code'           => '12345',
-            'website'            => 'https://www.testcompany.com',
-            'phone'              => '0123456789',
-            'mobile'             => '0987654321',
-            'logo'               => 'https://www.testcompany.com/logo.png',
-            'open_days'          => 'Monday-Friday',
-            'open_hours'         => '9:00-17:00',
-            'specialization'     => [
+            'name' => 'Test Company',
+            'about' => 'This is a test company.',
+            'type' => 'SAS',
+            'address' => '123 Test St',
+            'city' => 'Test City',
+            'zip_code' => '12345',
+            'website' => 'https://www.testcompany.com',
+            'phone' => '0123456789',
+            'mobile' => '0987654321',
+            'logo' => 'https://www.testcompany.com/logo.png',
+            'open_days' => 'Monday-Friday',
+            'open_hours' => '9:00-17:00',
+            'specialization' => [
                 ['slug' => 'informatique', 'id' => '2'],
             ],
-            'users'              => [
-                ['email' => 'user1_' . time() . '@test.com', 'password' => 'password1', 'roles' => ['ROLE_ADMIN']],
-                ['email' => 'user2_' . time() . '@test.com', 'password' => 'password2'],
+            'users' => [
+                ['email' => 'user1_'.time().'@test.com', 'password' => 'password1', 'roles' => ['ROLE_ADMIN']],
+                ['email' => 'user2_'.time().'@test.com', 'password' => 'password2'],
             ],
-            'type_equipments'    => [
+            'type_equipments' => [
                 ['name' => 'Laptop', 'description' => 'High performance laptop'],
                 ['name' => 'Printer', 'description' => 'Laser printer'],
             ],
@@ -45,7 +45,7 @@ final class CompanyControllerTest extends ApiTestCase
                 ['name' => 'Installation', 'description' => 'Installation of equipment'],
                 ['name' => 'Maintenance', 'description' => 'Regular maintenance service'],
             ],
-            'tasks'              => [
+            'tasks' => [
                 ['name' => 'Setup', 'description' => 'Initial setup of equipment'],
                 ['name' => 'Support', 'description' => 'Ongoing support for users'],
             ],
@@ -74,29 +74,29 @@ final class CompanyControllerTest extends ApiTestCase
     }
 
     /**
-     * Test get one company by ID
+     * Test get one company by ID.
      */
-
     public function testGetCompany(): void
     {
         $token = $this->getToken('superadmin@test.com', 'superadminpass');
-        $id    = $GLOBALS['COMPANY_ID'] ?? 2;
-        $this->client->request('GET', '/api/company?id=' . $id, [], [], [
-            'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+        $id = $GLOBALS['COMPANY_ID'] ?? 2;
+        $this->client->request('GET', '/api/company?id='.$id, [], [], [
+            'HTTP_AUTHORIZATION' => 'Bearer '.$token,
         ]);
         $this->assertResponseIsSuccessful();
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals($id, $responseData[0]['id']);
     }
+
     // /**
     //  * Test list companies (GET)
     //  */
     public function testListCompanies(): void
     {
         $client = $this->client;
-        $token  = $this->getToken('superadmin@test.com', 'superadminpass');
+        $token = $this->getToken('superadmin@test.com', 'superadminpass');
         $this->client->request('GET', '/api/company', [], [], [
-            'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+            'HTTP_AUTHORIZATION' => 'Bearer '.$token,
         ]);
         $this->assertResponseIsSuccessful();
         $responseData = json_decode($client->getResponse()->getContent(), true);
@@ -110,13 +110,13 @@ final class CompanyControllerTest extends ApiTestCase
     public function testUpdateCompany(): void
     {
         $client = $this->client;
-        $token  = $this->getToken('superadmin@test.com', 'superadminpass');
-        $id     = $GLOBALS['COMPANY_ID'] ?? 2;
-        $client->request('PATCH', '/api/company/' . $id, [], [], [
-            'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
-            'CONTENT_TYPE'       => 'application/json',
+        $token = $this->getToken('superadmin@test.com', 'superadminpass');
+        $id = $GLOBALS['COMPANY_ID'] ?? 2;
+        $client->request('PATCH', '/api/company/'.$id, [], [], [
+            'HTTP_AUTHORIZATION' => 'Bearer '.$token,
+            'CONTENT_TYPE' => 'application/json',
         ], json_encode([
-            'name'  => 'Updated Test Company',
+            'name' => 'Updated Test Company',
             'about' => 'Company updated',
         ]));
         $this->assertResponseIsSuccessful();
@@ -133,9 +133,9 @@ final class CompanyControllerTest extends ApiTestCase
         $client = $this->client;
         $token = $this->getToken('superadmin@test.com', 'superadminpass');
         $id = $GLOBALS['COMPANY_ID'] ?? 2;
-        $client->request('DELETE', '/api/company/' . $id, [], [], [
-            'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
-            'CONTENT_TYPE'       => 'application/json',
+        $client->request('DELETE', '/api/company/'.$id, [], [], [
+            'HTTP_AUTHORIZATION' => 'Bearer '.$token,
+            'CONTENT_TYPE' => 'application/json',
         ]);
         $this->assertResponseStatusCodeSame(200);
     }

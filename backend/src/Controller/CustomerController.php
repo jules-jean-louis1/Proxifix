@@ -19,17 +19,16 @@ final class CustomerController extends AbstractController
     #[IsGranted('ROLE_TECHNICIAN')]
     #[Route('/customer/{id}', name: 'app_customer_edit', methods: ['PATCH'])]
     public function editCustomer(
-        int                         $id,
-        Request                     $request,
-        EntityManagerInterface      $entityManager,
+        int $id,
+        Request $request,
+        EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $passwordHasher
-    ): JsonResponse
-    {
+    ): JsonResponse {
         try {
             $payload = $request->getPayload();
             $customerUser = $entityManager->getRepository(User::class)->find($id);
 
-            if (!$customerUser) {
+            if (! $customerUser) {
                 return $this->json(['error' => 'Customer not found'], Response::HTTP_NOT_FOUND);
             }
 
@@ -84,8 +83,7 @@ final class CustomerController extends AbstractController
             $entityManager->persist($customerUser);
             $entityManager->flush();
 
-            return $this->json($customerUser, 200, [], ['groups' => ["user:customer:edit-profile"]]);
-
+            return $this->json($customerUser, 200, [], ['groups' => ['user:customer:edit-profile']]);
         } catch (\Exception $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -97,7 +95,7 @@ final class CustomerController extends AbstractController
     {
         $customerUser = $entityManagerInterface->getRepository(User::class)->find($id);
 
-        if (!$customerUser) {
+        if (! $customerUser) {
             return $this->json(['error' => 'Customer not found'], Response::HTTP_NOT_FOUND);
         }
 
@@ -113,11 +111,11 @@ final class CustomerController extends AbstractController
     {
         $customerUser = $entityManagerInterface->getRepository(User::class)->find($id);
 
-        if (!$customerUser) {
+        if (! $customerUser) {
             return $this->json(['error' => 'Customer not found'], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->json($customerUser, Response::HTTP_OK, [], ["groups" => "user:details", "equipment:details"]);
+        return $this->json($customerUser, Response::HTTP_OK, [], ['groups' => 'user:details', 'equipment:details']);
     }
 
     #[IsGranted('ROLE_TECHNICIAN')]
@@ -132,7 +130,7 @@ final class CustomerController extends AbstractController
 
         $customer = $userRepository->getUsers($id, $query, $page, $limit, $order);
 
-        return $this->json($customer, Response::HTTP_OK, [], ["groups" => "user:details", "equipment:details"]);
+        return $this->json($customer, Response::HTTP_OK, [], ['groups' => 'user:details', 'equipment:details']);
     }
 
     #[IsGranted('ROLE_TECHNICIAN')]
@@ -145,7 +143,7 @@ final class CustomerController extends AbstractController
         $lastName = $payload->get('last_name');
         $password = $payload->get('password');
 
-        if (!$email && !$firstName && !$lastName && !$password) {
+        if (! $email && ! $firstName && ! $lastName && ! $password) {
             return $this->json(['error' => 'Missing required fields'], Response::HTTP_BAD_REQUEST);
         }
 

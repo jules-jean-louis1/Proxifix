@@ -14,8 +14,8 @@ class AdminRegistrationController extends AbstractController
 {
     #[Route('/api/auth/admin/register', name: 'app_register', methods: ['POST'])]
     public function register(Request $request,
-                             EntityManagerInterface $entityManager,
-                             UserPasswordHasherInterface $passwordHasher): JsonResponse
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         $payload = $request->getPayload();
 
@@ -25,7 +25,7 @@ class AdminRegistrationController extends AbstractController
         $lastName = $payload->get('last_name');
         $password = $payload->get('password');
 
-        if (!$email || !$firstName || !$lastName || !$password) {
+        if (! $email || ! $firstName || ! $lastName || ! $password) {
             return new JsonResponse(['error' => 'Missing required fields'], 400);
         }
 
@@ -35,16 +35,16 @@ class AdminRegistrationController extends AbstractController
         $user->setLastName($lastName);
         $user->setCreatedAt(new \DateTimeImmutable());
         $user->setUpdatedAt(new \DateTimeImmutable());
-        
+
         $hashedPassword = $passwordHasher->hashPassword($user, $password);
         $user->setPassword($hashedPassword);
-        
+
         $role = $payload->get('roles') ?? User::ROLE_TECHNICIAN;
         $user->setRoles([$role]);
-        
+
         $entityManager->persist($user);
         $entityManager->flush();
 
-        return new JsonResponse(["success" => "User registered successfully"], 201);
+        return new JsonResponse(['success' => 'User registered successfully'], 201);
     }
 }

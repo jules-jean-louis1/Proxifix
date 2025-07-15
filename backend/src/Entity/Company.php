@@ -13,55 +13,55 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company
 {
-    public const SARL = "SARL";
-    public const SASU = "SASU";
-    public const EI = "EI";
-    public const EURL = "EURL";
-    public const SA = "SA";
-    public const SC = "SC";
-    public const SNC = "SNC";
-    public const MICRO_ENTERPRISE = "Micro-entreprise";
-    public const SAS = "SAS";
+    public const SARL = 'SARL';
+    public const SASU = 'SASU';
+    public const EI = 'EI';
+    public const EURL = 'EURL';
+    public const SA = 'SA';
+    public const SC = 'SC';
+    public const SNC = 'SNC';
+    public const MICRO_ENTERPRISE = 'Micro-entreprise';
+    public const SAS = 'SAS';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["company:read", "user:details", "intervention:details", "company:get_list"])]
+    #[Groups(['company:read', 'user:details', 'intervention:details', 'company:get_list'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["company:read", "user:details", "intervention:details", "company:get_list"])]
+    #[Groups(['company:read', 'user:details', 'intervention:details', 'company:get_list'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["company:read", "intervention:details", "company:get_list"])]
+    #[Groups(['company:read', 'intervention:details', 'company:get_list'])]
     private ?string $about = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $type = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $address = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $zip_code = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $website = null;
 
     #[ORM\Column]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     /**
@@ -82,56 +82,56 @@ class Company
     #[ORM\OneToMany(targetEntity: AppointmentRequest::class, mappedBy: 'company')]
     private Collection $appointmentRequests;
 
-    #[ORM\Column (type: 'boolean', nullable: true)]
-    #[Groups(["company:read", "company:get_list"])]
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?bool $is_approved = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $open_days = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $open_hours = null;
 
     /**
      * @var Collection<int, CompanySpecialization>
      */
     #[ORM\ManyToMany(targetEntity: CompanySpecialization::class, inversedBy: 'companies')]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private Collection $specialization;
 
     /**
      * @var Collection<int, TypeEquipment>
      */
     #[ORM\OneToMany(targetEntity: TypeEquipment::class, mappedBy: 'Company')]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private Collection $typeEquipment;
 
     /**
      * @var Collection<int, TypeIntervention>
      */
     #[ORM\OneToMany(targetEntity: TypeIntervention::class, mappedBy: 'Company')]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private Collection $typeInterventions;
 
     /**
      * @var Collection<int, Task>
      */
     #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'Company')]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private Collection $tasks;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $logo = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $mobile = null;
 
     #[ORM\Column(options: ['default' => false])]
@@ -147,7 +147,6 @@ class Company
         $this->typeInterventions = new ArrayCollection();
         $this->tasks = new ArrayCollection();
     }
-
 
     public function getId(): ?int
     {
@@ -280,7 +279,7 @@ class Company
 
     public function addIntervention(Intervention $intervention): static
     {
-        if (!$this->interventions->contains($intervention)) {
+        if (! $this->interventions->contains($intervention)) {
             $this->interventions->add($intervention);
             $intervention->setCompany($this);
         }
@@ -302,7 +301,7 @@ class Company
 
     public function addUser(User $user): static
     {
-        if (!$this->users->contains($user)) {
+        if (! $this->users->contains($user)) {
             $this->users->add($user);
             $user->setCompany($this);
         }
@@ -332,7 +331,7 @@ class Company
 
     public function addAppointmentRequest(AppointmentRequest $appointmentRequest): static
     {
-        if (!$this->appointmentRequests->contains($appointmentRequest)) {
+        if (! $this->appointmentRequests->contains($appointmentRequest)) {
             $this->appointmentRequests->add($appointmentRequest);
             $appointmentRequest->setCompany($this);
         }
@@ -403,7 +402,7 @@ class Company
 
     public function addSpecialization(CompanySpecialization $specialization): static
     {
-        if (!$this->specialization->contains($specialization)) {
+        if (! $this->specialization->contains($specialization)) {
             $this->specialization->add($specialization);
         }
 
@@ -427,7 +426,7 @@ class Company
 
     public function addTypeEquipment(TypeEquipment $typeEquipment): static
     {
-        if (!$this->typeEquipment->contains($typeEquipment)) {
+        if (! $this->typeEquipment->contains($typeEquipment)) {
             $this->typeEquipment->add($typeEquipment);
             $typeEquipment->setCompany($this);
         }
@@ -457,7 +456,7 @@ class Company
 
     public function addTypeIntervention(TypeIntervention $typeIntervention): static
     {
-        if (!$this->typeInterventions->contains($typeIntervention)) {
+        if (! $this->typeInterventions->contains($typeIntervention)) {
             $this->typeInterventions->add($typeIntervention);
             $typeIntervention->setCompany($this);
         }
@@ -487,7 +486,7 @@ class Company
 
     public function addTask(Task $task): static
     {
-        if (!$this->tasks->contains($task)) {
+        if (! $this->tasks->contains($task)) {
             $this->tasks->add($task);
             $task->setCompany($this);
         }

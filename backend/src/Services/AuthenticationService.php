@@ -14,14 +14,13 @@ class AuthenticationService
     private UserRepository $userRepository;
     private JWTTokenManagerInterface $tokenManager;
 
-    public function __construct(UserRepository              $userRepository,
-                                UserPasswordHasherInterface $passwordHasher,
-                                JWTTokenManagerInterface    $tokenManager)
+    public function __construct(UserRepository $userRepository,
+        UserPasswordHasherInterface $passwordHasher,
+        JWTTokenManagerInterface $tokenManager)
     {
         $this->userRepository = $userRepository;
         $this->passwordHasher = $passwordHasher;
         $this->tokenManager = $tokenManager;
-
     }
 
     public function authenticateUser(Request $request): JsonResponse
@@ -30,15 +29,16 @@ class AuthenticationService
         $email = $payload->get('email');
         $password = $payload->get('password');
 
-        if(!isset($email) || !isset($password)) {
+        if (! isset($email) || ! isset($password)) {
             return new JsonResponse(['error' => 'Invalid credentials'], 400);
         }
 
         $user = $this->userRepository->findOneBy(['email' => $email]);
-        if(!$user || !$this->passwordHasher->isPasswordValid($user, plainPassword: $password)) {
+        if (! $user || ! $this->passwordHasher->isPasswordValid($user, plainPassword: $password)) {
             return new JsonResponse(['error' => 'Invalid credentials'], 400);
         }
         $token = $this->tokenManager->create($user);
+
         return new JsonResponse(['token' => $token], 200);
     }
 }

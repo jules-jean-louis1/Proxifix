@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\Intervention;
@@ -18,10 +19,10 @@ final class TaskInterventionController extends AbstractController
     {
         $payload = $request->getPayload();
 
-        $taskId         = $payload->get('task_id');
-        $task           = $em->getRepository(Task::class)->find($taskId);
+        $taskId = $payload->get('task_id');
+        $task = $em->getRepository(Task::class)->find($taskId);
         $interventionId = $payload->get('intervention_id');
-        $intervention   = $em->getRepository(Intervention::class)->find($interventionId);
+        $intervention = $em->getRepository(Intervention::class)->find($interventionId);
 
         if (! $task || ! $intervention) {
             return new JsonResponse(['error' => 'Task or Intervention not found'], 404);
@@ -35,8 +36,8 @@ final class TaskInterventionController extends AbstractController
         $em->flush();
 
         return new JsonResponse([
-            'id'              => $taskIntervention->getId(),
-            'task_id'         => $task->getId(),
+            'id' => $taskIntervention->getId(),
+            'task_id' => $task->getId(),
             'intervention_id' => $intervention->getId(),
         ], 201);
     }
@@ -44,17 +45,17 @@ final class TaskInterventionController extends AbstractController
     #[Route('/task-intervention/{id}', name: 'app_task_intervention_update', methods: ['PUT'])]
     public function update(Request $request, EntityManagerInterface $em, int $id): JsonResponse
     {
-        $payload          = $request->getPayload();
+        $payload = $request->getPayload();
         $taskIntervention = $em->getRepository(TaskIntervention::class)->find($id);
 
         if (! $taskIntervention) {
             return new JsonResponse(['error' => 'Task Intervention not found'], 404);
         }
 
-        $taskId         = $payload->get('task_id');
-        $task           = $em->getRepository(Task::class)->find($taskId);
+        $taskId = $payload->get('task_id');
+        $task = $em->getRepository(Task::class)->find($taskId);
         $interventionId = $payload->get('intervention_id');
-        $intervention   = $em->getRepository(Intervention::class)->find($interventionId);
+        $intervention = $em->getRepository(Intervention::class)->find($interventionId);
 
         if (! $task || ! $intervention) {
             return new JsonResponse(['error' => 'Task or Intervention not found'], 404);
@@ -66,8 +67,8 @@ final class TaskInterventionController extends AbstractController
         $em->flush();
 
         return new JsonResponse([
-            'id'              => $taskIntervention->getId(),
-            'task_id'         => $task->getId(),
+            'id' => $taskIntervention->getId(),
+            'task_id' => $task->getId(),
             'intervention_id' => $intervention->getId(),
         ], 200);
     }
@@ -96,11 +97,12 @@ final class TaskInterventionController extends AbstractController
         }
 
         return new JsonResponse([
-            'id'              => $taskIntervention->getId(),
-            'task_id'         => $taskIntervention->getTask()->getId(),
+            'id' => $taskIntervention->getId(),
+            'task_id' => $taskIntervention->getTask()->getId(),
             'intervention_id' => $taskIntervention->getIntervention()->getId(),
         ], 200);
     }
+
     #[Route('/task-interventions', name: 'app_task_interventions_list', methods: ['GET'])]
     public function list(EntityManagerInterface $em): JsonResponse
     {
@@ -108,8 +110,8 @@ final class TaskInterventionController extends AbstractController
         $data = [];
         foreach ($taskInterventions as $taskIntervention) {
             $data[] = [
-                'id'              => $taskIntervention->getId(),
-                'task_id'         => $taskIntervention->getTask()->getId(),
+                'id' => $taskIntervention->getId(),
+                'task_id' => $taskIntervention->getTask()->getId(),
                 'intervention_id' => $taskIntervention->getIntervention()->getId(),
             ];
         }

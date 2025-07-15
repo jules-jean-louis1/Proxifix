@@ -15,19 +15,19 @@ class Task
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["task:read", "task:write", "intervention:details", "task:get_list", "company:read", "company:get_list"])]
+    #[Groups(['task:read', 'task:write', 'intervention:details', 'task:get_list', 'company:read', 'company:get_list'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["task:read", "task:write", "intervention:details", "task:get_list", "company:read", "company:get_list"])]
+    #[Groups(['task:read', 'task:write', 'intervention:details', 'task:get_list', 'company:read', 'company:get_list'])]
     private ?string $name = null;
 
-    #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
-    #[Groups(["task:read", "task:write", "intervention:details", "task:get_list", "company:read", "company:get_list"])]
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[Groups(['task:read', 'task:write', 'intervention:details', 'task:get_list', 'company:read', 'company:get_list'])]
     private ?float $price = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(["task:read", "task:write", "intervention:details", "task:get_list", "company:read", "company:get_list"])]
+    #[Groups(['task:read', 'task:write', 'intervention:details', 'task:get_list', 'company:read', 'company:get_list'])]
     private ?string $description = null;
 
     #[ORM\OneToMany(mappedBy: 'task', targetEntity: TaskIntervention::class)]

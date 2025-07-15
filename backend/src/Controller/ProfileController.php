@@ -16,12 +16,11 @@ final class ProfileController extends AbstractController
     #[Route('/api/profile', name: 'app_user', methods: ['GET'])]
     public function profile(): JsonResponse
     {
-
         // Récupérer l'utilisateur connecté
         $user = $this->getUser();
 
         // Vérifier si l'utilisateur est authentifié
-        if (!$user) {
+        if (! $user) {
             return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
@@ -42,18 +41,18 @@ final class ProfileController extends AbstractController
 
     #[Route('/api/profile', name: 'app_profile', methods: ['PUT'])]
     public function profileUpdate(
-        TokenStorageInterface       $tokenStorage,
-        Request                     $request,
-        EntityManagerInterface      $entityManager,
+        TokenStorageInterface $tokenStorage,
+        Request $request,
+        EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $passwordHasher,
-        JWTTokenManagerInterface    $tokenManager): JsonResponse
+        JWTTokenManagerInterface $tokenManager): JsonResponse
     {
         $this->token = $tokenStorage->getToken();
         $user = $this->getUser();
 
         $data = json_decode($request->getContent(), true);
 
-        if (!$user) {
+        if (! $user) {
             return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
@@ -101,7 +100,7 @@ final class ProfileController extends AbstractController
                 'address' => $user->getAddress(),
                 'city' => $user->getCity(),
                 'zip_code' => $user->getZipCode(),
-            ]
+            ],
         ], JsonResponse::HTTP_OK);
     }
 
@@ -111,7 +110,7 @@ final class ProfileController extends AbstractController
         $this->token = $tokenStorage->getToken();
         $user = $this->getUser();
 
-        if (!$user) {
+        if (! $user) {
             return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
         }
         $entityManager->remove($user);

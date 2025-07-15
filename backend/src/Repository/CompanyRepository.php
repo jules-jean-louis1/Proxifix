@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Company;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use phpDocumentor\Reflection\Types\Boolean;
 
 /**
  * @extends ServiceEntityRepository<Company>
@@ -32,7 +31,7 @@ class CompanyRepository extends ServiceEntityRepository
             ->setMaxResults($size)
             ->orderBy('c.id', $order);
 
-        if ($id !== null) {
+        if (null !== $id) {
             $qb->andWhere('c.id = :id')
                 ->setParameter('id', $id);
         }
@@ -40,16 +39,16 @@ class CompanyRepository extends ServiceEntityRepository
         if ($pending) {
             $qb->andWhere('c.pending = true');
         }
-        
-        if ($specializationId !== null) {
+
+        if (null !== $specializationId) {
             $qb->join('c.specialization', 's')
             ->andWhere('s.id = :specializationId')
             ->setParameter('specializationId', $specializationId);
         }
 
-        if ($name !== null) {
+        if (null !== $name) {
             $qb->andWhere('c.name LIKE :name')
-                ->setParameter('name', '%' . $name . '%');
+                ->setParameter('name', '%'.$name.'%');
         }
 
         if ($isDeleted) {
@@ -61,7 +60,6 @@ class CompanyRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
-        
     }
     //    /**
     //     * @return Company[] Returns an array of Company objects

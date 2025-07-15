@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\TypeEquipment;
@@ -15,10 +16,10 @@ final class TypeEquipmentController extends AbstractController
     #[Route('/type-equipment', name: 'app_type_equipment', methods: ['GET'])]
     public function getList(Request $request, TypeEquipmentRepository $typeEquipmentRepository): JsonResponse
     {
-        $id    = $request->query->get('id');
-        $name  = $request->query->get('name');
-        $page  = $request->query->getInt('page', 1);
-        $size  = $request->query->getInt('size', 10);
+        $id = $request->query->get('id');
+        $name = $request->query->get('name');
+        $page = $request->query->getInt('page', 1);
+        $size = $request->query->getInt('size', 10);
         $order = $request->query->get('order', 'asc');
 
         if ($id) {

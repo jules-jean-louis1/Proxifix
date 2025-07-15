@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller\Auth;
 
 use App\Entity\User;
@@ -10,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route("/api/auth")]
+#[Route('/api/auth')]
 class CustomerRegistrationController extends AbstractController
 {
     #[Route('/customer/register', name: 'app_customer_create', methods: ['POST'])]
@@ -26,7 +27,7 @@ class CustomerRegistrationController extends AbstractController
                 return $this->json(['error' => 'Email already exists'], Response::HTTP_CONFLICT);
             }
 
-            $user           = new User();
+            $user = new User();
             $hashedPassword = $passwordHasher->hashPassword($user, $payload->get('password'));
 
             $user->setEmail($payload->get('email'))
@@ -42,11 +43,11 @@ class CustomerRegistrationController extends AbstractController
             $entityManager->commit();
 
             return $this->json([
-                'user'     => $user,
+                'user' => $user,
             ], Response::HTTP_CREATED);
-
         } catch (\Exception $e) {
             $entityManager->rollback();
+
             return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

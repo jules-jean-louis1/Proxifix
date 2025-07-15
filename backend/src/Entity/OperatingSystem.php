@@ -19,7 +19,7 @@ class OperatingSystem
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['operatingSystem.get_one','equipment:details'])]
+    #[Groups(['operatingSystem.get_one', 'equipment:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -49,7 +49,6 @@ class OperatingSystem
         $this->updated_at = new \DateTimeImmutable();
     }
 
-
     public function getId(): ?int
     {
         return $this->id;
@@ -77,7 +76,7 @@ class OperatingSystem
 
     public function addEquipment(Equipment $equipment): static
     {
-        if (!$this->equipment->contains($equipment)) {
+        if (! $this->equipment->contains($equipment)) {
             $this->equipment->add($equipment);
             $equipment->setOperatingSystem($this);
         }

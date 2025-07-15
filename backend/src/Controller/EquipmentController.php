@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\Brand;
@@ -25,11 +26,11 @@ class EquipmentController extends AbstractController
             return new JsonResponse(['error' => 'Name, user_id, type_equipment_id and brand_id are required'], 400);
         }
 
-        $user            = $entityManager->getRepository(User::class)->find($payload->get('user_id'));
-        $typeEquipment   = $entityManager->getRepository(TypeEquipment::class)->find($payload->get('type_equipment_id'));
-        $brand           = $entityManager->getRepository(Brand::class)->find($payload->get('brand_id'));
+        $user = $entityManager->getRepository(User::class)->find($payload->get('user_id'));
+        $typeEquipment = $entityManager->getRepository(TypeEquipment::class)->find($payload->get('type_equipment_id'));
+        $brand = $entityManager->getRepository(Brand::class)->find($payload->get('brand_id'));
         $operatingSystem = null;
-        if ($payload->has('operating_system_id') && $payload->get('operating_system_id') !== null) {
+        if ($payload->has('operating_system_id') && null !== $payload->get('operating_system_id')) {
             $operatingSystem = $entityManager->getRepository(OperatingSystem::class)->find($payload->get('operating_system_id'));
         }
 
@@ -48,7 +49,6 @@ class EquipmentController extends AbstractController
         $entityManager->flush();
 
         return $this->json($equipment, 201, [], ['groups' => 'equipment:details']);
-
     }
 
     #[Route('/equipment/{id}', name: 'app_equipment_edit', methods: ['PUT', 'PATCH'])]
@@ -110,12 +110,12 @@ class EquipmentController extends AbstractController
             'model' => $equipment->getModel(),
             'brand' => [
                 'id' => $equipment->getBrand()->getId(),
-                'name' => $equipment->getBrand()->getName()
+                'name' => $equipment->getBrand()->getName(),
             ],
             'type_equipment' => [
                 'id' => $equipment->getTypeEquipment()->getId(),
-                'name' =>$equipment->getTypeEquipment()->getName()
-            ]
+                'name' => $equipment->getTypeEquipment()->getName(),
+            ],
         ];
 
         return new JsonResponse($equipmentData, 200);
@@ -140,6 +140,7 @@ class EquipmentController extends AbstractController
 
         return new JsonResponse(['message' => 'Equipment deleted'], 200);
     }
+
     #[Route('/customer/{customerId}', name: 'app_equipment_customer_list', methods: ['GET'])]
     public function getEquipmentUser(int $customerId, EntityManagerInterface $em): JsonResponse
     {
@@ -151,19 +152,19 @@ class EquipmentController extends AbstractController
 
         return $this->json($equipments, 200, [], ['groups' => 'equipment:details']);
     }
-    
+
     #[Route('/equipment', name: 'app_equipment_get', methods: ['GET'])]
     public function getEquipments(Request $request, EquipmentRepository $equipmentRepository)
     {
-        $reqId              = $request->query->get('id');
-        $reqUserId          = $request->query->get('user_id');
-        $reqBrandId         = $request->query->get('brand_id');
+        $reqId = $request->query->get('id');
+        $reqUserId = $request->query->get('user_id');
+        $reqBrandId = $request->query->get('brand_id');
         $reqTypeEquipmentId = $request->query->get('type_equipment_id');
-        $reqPage            = $request->query->get('page') ?? 1;
-        $reqSize            = $request->query->get('size') ?? 25;
-        $reqName            = $request->query->get('name');
-        $reqOrder           = $request->query->get('order') ?? "ASC";
-        $reqReference       = $request->query->get('reference') ?? "";
+        $reqPage = $request->query->get('page') ?? 1;
+        $reqSize = $request->query->get('size') ?? 25;
+        $reqName = $request->query->get('name');
+        $reqOrder = $request->query->get('order') ?? 'ASC';
+        $reqReference = $request->query->get('reference') ?? '';
 
         $equipments = $equipmentRepository->getEquipments($reqId, $reqUserId, $reqBrandId, $reqTypeEquipmentId, $reqPage, $reqSize, $reqName, $reqOrder, $reqReference);
 
@@ -171,7 +172,8 @@ class EquipmentController extends AbstractController
     }
 
     #[Route('/equipment/{id}', name: 'app_equipment_get_one', methods: ['GET'])]
-    public function getOneEquipment(int $id, EntityManagerInterface $em) {
+    public function getOneEquipment(int $id, EntityManagerInterface $em)
+    {
         $equipment = $em->getRepository(Equipment::class)->findOneBy(['id' => $id]);
 
         return $this->json($equipment, 200, [], ['groups' => 'equipment:details']);

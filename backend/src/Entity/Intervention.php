@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -13,59 +14,59 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource]
 class Intervention
 {
-    public const PENDING = "pending";
-    public const ASSIGNED = "assigned";
-    public const AWAITING_PICKUP = "awaiting_pickup";
-    public const IN_PROGRESS = "in_progress";
-    public const COMPLETED = "completed";
-    public const CANCELLED = "cancelled";
+    public const PENDING = 'pending';
+    public const ASSIGNED = 'assigned';
+    public const AWAITING_PICKUP = 'awaiting_pickup';
+    public const IN_PROGRESS = 'in_progress';
+    public const COMPLETED = 'completed';
+    public const CANCELLED = 'cancelled';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
+    #[Groups(['intervention:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
+    #[Groups(['intervention:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
+    #[Groups(['intervention:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?string $description = null;
 
-    #[ORM\Column(Types::TEXT, nullable:true)]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
+    #[ORM\Column(Types::TEXT, nullable: true)]
+    #[Groups(['intervention:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?string $message_report = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
+    #[Groups(['intervention:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?\DateTimeImmutable $start_date = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
+    #[Groups(['intervention:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?\DateTimeImmutable $end_date = null;
 
     #[ORM\Column]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
+    #[Groups(['intervention:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
+    #[Groups(['intervention:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(targetEntity: TypeIntervention::class, inversedBy: 'interventions')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
+    #[Groups(['intervention:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?TypeIntervention $typeIntervention = null;
 
-    #[ORM\ManyToOne(inversedBy: "interventions")]
+    #[ORM\ManyToOne(inversedBy: 'interventions')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[Groups(['intervention:details'])]
     private ?Company $company = null;
 
     #[ORM\Column(length : 255)]
-    #[Groups(['intervention:read','equipment:details', 'intervention:details', "user:details"])]
+    #[Groups(['intervention:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?string $status = null;
 
     #[ORM\ManyToOne]
@@ -77,10 +78,10 @@ class Intervention
     #[Groups(['intervention:read', 'intervention:details'])]
     private ?User $technician = null;
 
-    #[ORM\OneToMany(mappedBy: "intervention", targetEntity: TaskIntervention::class)]
+    #[ORM\OneToMany(mappedBy: 'intervention', targetEntity: TaskIntervention::class)]
     #[Groups(['intervention:read', 'intervention:details'])]
     private Collection $taskInterventions;
-    
+
     #[ORM\ManyToOne(inversedBy: null)]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['intervention:read', 'intervention:details'])]
@@ -143,22 +144,26 @@ class Intervention
     {
         return $this->start_date;
     }
+
     public function setStartDate(?\DateTimeImmutable $start_date): static
     {
         $this->start_date = $start_date;
 
         return $this;
     }
+
     public function getEndDate(): ?\DateTimeImmutable
     {
         return $this->end_date;
     }
+
     public function setEndDate(?\DateTimeImmutable $end_date): static
     {
         $this->end_date = $end_date;
 
         return $this;
     }
+
     public function getDuration(): ?int
     {
         if ($this->start_date && $this->end_date) {
@@ -167,6 +172,7 @@ class Intervention
 
         return null;
     }
+
     public function getDurationInHours(): ?int
     {
         if ($this->start_date && $this->end_date) {
@@ -175,15 +181,16 @@ class Intervention
 
         return null;
     }
+
     public function getTypeIntervention(): ?TypeIntervention
     {
         return $this->typeIntervention;
     }
-    
+
     public function setTypeIntervention(?TypeIntervention $typeIntervention): static
     {
         $this->typeIntervention = $typeIntervention;
-    
+
         return $this;
     }
 
@@ -234,24 +241,25 @@ class Intervention
 
         return $this;
     }
+
     public function isPending(): bool
     {
-        return $this->status === self::PENDING;
+        return self::PENDING === $this->status;
     }
 
     public function isAssigned(): bool
     {
-        return $this->status === self::ASSIGNED && $this->technician !== null;
+        return self::ASSIGNED === $this->status && null !== $this->technician;
     }
 
     public function isInProgress(): bool
     {
-        return $this->status === self::IN_PROGRESS;
+        return self::IN_PROGRESS === $this->status;
     }
 
     public function isCompleted(): bool
     {
-        return $this->status === self::COMPLETED;
+        return self::COMPLETED === $this->status;
     }
 
     public function canBeAssigned(): bool
@@ -287,7 +295,7 @@ class Intervention
     {
         return $this->taskInterventions;
     }
-    
+
     public function addTaskIntervention(
         TaskIntervention $taskIntervention
     ): self {
@@ -301,7 +309,7 @@ class Intervention
         TaskIntervention $taskIntervention
     ): self {
         $this->taskInterventions->removeElement($taskIntervention);
-    
+
         return $this;
     }
 
@@ -309,10 +317,11 @@ class Intervention
     {
         return $this->appointmentRequest;
     }
-    
+
     public function setAppointmentRequest(?AppointmentRequest $appointmentRequest): static
     {
         $this->appointmentRequest = $appointmentRequest;
+
         return $this;
     }
 
@@ -320,11 +329,11 @@ class Intervention
     {
         return $this->equipment;
     }
-    
+
     public function setEquipment(?Equipment $equipment): static
     {
         $this->equipment = $equipment;
-    
+
         return $this;
     }
 }

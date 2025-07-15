@@ -49,7 +49,7 @@ class TypeInterventionRepository extends ServiceEntityRepository
 
         if ($name) {
             $qb->andWhere('t.name LIKE :name')
-                ->setParameter('name', '%' . $name . '%');
+                ->setParameter('name', '%'.$name.'%');
         }
 
         if ($companyId) {

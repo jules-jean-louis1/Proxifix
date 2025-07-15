@@ -19,19 +19,19 @@ class TypeEquipmentRepository extends ServiceEntityRepository
     public function getTypes(?int $id, ?int $page, ?int $size, ?string $name, ?string $order = 'ASC'): array
     {
         $offset = ($page - 1) * $size;
-        $query  = $this->createQueryBuilder('t');
+        $query = $this->createQueryBuilder('t');
 
-        if ($id !== null) {
+        if (null !== $id) {
             $query->andWhere('t.id = :id')
                 ->setParameter('id', intval($id));
         }
 
-        if ($name !== null && $name !== "") {
+        if (null !== $name && '' !== $name) {
             $query->andWhere('LOWER(t.name) LIKE :name')
-                ->setParameter('name', '%' . strtolower($name) . '%');
+                ->setParameter('name', '%'.strtolower($name).'%');
         }
 
-        if ($order !== null) {
+        if (null !== $order) {
             $query->orderBy('t.name', $order);
         }
         // TODO: Add company filter
