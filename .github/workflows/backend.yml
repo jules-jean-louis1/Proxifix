@@ -14,6 +14,9 @@ jobs:
         name: "${{ matrix.operating-system }} / PHP ${{ matrix.php-version }}"
         runs-on: ${{ matrix.operating-system }}
         continue-on-error: false
+        defaults:
+            run:
+                working-directory: ./backend
 
         strategy:
             matrix:
@@ -41,7 +44,7 @@ jobs:
               run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
             - name: "Install dependencies"
-              run: composer install --ansi --no-interaction --no-progress
+              run: composer install --ansi --no-interaction --no-progress --no-scripts
 
             - name: "Build and compile assets"
               run: |
