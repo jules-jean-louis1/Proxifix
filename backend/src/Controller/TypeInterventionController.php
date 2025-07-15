@@ -65,9 +65,9 @@ final class TypeInterventionController extends AbstractController
         // }
 
         $typeIntervention = new TypeIntervention();
-        
+
         $name = $payload->get('name');
-        if (!is_string($name)) {
+        if (! is_string($name)) {
             return new JsonResponse(['error' => 'Name must be a string'], 400);
         }
         $typeIntervention->setName($name);
@@ -105,7 +105,7 @@ final class TypeInterventionController extends AbstractController
         }
 
         $name = $payload->get('name');
-        if (!is_string($name)) {
+        if (! is_string($name)) {
             return new JsonResponse(['error' => 'Name must be a string'], 400);
         }
         $typeIntervention->setName($name);

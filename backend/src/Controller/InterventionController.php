@@ -402,11 +402,11 @@ class InterventionController extends AbstractController
     }
 
     #[Route('/intervention/status', name: 'app_intervention_status', methods: ['GET'])]
-    public function getInterventionStatus(): JsonResponse 
+    public function getInterventionStatus(): JsonResponse
     {
         $statuses = [
             Intervention::PENDING,
-            Intervention::ASSIGNED, 
+            Intervention::ASSIGNED,
             Intervention::IN_PROGRESS,
             Intervention::COMPLETED,
             Intervention::CANCELLED,

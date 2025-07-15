@@ -35,11 +35,11 @@ final class UserController extends AbstractController
         // Ensure role is always an array
         $role = $role ? [$role] : [];
         $user = $this->getUser();
-        
-        if (!$user instanceof User) {
+
+        if (! $user instanceof User) {
             return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
         }
-        
+
         $userRoles = $user->getRoles();
 
         if (in_array(User::ROLE_ADMIN, $userRoles, true)) {
@@ -106,10 +106,10 @@ final class UserController extends AbstractController
         $role = $role ? [$role] : [];
 
         $currentUser = $this->getUser();
-        if (!$currentUser instanceof User) {
+        if (! $currentUser instanceof User) {
             return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
         }
-        
+
         $companyId = $currentUser->getCompany()->getId();
         $company = $entityManager->getRepository(Company::class)->findOneBy(['id' => $companyId]);
         foreach ($role as $r) {
@@ -135,10 +135,10 @@ final class UserController extends AbstractController
     public function listUsers(EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage, UserRepository $userRepository, Request $request): JsonResponse
     {
         $currentUser = $this->getUser();
-        if (!$currentUser instanceof User) {
+        if (! $currentUser instanceof User) {
             return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
         }
-        
+
         $companyId = $currentUser->getCompany()->getId();
         $company = $entityManager->getRepository(Company::class)->findOneBy(['id' => $companyId]);
         if (! $company) {
@@ -164,7 +164,7 @@ final class UserController extends AbstractController
     public function deleteUser(EntityManagerInterface $entityManager, int $id, TokenStorageInterface $tokenStorage): JsonResponse
     {
         $user = $this->getUser();
-        if (!$user instanceof User || ! in_array(User::ROLE_ADMIN, $user->getRoles(), true)) {
+        if (! $user instanceof User || ! in_array(User::ROLE_ADMIN, $user->getRoles(), true)) {
             return $this->json(['error' => 'No right to delete user'], Response::HTTP_FORBIDDEN);
         }
         $userToDelete = $entityManager->getRepository(User::class)->find($id);

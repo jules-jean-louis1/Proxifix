@@ -415,7 +415,7 @@ final class CompanyController extends AbstractController
 
             // Treat as single value (convert to array for consistent processing)
             $specializationArray = [$specializations];
-            
+
             foreach ($specializationArray as $specializationSlug) {
                 if (is_string($specializationSlug) || is_numeric($specializationSlug)) {
                     $specializationEntity = $em->getRepository(CompanySpecialization::class)
@@ -493,13 +493,13 @@ final class CompanyController extends AbstractController
         $reqIsDeleted = 'true' === $request->query->get('is_deleted') ? true : false;
 
         $companies = $companyRepository->getCompanies(
-            null !== $reqId ? intval($reqId) : null, 
-            $reqPending, 
-            $reqSpecialization ? (int) $reqSpecialization : null, 
-            $reqPage, 
-            $reqSize, 
-            $reqName, 
-            $reqOrder, 
+            null !== $reqId ? intval($reqId) : null,
+            $reqPending,
+            $reqSpecialization ? (int) $reqSpecialization : null,
+            $reqPage,
+            $reqSize,
+            $reqName,
+            $reqOrder,
             $reqIsDeleted
         );
 

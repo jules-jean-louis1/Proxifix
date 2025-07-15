@@ -21,7 +21,7 @@ final class ProfileController extends AbstractController
         $user = $this->getUser();
 
         // Vérifier si l'utilisateur est authentifié
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
@@ -52,7 +52,7 @@ final class ProfileController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
@@ -109,7 +109,7 @@ final class ProfileController extends AbstractController
     {
         $user = $this->getUser();
 
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
         }
         $entityManager->remove($user);

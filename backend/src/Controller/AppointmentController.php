@@ -45,14 +45,14 @@ final class AppointmentController extends AbstractController
         }
 
         $appointments = $appointmentRequestRepository->getAppointements(
-            (int) $pageRequest, 
-            (int) $sizeRequest, 
-            $userIdRequest, 
-            $appointmentIdRequest ? (int) $appointmentIdRequest : null, 
-            $statusRequest, 
-            $dateRequest ? new \DateTime($dateRequest) : null, 
-            $orderRequest, 
-            $companyIdRequest ? (int) $companyIdRequest : null, 
+            (int) $pageRequest,
+            (int) $sizeRequest,
+            $userIdRequest,
+            $appointmentIdRequest ? (int) $appointmentIdRequest : null,
+            $statusRequest,
+            $dateRequest ? new \DateTime($dateRequest) : null,
+            $orderRequest,
+            $companyIdRequest ? (int) $companyIdRequest : null,
             $idRequest ? (int) $idRequest : null
         );
 

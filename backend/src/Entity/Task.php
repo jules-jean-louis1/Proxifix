@@ -97,7 +97,7 @@ class Task
 
     public function addTaskIntervention(TaskIntervention $taskIntervention): self
     {
-        if (!$this->taskInterventions->contains($taskIntervention)) {
+        if (! $this->taskInterventions->contains($taskIntervention)) {
             $this->taskInterventions->add($taskIntervention);
             $taskIntervention->setTask($this);
         }

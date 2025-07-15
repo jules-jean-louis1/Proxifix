@@ -167,14 +167,14 @@ class EquipmentController extends AbstractController
         $reqReference = $request->query->get('reference') ?? '';
 
         $equipments = $equipmentRepository->getEquipments(
-            $reqId ? (int) $reqId : null, 
-            $reqUserId ? (int) $reqUserId : null, 
-            $reqBrandId ? (int) $reqBrandId : null, 
-            $reqTypeEquipmentId ? (int) $reqTypeEquipmentId : null, 
-            (int) $reqPage, 
-            (int) $reqSize, 
-            $reqName, 
-            $reqOrder, 
+            $reqId ? (int) $reqId : null,
+            $reqUserId ? (int) $reqUserId : null,
+            $reqBrandId ? (int) $reqBrandId : null,
+            $reqTypeEquipmentId ? (int) $reqTypeEquipmentId : null,
+            (int) $reqPage,
+            (int) $reqSize,
+            $reqName,
+            $reqOrder,
             $reqReference
         );
 

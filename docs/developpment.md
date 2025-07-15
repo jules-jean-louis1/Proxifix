@@ -119,4 +119,7 @@ vendor/bin/phpstan analyze
 
 # Vérification du formatage
 vendor/bin/php-cs-fixer fix --dry-run --diff
+
+# Correction automatique du formatage
+vendor/bin/php-cs-fixer fix
 ```

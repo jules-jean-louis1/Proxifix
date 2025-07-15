@@ -65,14 +65,17 @@ class AppFixtures extends Fixture
                         $entity = new TypeEquipment();
                         $entity->setName($value);
                         $entity->setCompany($company);
+
                         break;
                     case Brand::class:
                         $entity = new Brand();
                         $entity->setName($value);
+
                         break;
                     case OperatingSystem::class:
                         $entity = new OperatingSystem();
                         $entity->setName($value);
+
                         break;
                     default:
                         continue 2; // Skip unknown entity types
