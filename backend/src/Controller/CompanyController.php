@@ -20,7 +20,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/api')]
 final class CompanyController extends AbstractController
 {
-    #[IsGranted('ROLE_SUPER_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/company', name: 'app_company_post', methods: ['POST'])]
     public function create(
         Request $request,
@@ -28,6 +28,10 @@ final class CompanyController extends AbstractController
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
+        $user = $this->getUser();
+        if (! $user instanceof User) {
+            return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
         // Validation des données requises
         $name = $data['name'] ?? null;
         if (! $name) {
@@ -50,7 +54,12 @@ final class CompanyController extends AbstractController
         $company->setCreatedAt(new \DateTimeImmutable());
         $company->setUpdatedAt(new \DateTimeImmutable());
         $company->setLogo($data['logo'] ?? '');
-        $company->setIsApproved($data['is_approved'] ?? false);
+
+        if (in_array(User::ROLE_ADMIN, $user->getRoles(), true)) {
+            $company->setIsApproved(false);
+        } else {
+            $company->setIsApproved($data['is_approved']);
+        }
         $company->setPhone($data['phone'] ?? '');
         $company->setMobile($data['mobile'] ?? '');
 
