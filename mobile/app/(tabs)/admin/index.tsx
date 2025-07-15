@@ -16,7 +16,7 @@ export default function AdminHome() {
     if (!sessionData) return;
     (async () => {
       try {
-        const resp = await api.get(`/intervention-pending`);
+        const resp = await api.get(`/intervention?status=pending&company_id=${sessionData.company.id}`);
         setInterventions(resp.data);
       } catch (error) {
         console.error("Erreur lors de la récupération des interventions :", error);

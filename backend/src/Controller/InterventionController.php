@@ -394,4 +394,12 @@ class InterventionController extends AbstractController
             return $this->json(["error" => $e->getMessage()], 400);
         }
     }
+
+    #[Route("/intervention/status", name: "app_intervention_status", methods: ["GET"])]
+    public function getInterventionStatus(
+        InterventionRepository $interventionRepository
+    ): JsonResponse {
+        $statuses = $interventionRepository->getAvailableStatuses();
+        return $this->json($statuses, 200);
+    }
 }

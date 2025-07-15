@@ -3,6 +3,7 @@ import { AppSelectInput } from "@/app/components/inputs/AppSelectInput";
 import { AppTextField } from "@/app/components/inputs/AppTextField";
 import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
 import { useSessionContext } from "@/app/context/useSessionContext";
+import { getStatus } from "@/app/utils/intervention";
 import { useApi } from "@/app/utils/useApi";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -11,7 +12,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Pressable, ScrollView, View } from "react-native";
 import { Text } from "react-native-paper";
 
-type StepName = "detail" | "user" | "equipment" | "status";
+type StepName = "detail" | "user" | "status";
 
 type Step = {
   name: string;
@@ -21,7 +22,6 @@ type Step = {
 const STEPS: Step[] = [
   { name: "detail", title: "Détails de l'intervention" },
   { name: "user", title: "Client et technicien" },
-  { name: "equipment", title: "Equipement" },
   { name: "status", title: "Temps/Status" },
 ] as const;
 
@@ -32,6 +32,13 @@ const AdminInterventionsNewPage = () => {
   const [user, setUser] = useState<any[]>([]);
   const [companyUser, setCompanyUser] = useState<any[]>([]);
   const [equipment, setEquipment] = useState<any[]>([]);
+  const [interventionStatuses, setInterventionStatuses] = useState<string[]>([
+    "pending",
+    "assigned",
+    "awaiting_pickup",
+    "in_progress",
+    "completed",
+  ]);
   const [searchText, setSearchText] = useState("");
 
   const api = useApi();
@@ -39,6 +46,7 @@ const AdminInterventionsNewPage = () => {
   const { handleSubmit } = methods;
   const sessionCtx = useSessionContext();
   const sessionData = sessionCtx?.session;
+  const selectedUserId = methods.watch("user_id");
 
   const isStepActive = (stepName: StepName) => activeStep === stepName;
   const nextStep = () => {
@@ -65,16 +73,48 @@ const AdminInterventionsNewPage = () => {
           "/type-intervention?company_id=" + sessionData?.company.id
         );
         const userResponse = await api.get(`/user`);
-        const companyUserResponse = await api.get(`/user?company_id=${sessionData?.company.id}`);
+        const companyUserResponse = await api.get(
+          `/user?company_id=${sessionData?.company.id}`
+        );
         setTypeIntervention(response.data);
         setUser(userResponse.data);
         setCompanyUser(companyUserResponse.data);
-        console.log("user", user);
       } catch (error) {
         console.error("Error fetching type intervention:", error);
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (selectedUserId) {
+      (async () => {
+        try {
+          const response = await api.get(
+            `/equipment?user_id=${selectedUserId}`
+          );
+          setEquipment(response.data);
+        } catch (error) {
+          console.error("Error fetching equipment:", error);
+        }
+      })();
+    } else {
+      setEquipment([]);
+    }
+  }, [selectedUserId]);
+
+  const onSubmit = async (data: any) => {
+    try {
+      const response = await api.post("/intervention", {
+        ...data,
+        company_id: sessionData?.company.id,
+      });
+      console.log("Intervention created successfully:", response.data);
+      router.push("/admin/interventions");
+    } catch (error) {
+      console.error("Error creating intervention:", error);
+      // Handle error (e.g., show a toast or alert)
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -138,12 +178,60 @@ const AdminInterventionsNewPage = () => {
                 rules={{ required: "Le client est requis" }}
                 placeholder="Sélectionnez le client"
               />
+              <AppSelectInput
+                nameField="equipment_id"
+                label="Équipement"
+                options={equipment!.map((item) => ({
+                  label: item.name,
+                  value: item.id,
+                }))}
+                rules={{ required: "L'équipement est requis" }}
+                placeholder="Sélectionnez l'équipement"
+              />
+              <AppSelectInput
+                nameField="technician_id"
+                label="Technicien"
+                options={companyUser!.map((item) => ({
+                  label: `${item.first_name} ${item.last_name}`,
+                  value: item.id,
+                }))}
+                rules={{ required: "Le technicien est requis" }}
+                placeholder="Sélectionnez le technicien"
+              />
               <AppButton
                 type="secondary"
                 onPress={previousStep}
                 children="Précédent"
               />
               <AppButton type="primary" onPress={nextStep} children="Suivant" />
+            </View>
+          )}
+          {(isStepActive("status") || steps.length === 2) && (
+            <View>
+              <Text variant="titleLarge">Statut de l'intervention</Text>
+              <Text variant="bodyMedium">
+                Sélectionnez le statut de l'intervention
+              </Text>
+              <AppSelectInput
+                nameField="status"
+                label="Statut"
+                options={interventionStatuses.map((item) => ({
+                  label: getStatus(item),
+                  value: item,
+                }))}
+                rules={{ required: "Le statut est requis" }}
+                placeholder="Sélectionnez le statut"
+              />
+              <AppButton
+                type="secondary"
+                onPress={previousStep}
+                children="Précédent"
+              />
+              <AppButton
+                type="primary"
+                onPress={handleSubmit(onSubmit)}
+                children="Valider"
+              />
             </View>
           )}
         </FormProvider>
