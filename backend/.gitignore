@@ -2,7 +2,6 @@
 ###> symfony/framework-bundle ###
 # Keep .env for CI/CD but ignore local overrides
 /.env.dev
-/.env.test
 /.env.local
 /.env.local.php
 /.env.*.local
