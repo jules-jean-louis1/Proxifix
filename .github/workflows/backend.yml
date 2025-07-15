@@ -31,7 +31,11 @@ jobs:
         key: ${{ runner.os }}-php-${{ hashFiles('backend/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
-          
+            
+    - name: Update Composer
+      working-directory: ./backend
+      run: composer update
+
     - name: Install Dependencies
       working-directory: ./backend
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist

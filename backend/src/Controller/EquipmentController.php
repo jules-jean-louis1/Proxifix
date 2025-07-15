@@ -140,7 +140,7 @@ class EquipmentController extends AbstractController
 
         return new JsonResponse(['message' => 'Equipment deleted'], 200);
     }
-    #[Route('/customer/$customerId}', name: 'app_equipment_customer_list', methods: ['GET'])]
+    #[Route('/customer/{customerId}', name: 'app_equipment_customer_list', methods: ['GET'])]
     public function getEquipmentUser(int $customerId, EntityManagerInterface $em): JsonResponse
     {
         $equipments = $em->getRepository(Equipment::class)->findByUserId($customerId);
