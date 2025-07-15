@@ -1,55 +1,55 @@
 name: Backend
 
 on:
-    push:
-        branches: ['main', 'dev']
-    pull_request: 
-        branches: ['main', 'dev']
+  push:
+    branches: ["main", "dev"]
+  pull_request:
+    branches: ["main", "dev"]
 
 permissions:
   contents: read
 
 jobs:
-    test:
-        name: "${{ matrix.operating-system }} / PHP ${{ matrix.php-version }}"
-        runs-on: ${{ matrix.operating-system }}
-        continue-on-error: false
-        defaults:
-            run:
-                working-directory: ./backend
+  test:
+    name: "${{ matrix.operating-system }} / PHP ${{ matrix.php-version }}"
+    runs-on: ${{ matrix.operating-system }}
+    continue-on-error: false
+    defaults:
+      run:
+        working-directory: ./backend
 
-        strategy:
-            matrix:
-                operating-system: ['ubuntu-latest']
-                php-version: ['8.3']
-                include:
-                    - operating-system: 'macos-latest'
-                      php-version: '8.3'
-                    - operating-system: 'windows-latest'
-                      php-version: '8.3'
+    strategy:
+      matrix:
+        operating-system: ["ubuntu-latest"]
+        php-version: ["8.3"]
+        include:
+          - operating-system: "macos-latest"
+            php-version: "8.3"
+          - operating-system: "windows-latest"
+            php-version: "8.3"
 
-        steps:
-            - name: "Checkout code"
-              uses: actions/checkout@v4
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v4
 
-            - name: "Install PHP with extensions"
-              uses: shivammathur/setup-php@v2
-              with:
-                  coverage: "none"
-                  extensions: "intl, mbstring, pdo_sqlite, zip"
-                  php-version: ${{ matrix.php-version }}
-                  tools: composer:v2
+      - name: "Install PHP with extensions"
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: "none"
+          extensions: "intl, mbstring, pdo_sqlite, zip"
+          php-version: ${{ matrix.php-version }}
+          tools: composer:v2
 
-            - name: "Add PHPUnit matcher"
-              run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+      - name: "Add PHPUnit matcher"
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-            - name: "Install dependencies"
-              run: composer install --ansi --no-interaction --no-progress --no-scripts
+      - name: "Install dependencies"
+        run: composer install --ansi --no-interaction --no-progress --no-scripts
 
-            - name: "Build and compile assets"
-              run: |
-                php bin/console importmap:install
-                php bin/console sass:build
-                php bin/console asset-map:compile
-            - name: "Run tests"
-              run: vendor/bin/phpunit
+      - name: "Build and compile assets"
+        run: |
+          php bin/console doctrine:database:create --env=test
+          php bin/console doctrine:migrations:migrate --env=test --no-interaction
+          php bin/console doctrine:fixtures:load --env=test --no-interaction
+      - name: "Run tests"
+        run: vendor/bin/phpunit
