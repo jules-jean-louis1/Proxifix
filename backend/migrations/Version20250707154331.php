@@ -38,7 +38,7 @@ final class Version20250707154331 extends AbstractMigration
         $this->addSql('UPDATE brand SET created_at = NOW(), updated_at = NOW()');
         $this->addSql('ALTER TABLE brand ALTER COLUMN created_at SET NOT NULL');
         $this->addSql('ALTER TABLE brand ALTER COLUMN updated_at SET NOT NULL');
-        
+
         $this->addSql('ALTER TABLE operating_system ADD created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL');
         $this->addSql('ALTER TABLE operating_system ADD updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL');
         $this->addSql('COMMENT ON COLUMN operating_system.created_at IS \'(DC2Type:datetime_immutable)\'');
@@ -46,7 +46,7 @@ final class Version20250707154331 extends AbstractMigration
         $this->addSql('UPDATE operating_system SET created_at = NOW(), updated_at = NOW()');
         $this->addSql('ALTER TABLE operating_system ALTER COLUMN created_at SET NOT NULL');
         $this->addSql('ALTER TABLE operating_system ALTER COLUMN updated_at SET NOT NULL');
-        
+
         $this->addSql('ALTER TABLE task_intervention ADD created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL');
         $this->addSql('ALTER TABLE task_intervention ADD update_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL');
         $this->addSql('COMMENT ON COLUMN task_intervention.created_at IS \'(DC2Type:datetime_immutable)\'');

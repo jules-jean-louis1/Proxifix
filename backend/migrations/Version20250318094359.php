@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types = 1);
+declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
@@ -81,7 +81,6 @@ final class Version20250318094359 extends AbstractMigration
             END LOOP;
         END;
         $$ LANGUAGE plpgsql;");
-        
     }
 
     public function down(Schema $schema): void
@@ -103,6 +102,6 @@ final class Version20250318094359 extends AbstractMigration
         $this->addSql('ALTER TABLE booking ALTER end_date TYPE TIME(0) WITHOUT TIME ZONE');
         $this->addSql('COMMENT ON COLUMN booking.start_date IS NULL');
         $this->addSql('COMMENT ON COLUMN booking.end_date IS NULL');
-        $this->addSql("DROP FUNCTION IF EXISTS get_free_slots(DATE, INT)");
+        $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(DATE, INT)');
     }
 }
