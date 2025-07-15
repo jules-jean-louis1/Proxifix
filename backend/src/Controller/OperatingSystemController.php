@@ -24,28 +24,29 @@ final class OperatingSystemController extends AbstractController
 
         if ($id) {
             $operatingSystem = $operatingSystemRepository->find($id);
-            if (!$operatingSystem) {
+            if (! $operatingSystem) {
                 return $this->json(['error' => 'Operating System not found'], Response::HTTP_NOT_FOUND);
             }
+
             return $this->json($operatingSystem, Response::HTTP_OK, [], ['groups' => ['operatingSystem.get_one']]);
         }
 
         if ($name) {
             $operatingSystems = $operatingSystemRepository->findBy(['name' => $name]);
-            if (!$operatingSystems) {
+            if (! $operatingSystems) {
                 return $this->json(['error' => 'No Operating Systems found with that name'], Response::HTTP_NOT_FOUND);
             }
         } else {
             $operatingSystems = $operatingSystemRepository->findAll();
         }
-        if (!$operatingSystems) {
+        if (! $operatingSystems) {
             return $this->json(['error' => 'No Operating Systems found'], Response::HTTP_NOT_FOUND);
         }
 
         return $this->json($operatingSystems, Response::HTTP_OK, [], ['groups' => ['operatingSystem.get_all']]);
     }
 
-    #[IsGranted("ROLE_ADMIN")]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/operating-system', name: 'app_operating_system_create', methods: ['POST'])]
     public function create(Request $request, #[MapRequestPayload(serializationContext: ['groups' => 'operatingSystem.create '])] OperatingSystem $operatingSystem, EntityManagerInterface $em): JsonResponse
     {
@@ -69,7 +70,8 @@ final class OperatingSystemController extends AbstractController
 
         return $this->json($operatingSystem, Response::HTTP_OK);
     }
-    #[IsGranted("ROLE_ADMIN")]
+
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/operating-system/{id}', name: 'app_operating_system_delete', methods: ['DELETE'])]
     public function delete(EntityManagerInterface $em, int $id): JsonResponse
     {
@@ -83,7 +85,8 @@ final class OperatingSystemController extends AbstractController
 
         return $this->json(['message' => 'Operating System deleted'], Response::HTTP_OK);
     }
-    #[IsGranted("ROLE_ADMIN")]
+
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/operating-system/{id}', name: 'app_operating_system_get', methods: ['GET'])]
     public function getOne(EntityManagerInterface $em, int $id): JsonResponse
     {

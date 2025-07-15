@@ -64,7 +64,7 @@ class TypeEquipment
 
     public function addEquipment(Equipment $equipment): static
     {
-        if (!$this->equipment->contains($equipment)) {
+        if (! $this->equipment->contains($equipment)) {
             $this->equipment->add($equipment);
             $equipment->setTypeEquipment($this);
         }

@@ -18,21 +18,21 @@ class CompanySpecialization
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true, unique: true)]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $slug = null;
 
     #[ORM\Column(length: 255, nullable: true, unique: true)]
-    #[Groups(["company:read", "company:get_list"])]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $label = null;
 
     /**
      * @var Collection<int, Company>
      */
-    #[ORM\ManyToMany(targetEntity: Company::class, mappedBy: "specializations", cascade: ["persist"])]
+    #[ORM\ManyToMany(targetEntity: Company::class, mappedBy: 'specializations', cascade: ['persist'])]
     private Collection $companies;
 
     public function __construct()
@@ -79,7 +79,7 @@ class CompanySpecialization
 
     public function addCompany(Company $company): static
     {
-        if (!$this->companies->contains($company)) {
+        if (! $this->companies->contains($company)) {
             $this->companies->add($company);
             $company->addSpecialization($this);
         }

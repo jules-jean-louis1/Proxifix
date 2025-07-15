@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repository;
 
 use App\Entity\Brand;
@@ -15,24 +16,25 @@ class BrandRepository extends ServiceEntityRepository
         parent::__construct($registry, Brand::class);
     }
 
+    /**
+     * @return array<Brand>
+     */
     public function getBrands(?int $id, int $page, int $size, ?string $name, string $order): array
     {
         $offset = ($page - 1) * $size;
-        $query  = $this->createQueryBuilder('b');
+        $query = $this->createQueryBuilder('b');
 
-        if ($id !== null) {
+        if (null !== $id) {
             $query->andWhere('b.id = :id')
                 ->setParameter('id', $id);
         }
 
-        if ($name !== null && $name !== "") {
+        if (null !== $name && '' !== $name) {
             $query->andWhere('LOWER(b.name) LIKE :name')
-                ->setParameter('name', '%' . strtolower($name) . '%');
+                ->setParameter('name', '%'.strtolower($name).'%');
         }
 
-        if ($order !== null) {
-            $query->orderBy('b.name', $order);
-        }
+        $query->orderBy('b.name', $order);
 
         $query->setFirstResult($offset)
             ->setMaxResults($size);
@@ -68,6 +70,6 @@ class BrandRepository extends ServiceEntityRepository
     {
         $brand = $this->findOneBy(['name' => $name]);
 
-        return $brand !== null;
+        return null !== $brand;
     }
 }

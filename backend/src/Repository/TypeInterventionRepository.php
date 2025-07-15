@@ -32,6 +32,9 @@ class TypeInterventionRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return array<TypeIntervention>
+     */
     public function getTypeInterventions(
         ?int $id = null,
         ?string $name = null,
@@ -49,7 +52,7 @@ class TypeInterventionRepository extends ServiceEntityRepository
 
         if ($name) {
             $qb->andWhere('t.name LIKE :name')
-                ->setParameter('name', '%' . $name . '%');
+                ->setParameter('name', '%'.$name.'%');
         }
 
         if ($companyId) {

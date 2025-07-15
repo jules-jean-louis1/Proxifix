@@ -1,4 +1,5 @@
 <?php
+
 namespace App\DataFixtures;
 
 use App\Entity\Brand;
@@ -52,17 +53,32 @@ class AppFixtures extends Fixture
         $manager->persist($adminUser);
 
         $data = [
-            TypeEquipment::class   => ['Ordinateur de bureau', 'Ordinateur portable', 'Tablette', 'Smartphone', 'Imprimante', 'Serveur', 'Switch', 'SSD Externe', 'HDD Externe', 'Ecran'],
+            TypeEquipment::class => ['Ordinateur de bureau', 'Ordinateur portable', 'Tablette', 'Smartphone', 'Imprimante', 'Serveur', 'Switch', 'SSD Externe', 'HDD Externe', 'Ecran'],
             OperatingSystem::class => ['Windows 11 Home', 'Windows 11 Pro', 'Windows 10 Pro', 'Windows 10 Home', 'Windows 8.1', 'Windows 7 Pro', 'Windows 7 Édition Familiale Basique', 'Windows 7 Édition Starter', 'Windows 7 Édition Intégrale', 'Windows XP Professionnel', 'Windows XP Familiale', 'macOS Big Sur', 'Linux Mint', 'macOS Monterey', 'Elementary OS', 'Ubuntu', 'Xubuntu', 'Xubuntu Eoan', 'Pop!_OS', 'Fedora', 'Manjaro', 'Debian', 'Arch Linux', 'Android', 'iOS', 'iPadOS'],
-            Brand::class           => ['Apple', 'Samsung', 'Dell', 'HP', 'Lenovo', 'Asus', 'Acer', 'Microsoft', 'Huawei', 'Xiaomi', 'Sony', 'LG', 'OnePlus', 'Google', 'Nokia', 'Epson'],
+            Brand::class => ['Apple', 'Samsung', 'Dell', 'HP', 'Lenovo', 'Asus', 'Acer', 'Microsoft', 'Huawei', 'Xiaomi', 'Sony', 'LG', 'OnePlus', 'Google', 'Nokia', 'Epson'],
         ];
 
         foreach ($data as $entityClass => $values) {
             foreach ($values as $value) {
-                $entity = new $entityClass();
-                $entity->setName($value);
-                if ($entityClass === TypeEquipment::class) {
-                    $entity->setCompany($company);
+                switch ($entityClass) {
+                    case TypeEquipment::class:
+                        $entity = new TypeEquipment();
+                        $entity->setName($value);
+                        $entity->setCompany($company);
+
+                        break;
+                    case Brand::class:
+                        $entity = new Brand();
+                        $entity->setName($value);
+
+                        break;
+                    case OperatingSystem::class:
+                        $entity = new OperatingSystem();
+                        $entity->setName($value);
+
+                        break;
+                    default:
+                        continue 2; // Skip unknown entity types
                 }
                 $manager->persist($entity);
             }
@@ -115,7 +131,6 @@ class AppFixtures extends Fixture
         $admin->setPassword($this->passwordHasher->hashPassword($admin, 'adminpass'));
         $manager->persist($admin);
 
-        
         // Create a technician user
         $technician = new User();
         $technician->setEmail('technician@test.com');
@@ -124,25 +139,24 @@ class AppFixtures extends Fixture
         $technician->setLastName('User');
         $technician->setPassword($this->passwordHasher->hashPassword($technician, 'technicianpass'));
         $manager->persist($technician);
-        
-        for ($i = 1; $i <= 10; $i++) {
+
+        for ($i = 1; $i <= 10; ++$i) {
             $customer = new User();
-            $customer->setEmail('customer' . $i . '@test.com');
+            $customer->setEmail('customer'.$i.'@test.com');
             $customer->setRoles(['ROLE_CUSTOMER']);
-            $customer->setFirstName('Customer' . $i);
+            $customer->setFirstName('Customer'.$i);
             $customer->setLastName('User');
             $customer->setPassword($this->passwordHasher->hashPassword($customer, 'customerpass'));
             $manager->persist($customer);
         }
 
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 5; ++$i) {
             $equipment = new Equipment();
-            $equipment->setName('Equipment ' . $i);
-            $equipment->setReference('SN' . str_pad($i, 5, '0', STR_PAD_LEFT));
+            $equipment->setName('Equipment '.$i);
+            $equipment->setReference('SN'.str_pad((string) $i, 5, '0', STR_PAD_LEFT));
             $equipment->setUser($customer);
             $manager->persist($equipment);
         }
-        
 
         $manager->flush();
     }

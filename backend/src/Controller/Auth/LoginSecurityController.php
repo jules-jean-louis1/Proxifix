@@ -12,9 +12,8 @@ class LoginSecurityController extends AbstractController
 {
     #[Route('/api/auth/login', name: 'app_login', methods: ['POST'])]
     public function login(Request $request,
-                          AuthenticationService $authenticationService
-    ): JsonResponse
-    {
+        AuthenticationService $authenticationService
+    ): JsonResponse {
         return $authenticationService->authenticateUser($request);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repository;
 
 use App\Entity\Equipment;
@@ -18,7 +19,6 @@ class EquipmentRepository extends ServiceEntityRepository
     /**
      * Trouve tous les équipements pour un utilisateur donné.
      *
-     * @param int $userId
      * @return Equipment[]
      */
     public function findByUserId(int $userId): array
@@ -31,44 +31,47 @@ class EquipmentRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getEquipments(?int $id, ?int $userId, ?int $brandId, ?int $typeEquipmentId, ?int $page, ?int $size, ?string $name, ?string $order = 'ASC', ?string $reference = ""): array
+    /**
+     * @return array<Equipment>
+     */
+    public function getEquipments(?int $id, ?int $userId, ?int $brandId, ?int $typeEquipmentId, ?int $page, ?int $size, ?string $name, ?string $order = 'ASC', ?string $reference = ''): array
     {
         $offset = ($page - 1) * $size;
-        $query  = $this->createQueryBuilder('e');
+        $query = $this->createQueryBuilder('e');
 
-        if ($order !== null) {
+        if (null !== $order) {
             $query->orderBy('e.name', $order);
         }
 
         $query->setFirstResult($offset)
             ->setMaxResults($size);
 
-        if ($id !== null) {
+        if (null !== $id) {
             $query->andWhere('e.id = :id')
                 ->setParameter('id', intval($id));
         }
 
-        if ($userId !== null) {
+        if (null !== $userId) {
             $query->andWhere('e.customer = :user_id')
                 ->setParameter('user_id', intval($userId));
         }
 
-        if ($brandId !== null) {
+        if (null !== $brandId) {
             $query->andWhere('e.brand = :brand_id')
                 ->setParameter('brand_id', intval($brandId));
         }
 
-        if ($typeEquipmentId !== null) {
+        if (null !== $typeEquipmentId) {
             $query->andWhere('e.type_equipment = :type_equipment_id')
                 ->setParameter('type_equipment_id', intval($typeEquipmentId));
         }
 
-        if ($name !== null) {
+        if (null !== $name) {
             $query->andWhere('LOWER(e.name) LIKE :name')
-                ->setParameter('name', '%' . strtolower($name) . '%');
+                ->setParameter('name', '%'.strtolower($name).'%');
         }
 
-        if ($reference !== "") {
+        if ('' !== $reference) {
             $query->andWhere('e.reference = :reference')
                 ->setParameter('reference', $reference);
         }

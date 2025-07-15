@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\Intervention;
@@ -19,7 +20,7 @@ final class TaskController extends AbstractController
         $payload = $request->getPayload();
 
         $InterventionId = $payload->get('intervention_id');
-        $intervention   = $em->getRepository(Intervention::class)->find($InterventionId);
+        $intervention = $em->getRepository(Intervention::class)->find($InterventionId);
 
         if (! $intervention) {
             return new JsonResponse(['error' => 'Intervention not found'], 404);
@@ -34,20 +35,19 @@ final class TaskController extends AbstractController
         $em->flush();
 
         return new JsonResponse([
-            'id'              => $task->getId(),
-            'name'            => $task->getName(),
-            'description'     => $task->getDescription(),
-            'price'           => $task->getPrice(),
+            'id' => $task->getId(),
+            'name' => $task->getName(),
+            'description' => $task->getDescription(),
+            'price' => $task->getPrice(),
             'intervention_id' => $intervention->getId(),
         ], 201);
-
     }
 
     #[Route('/task/{id}', name: 'app_task_update', methods: ['PUT'])]
     public function update(Request $request, EntityManagerInterface $em, int $id): JsonResponse
     {
         $payload = $request->getPayload();
-        $task    = $em->getRepository(Task::class)->find($id);
+        $task = $em->getRepository(Task::class)->find($id);
 
         if (! $task) {
             return new JsonResponse(['error' => 'Task not found'], 404);
@@ -60,10 +60,10 @@ final class TaskController extends AbstractController
         $em->flush();
 
         return new JsonResponse([
-            'id'          => $task->getId(),
-            'name'        => $task->getName(),
+            'id' => $task->getId(),
+            'name' => $task->getName(),
             'description' => $task->getDescription(),
-            'price'       => $task->getPrice(),
+            'price' => $task->getPrice(),
         ], 200);
     }
 
@@ -92,12 +92,13 @@ final class TaskController extends AbstractController
         }
 
         return new JsonResponse([
-            'id'          => $task->getId(),
-            'name'        => $task->getName(),
+            'id' => $task->getId(),
+            'name' => $task->getName(),
             'description' => $task->getDescription(),
-            'price'       => $task->getPrice(),
+            'price' => $task->getPrice(),
         ], 200);
     }
+
     #[Route('/task', name: 'app_task_list', methods: ['GET'])]
     public function get(Request $request, TaskRepository $taskRepository): JsonResponse
     {
@@ -107,7 +108,7 @@ final class TaskController extends AbstractController
         $page = $request->get('page') ?? 1;
         $size = $request->get('size') ?? 25;
         $order = $request->get('order');
-        $tasks = $taskRepository->getTasks($id,$companyId,$name,$page,$size,$order);
+        $tasks = $taskRepository->getTasks($id, $companyId, $name, $page, $size, $order);
         if (! $tasks) {
             return new JsonResponse(['error' => 'No tasks found'], 404);
         }

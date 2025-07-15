@@ -24,7 +24,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
         }
 
@@ -33,12 +33,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * @return array<User>
+     */
     public function customerList(int $page, int $limit): array
     {
         $offset = ($page - 1) * $limit;
 
         return $this->createQueryBuilder('u')
-            ->where("JSON_GET_TEXT(u.roles, 0) = :role")
+            ->where('JSON_GET_TEXT(u.roles, 0) = :role')
             ->setParameter('role', 'ROLE_CUSTOMER')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
@@ -46,51 +49,57 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
-    public function searchCustomer(string $searchQuery)
+    /**
+     * @return array<User>
+     */
+    public function searchCustomer(string $searchQuery): array
     {
         return $this->createQueryBuilder('u')
-            ->where("JSON_GET_TEXT(u.roles, 0) = :role")
-            ->andWhere("u.first_name = :searchQuery")
-            ->orWhere("u.last_name = :searchQuery")
+            ->where('JSON_GET_TEXT(u.roles, 0) = :role')
+            ->andWhere('u.first_name = :searchQuery')
+            ->orWhere('u.last_name = :searchQuery')
             ->setParameter('role', 'ROLE_CUSTOMER')
             ->setParameter('searchQuery', $searchQuery)
             ->getQuery()
             ->getResult();
     }
 
-    public function getUsers(?int $companyId = null, ?string $searchQuery = "", ?int $page = 1, ?int $size = 25, ?string $order = "", ?string $role = "ROLE_CUSTOMER"): array
+    /**
+     * @return array<User>
+     */
+    public function getUsers(?int $companyId = null, ?string $searchQuery = '', ?int $page = 1, ?int $size = 25, ?string $order = '', ?string $role = 'ROLE_CUSTOMER'): array
     {
         $sql = 'SELECT u.* FROM "user" u WHERE 1=1';
         $params = [];
-        
-        if ($companyId !== null) {
+
+        if (null !== $companyId) {
             $sql .= ' AND u.company_id = :companyId';
             $params['companyId'] = $companyId;
         }
-        
+
         if ($searchQuery) {
             $sql .= ' AND (UPPER(u.first_name) LIKE UPPER(:searchQuery) OR UPPER(u.last_name) LIKE UPPER(:searchQuery) OR UPPER(u.email) LIKE UPPER(:searchQuery))';
-            $params['searchQuery'] = '%' . $searchQuery . '%';
+            $params['searchQuery'] = '%'.$searchQuery.'%';
         }
-        
+
         if ($role) {
             $sql .= ' OR CAST(u.roles AS text) LIKE :rolePattern';
-            $params['rolePattern'] = '%"' . $role . '"%';
+            $params['rolePattern'] = '%"'.$role.'"%';
         }
-        
+
         $sql .= ' ORDER BY u.created_at DESC LIMIT :size OFFSET :offset';
         $params['size'] = $size;
         $params['offset'] = ($page - 1) * $size;
-        
+
         $connection = $this->getEntityManager()->getConnection();
         $result = $connection->executeQuery($sql, $params);
-        
+
         // Convertir les résultats en entités User
         $users = [];
         foreach ($result->fetchAllAssociative() as $row) {
             $users[] = $this->find($row['id']);
         }
-        
+
         return $users;
     }
     //    /**

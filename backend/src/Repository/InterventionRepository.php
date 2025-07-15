@@ -1,8 +1,8 @@
 <?php
+
 namespace App\Repository;
 
 use App\Entity\Intervention;
-use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -15,10 +15,10 @@ class InterventionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Intervention::class);
     }
+
     /**
      * Récupère les interventions pour un utilisateur donné.
      *
-     * @param int $userId
      * @return Intervention[]
      */
     public function findByUserId(int $userId): array
@@ -33,6 +33,9 @@ class InterventionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Intervention>
+     */
     public function findByCompanyId(int $companyId, int $page, int $limit, string $order, ?string $status): array
     {
         $offset = ($page - 1) * $limit;
@@ -44,7 +47,7 @@ class InterventionRepository extends ServiceEntityRepository
             ->setFirstResult($offset)
             ->setMaxResults($limit);
 
-        if ($status !== "all") {
+        if ('all' !== $status) {
             $qb->leftJoin('i.status', 's')
                 ->andWhere('s.name = :status')
                 ->setParameter('status', $status);
@@ -53,6 +56,9 @@ class InterventionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getFreeSlots(\DateTime $date, ?int $companyId = null, ?int $interval_min = null, ?string $startTime = null, ?string $endTime = null, ?string $role = null): array
     {
         $conn = $this->getEntityManager()->getConnection();
@@ -63,19 +69,18 @@ class InterventionRepository extends ServiceEntityRepository
         SQL;
 
         $result = $conn->executeQuery($query, [
-            'p_date'       => $date->format('Y-m-d'),
+            'p_date' => $date->format('Y-m-d'),
             'p_company_id' => $companyId ?? 0,
-            'p_interval_minutes'   => $interval_min ?? 60,
+            'p_interval_minutes' => $interval_min ?? 60,
         ]);
 
         return $result->fetchAllAssociative();
     }
 
-    public function isSlotsAvailable(int $companyId, string | DateTimeImmutable $start_date, string | DateTimeImmutable $end_date = null): bool
+    public function isSlotsAvailable(int $companyId, string|\DateTimeImmutable $start_date, string|\DateTimeImmutable|null $end_date = null): bool
     {
-
-        $start_date = $start_date instanceof DateTimeImmutable ? $start_date : new DateTimeImmutable($start_date);
-        $end_date   = $end_date instanceof DateTimeImmutable ? $end_date : $start_date->add(new \DateInterval('PT1H')); // Par défaut, 1 heure
+        $start_date = $start_date instanceof \DateTimeImmutable ? $start_date : new \DateTimeImmutable($start_date);
+        $end_date = $end_date instanceof \DateTimeImmutable ? $end_date : $start_date->add(new \DateInterval('PT1H')); // Par défaut, 1 heure
 
         $qb = $this->createQueryBuilder('i')
             ->select('COUNT(i.id)')
@@ -88,9 +93,12 @@ class InterventionRepository extends ServiceEntityRepository
 
         $count = $qb->getQuery()->getSingleScalarResult();
 
-        return $count == 0;
+        return 0 == $count;
     }
 
+    /**
+     * @return array<Intervention>
+     */
     public function getInterventions(
         ?int $id = null,
         ?int $userId = null,
@@ -103,40 +111,40 @@ class InterventionRepository extends ServiceEntityRepository
         ?int $size = 10
     ): array {
         $offset = ($page - 1) * $size;
-        $query  = $this->createQueryBuilder('i');
+        $query = $this->createQueryBuilder('i');
 
-        if ($order !== null) {
+        if (null !== $order) {
             $query->orderBy('i.created_at', $order);
         }
         $query->setFirstResult($offset)
             ->setMaxResults($size);
 
-        if ($id !== null) {
+        if (null !== $id) {
             $query->andWhere('i.id = :id')
                 ->setParameter('id', intval($id));
         }
 
-        if ($userId !== null) {
+        if (null !== $userId) {
             $query->andWhere('i.customer = :user_id')
                 ->setParameter('user_id', intval($userId));
         }
 
-        if ($technicianId !== null) {
+        if (null !== $technicianId) {
             $query->andWhere('i.technician = :technician_id')
                 ->setParameter('technician_id', intval($technicianId));
         }
-        if ($companyId !== null) {
+        if (null !== $companyId) {
             $query->andWhere('i.company = :company_id')
                 ->setParameter('company_id', intval($companyId));
         }
 
-        if ($status !== null && $status !== "all") {
+        if (null !== $status && 'all' !== $status) {
             $query->leftJoin('i.status', 's')
                 ->andWhere('s.name = :status')
                 ->setParameter('status', $status);
         }
 
-        if ($typeInterventionId !== null) {
+        if (null !== $typeInterventionId) {
             $query->andWhere('i.typeIntervention = :type_intervention_id')
                 ->setParameter('type_intervention_id', intval($typeInterventionId));
         }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -15,24 +16,30 @@ class TypeIntervention
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['equipment:details','intervention:details',"user:details"])]
+    #[Groups(['equipment:details', 'intervention:details', 'user:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['equipment:details','intervention:details',"user:details"])]
+    #[Groups(['equipment:details', 'intervention:details', 'user:details'])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(['equipment:details', 'intervention:details',"user:details"])]
+    #[Groups(['equipment:details', 'intervention:details', 'user:details'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    #[Groups(['equipment:details', 'intervention:details',"user:details"])]
+    #[Groups(['equipment:details', 'intervention:details', 'user:details'])]
     private ?\DateTimeImmutable $updated_at = null;
 
+    /**
+     * @var Collection<int, Intervention>
+     */
     #[ORM\OneToMany(mappedBy: 'typeIntervention', targetEntity: Intervention::class)]
     private Collection $interventions;
 
+    /**
+     * @var Collection<int, AppointmentRequest>
+     */
     #[ORM\OneToMany(mappedBy: 'typeIntervention', targetEntity: AppointmentRequest::class)]
     private Collection $appointmentRequests;
 
@@ -41,6 +48,7 @@ class TypeIntervention
 
     #[ORM\ManyToOne(inversedBy: 'typeInterventions')]
     private ?Company $Company = null;
+
     public function __construct()
     {
         $this->appointmentRequests = new ArrayCollection();
@@ -48,6 +56,7 @@ class TypeIntervention
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
     }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -88,6 +97,10 @@ class TypeIntervention
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Intervention>
+     */
     public function getInterventions(): Collection
     {
         return $this->interventions;
@@ -114,6 +127,10 @@ class TypeIntervention
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, AppointmentRequest>
+     */
     public function getAppointmentRequests(): Collection
     {
         return $this->appointmentRequests;

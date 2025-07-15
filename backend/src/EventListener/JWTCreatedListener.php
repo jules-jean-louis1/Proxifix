@@ -8,10 +8,9 @@ class JWTCreatedListener
 {
     public function onJWTCreated(JWTCreatedEvent $event): void
     {
-
         $user = $event->getUser();
 
-        if (!$user instanceof \App\Entity\User) {
+        if (! $user instanceof \App\Entity\User) {
             return;
         }
 

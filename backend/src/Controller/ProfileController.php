@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,12 +17,11 @@ final class ProfileController extends AbstractController
     #[Route('/api/profile', name: 'app_user', methods: ['GET'])]
     public function profile(): JsonResponse
     {
-
         // Récupérer l'utilisateur connecté
         $user = $this->getUser();
 
         // Vérifier si l'utilisateur est authentifié
-        if (!$user) {
+        if (! $user instanceof User) {
             return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
@@ -42,18 +42,17 @@ final class ProfileController extends AbstractController
 
     #[Route('/api/profile', name: 'app_profile', methods: ['PUT'])]
     public function profileUpdate(
-        TokenStorageInterface       $tokenStorage,
-        Request                     $request,
-        EntityManagerInterface      $entityManager,
+        TokenStorageInterface $tokenStorage,
+        Request $request,
+        EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $passwordHasher,
-        JWTTokenManagerInterface    $tokenManager): JsonResponse
+        JWTTokenManagerInterface $tokenManager): JsonResponse
     {
-        $this->token = $tokenStorage->getToken();
         $user = $this->getUser();
 
         $data = json_decode($request->getContent(), true);
 
-        if (!$user) {
+        if (! $user instanceof User) {
             return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
@@ -101,17 +100,16 @@ final class ProfileController extends AbstractController
                 'address' => $user->getAddress(),
                 'city' => $user->getCity(),
                 'zip_code' => $user->getZipCode(),
-            ]
+            ],
         ], JsonResponse::HTTP_OK);
     }
 
     #[Route('/api/profile', name: 'app_profile_delete', methods: ['DELETE'])]
     public function profileDelete(TokenStorageInterface $tokenStorage, EntityManagerInterface $entityManager): JsonResponse
     {
-        $this->token = $tokenStorage->getToken();
         $user = $this->getUser();
 
-        if (!$user) {
+        if (! $user instanceof User) {
             return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
         }
         $entityManager->remove($user);

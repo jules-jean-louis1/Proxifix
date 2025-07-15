@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -12,52 +13,52 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource]
 class AppointmentRequest
 {
-    public const PENDING   = "pending";
-    public const CONFIRMED = "confirmed";
-    public const SCHEDULED = "scheduled";
-    public const REJECTED  = "rejected";
+    public const PENDING = 'pending';
+    public const CONFIRMED = 'confirmed';
+    public const SCHEDULED = 'scheduled';
+    public const REJECTED = 'rejected';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["appointment:read","user:details", "equipment:details"])]
+    #[Groups(['appointment:read', 'user:details', 'equipment:details'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(["user:details"])]
+    #[Groups(['user:details'])]
     private ?\DateTimeImmutable $date = null;
 
     #[ORM\Column(length: 255, options: ['default' => ''])]
-    #[Groups(['intervention:details',"user:details", "equipment:details"])]
+    #[Groups(['intervention:details', 'user:details', 'equipment:details'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(["user:details", "equipment:details"])]
+    #[Groups(['user:details', 'equipment:details'])]
     private ?string $description = null;
 
     #[ORM\Column(length : 255)]
     #[Assert\Choice(
-            choices: [
-                self::REJECTED,
-                self::SCHEDULED,
-                self::CONFIRMED,
-                self::REJECTED,
-            ],
-            message: "Choose a valid status."
-        )]
-    #[Groups(["user:details", "equipment:details"])]
+        choices: [
+            self::REJECTED,
+            self::SCHEDULED,
+            self::CONFIRMED,
+            self::REJECTED,
+        ],
+        message: 'Choose a valid status.'
+    )]
+    #[Groups(['user:details', 'equipment:details'])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'appointmentRequests')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['intervention:details',"user:details", "equipment:details"])]
+    #[Groups(['intervention:details', 'user:details', 'equipment:details'])]
     private ?User $approved_by = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(["user:details", "equipment:details"])]
+    #[Groups(['user:details', 'equipment:details'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(type : Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(["user:details", "equipment:details", "equipment:details"])]
+    #[Groups(['user:details', 'equipment:details', 'equipment:details'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy : 'appointmentRequests')]
@@ -73,10 +74,10 @@ class AppointmentRequest
     private ?Equipment $equipment = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable:true)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?TypeIntervention $typeIntervention = null;
 
-    #[ORM\OneToOne(mappedBy: "appointmentRequest")]
+    #[ORM\OneToOne(mappedBy: 'appointmentRequest')]
     private ?Intervention $intervention = null;
 
     public function __construct()
@@ -96,7 +97,7 @@ class AppointmentRequest
 
     public function setDate(\DateTimeInterface $date): static
     {
-        $this->date = $date;
+        $this->date = $date instanceof \DateTimeImmutable ? $date : \DateTimeImmutable::createFromInterface($date);
 
         return $this;
     }
@@ -136,6 +137,7 @@ class AppointmentRequest
 
         return $this;
     }
+
     public function getApprovedBy(): ?User
     {
         return $this->approved_by;
@@ -147,6 +149,7 @@ class AppointmentRequest
 
         return $this;
     }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;
@@ -183,7 +186,6 @@ class AppointmentRequest
         return $this;
     }
 
-
     public function getCompany(): ?Company
     {
         return $this->company;
@@ -200,11 +202,11 @@ class AppointmentRequest
     {
         return $this->equipment;
     }
-    
+
     public function setEquipment(?Equipment $equipment): static
     {
         $this->equipment = $equipment;
-    
+
         return $this;
     }
 
@@ -212,13 +214,14 @@ class AppointmentRequest
     {
         return $this->typeIntervention;
     }
-    
+
     public function setTypeIntervention(?TypeIntervention $typeIntervention): static
     {
         $this->typeIntervention = $typeIntervention;
-    
+
         return $this;
     }
+
     public function getIntervention(): ?Intervention
     {
         return $this->intervention;

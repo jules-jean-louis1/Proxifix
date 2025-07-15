@@ -7,35 +7,77 @@ on:
     branches: [ main, dev ]
 
 jobs:
-  php-lint:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.1'
-        extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
-        
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: backend/vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
-          
-    - name: Install dependencies
-      working-directory: ./backend
-      run: composer install --prefer-dist --no-progress
-      
-    - name: Run PHP-CS-Fixer
-      working-directory: ./backend
-      run: vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
-      
-    - name: Run PHPStan
-      working-directory: ./backend
-      run: vendor/bin/phpstan analyse --error-format=github
+    php-cs-fixer:
+        name: PHP-CS-Fixer
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./backend
+        steps:
+            - name: "Checkout code"
+              uses: actions/checkout@v4
+
+            - name: PHP-CS-Fixer
+              uses: docker://oskarstark/php-cs-fixer-ga
+              with:
+                  args: --diff --dry-run --allow-risky=yes backend
+
+    linters:
+        name: Linters
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./backend
+        strategy:
+            matrix:
+                php-version: ['8.2']
+
+        steps:
+            - name: "Checkout code"
+              uses: actions/checkout@v4
+
+            - name: "Install PHP with extensions"
+              uses: shivammathur/setup-php@v2
+              with:
+                  coverage: "none"
+                  extensions: intl
+                  php-version: ${{ matrix.php-version }}
+                  tools: composer:v2
+
+            - name: Lint Composer config
+              run: composer validate --no-check-publish --strict
+
+            - name: "Install dependencies"
+              id: install
+              run: composer install --ansi --no-interaction --no-progress --no-scripts
+
+            - name: Lint YAML files
+              if: always() && steps.install.outcome == 'success'
+              run: ./bin/console lint:yaml config --parse-tags
+
+            - name: Check if any dependencies are compromised
+              if: always() && steps.install.outcome == 'success'
+              run: composer audit --no-dev || true
+
+    static-analysis:
+        name: PHPStan
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./backend
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  coverage: none
+                  php-version: '8.3'
+
+            - name: Install dependencies
+              run: composer install --ansi --no-interaction --no-progress --no-scripts
+
+            - name: Run PHPStan
+              run: vendor/bin/phpstan analyze --no-progress

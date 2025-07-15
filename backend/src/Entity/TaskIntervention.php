@@ -39,6 +39,7 @@ class TaskIntervention
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
     }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -62,6 +63,7 @@ class TaskIntervention
 
         return $this;
     }
+
     public function getIntervention(): ?Intervention
     {
         return $this->intervention;
