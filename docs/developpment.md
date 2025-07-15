@@ -76,3 +76,47 @@ php bin/console doctrine:fixtures:load --env=test
 ```bash
 php bin/phpunit
 ```
+
+## Qualité du Code
+
+### Analyse Statique avec PHPStan
+
+Pour vérifier que le code respecte les standards de qualité et de type safety, utilisez PHPStan :
+
+```bash
+vendor/bin/phpstan analyze
+```
+
+Cette commande analyse le code selon les règles définies dans `phpstan.neon` (niveau 6) et vérifie :
+- La sécurité des types
+- Les erreurs potentielles
+- Le respect des bonnes pratiques
+
+### Formatage du Code avec PHP-CS-Fixer
+
+Pour vérifier le formatage du code selon les standards PSR-12 :
+
+```bash
+vendor/bin/php-cs-fixer fix --dry-run --diff
+```
+
+Pour corriger automatiquement les problèmes de formatage :
+
+```bash
+vendor/bin/php-cs-fixer fix
+```
+
+### Pipeline de Qualité Complète
+
+Pour exécuter tous les contrôles de qualité en une seule fois :
+
+```bash
+# Tests unitaires
+php bin/phpunit
+
+# Analyse statique
+vendor/bin/phpstan analyze
+
+# Vérification du formatage
+vendor/bin/php-cs-fixer fix --dry-run --diff
+```
