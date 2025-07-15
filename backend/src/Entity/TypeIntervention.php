@@ -31,9 +31,15 @@ class TypeIntervention
     #[Groups(['equipment:details', 'intervention:details', 'user:details'])]
     private ?\DateTimeImmutable $updated_at = null;
 
+    /**
+     * @var Collection<int, Intervention>
+     */
     #[ORM\OneToMany(mappedBy: 'typeIntervention', targetEntity: Intervention::class)]
     private Collection $interventions;
 
+    /**
+     * @var Collection<int, AppointmentRequest>
+     */
     #[ORM\OneToMany(mappedBy: 'typeIntervention', targetEntity: AppointmentRequest::class)]
     private Collection $appointmentRequests;
 
@@ -92,6 +98,9 @@ class TypeIntervention
         return $this;
     }
 
+    /**
+     * @return Collection<int, Intervention>
+     */
     public function getInterventions(): Collection
     {
         return $this->interventions;
@@ -119,6 +128,9 @@ class TypeIntervention
         return $this;
     }
 
+    /**
+     * @return Collection<int, AppointmentRequest>
+     */
     public function getAppointmentRequests(): Collection
     {
         return $this->appointmentRequests;

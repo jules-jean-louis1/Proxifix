@@ -78,6 +78,9 @@ class Intervention
     #[Groups(['intervention:read', 'intervention:details'])]
     private ?User $technician = null;
 
+    /**
+     * @var Collection<int, TaskIntervention>
+     */
     #[ORM\OneToMany(mappedBy: 'intervention', targetEntity: TaskIntervention::class)]
     #[Groups(['intervention:read', 'intervention:details'])]
     private Collection $taskInterventions;
@@ -291,7 +294,10 @@ class Intervention
         return $this;
     }
 
-    public function getTaskInterventions(): ArrayCollection|Collection
+    /**
+     * @return Collection<int, TaskIntervention>
+     */
+    public function getTaskInterventions(): Collection
     {
         return $this->taskInterventions;
     }

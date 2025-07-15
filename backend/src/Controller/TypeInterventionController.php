@@ -19,17 +19,17 @@ final class TypeInterventionController extends AbstractController
     {
         $id = $request->query->get('id');
         $name = $request->query->get('name');
-        $page = $request->query->get('page', 1);
-        $size = $request->query->get('size', 10);
+        $page = $request->query->get('page', '1');
+        $size = $request->query->get('size', '10');
         $order = $request->query->get('order', 'asc');
         $companyId = $request->query->get('company_id');
 
         $typeInterventions = $typeInterventionRepository->getTypeInterventions(
-            $id,
+            $id ? (int) $id : null,
             $name,
-            $companyId,
-            $page,
-            $size,
+            $companyId ? (int) $companyId : null,
+            (int) $page,
+            (int) $size,
             $order
         );
 
@@ -65,7 +65,12 @@ final class TypeInterventionController extends AbstractController
         // }
 
         $typeIntervention = new TypeIntervention();
-        $typeIntervention->setName($payload->get('name'));
+        
+        $name = $payload->get('name');
+        if (!is_string($name)) {
+            return new JsonResponse(['error' => 'Name must be a string'], 400);
+        }
+        $typeIntervention->setName($name);
 
         if ($payload->get('company_id')) {
             $company = $companyRepository->find($payload->get('company_id'));
@@ -78,7 +83,8 @@ final class TypeInterventionController extends AbstractController
             $typeIntervention->setCompany($user->getCompany());
         }
 
-        $typeIntervention->setDescription($payload->get('description') ?? null);
+        $description = $payload->get('description');
+        $typeIntervention->setDescription(is_string($description) ? $description : null);
         $typeInterventionRepository->save($typeIntervention, true);
 
         return new JsonResponse(['id' => $typeIntervention->getId(), 'name' => $typeIntervention->getName()], 201);
@@ -98,7 +104,11 @@ final class TypeInterventionController extends AbstractController
             return new JsonResponse(['error' => 'Type Intervention not found'], 404);
         }
 
-        $typeIntervention->setName($payload->get('name'));
+        $name = $payload->get('name');
+        if (!is_string($name)) {
+            return new JsonResponse(['error' => 'Name must be a string'], 400);
+        }
+        $typeIntervention->setName($name);
         if ($payload->get('company_id')) {
             $company = $companyRepository->find($payload->get('company_id'));
             $typeIntervention->setCompany($company);

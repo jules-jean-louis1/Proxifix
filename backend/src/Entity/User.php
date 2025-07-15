@@ -35,7 +35,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     /**
-     * @var <string> The user roles
+     * @var string[] The user roles
      */
     #[ORM\Column(type: Types::JSON)]
     #[Assert\NotBlank]
@@ -64,8 +64,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Length(min: 6, max: 255)]
     private ?string $password = null;
 
-    #[Groups('user:write')]
-    private ?string $plainPassword = null;
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 255)]
@@ -167,11 +165,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * @see UserInterface
      */
+    /**
+     * @return list<string>
+     */
     public function getRoles(): array
     {
         $roles = $this->roles;
 
-        return array_unique($roles);
+        return array_values(array_unique($roles));
     }
 
     /**
@@ -186,7 +187,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function hasRole(string $role): bool
     {
-        return $this->roles === $role;
+        return in_array($role, $this->roles, true);
     }
 
     /**

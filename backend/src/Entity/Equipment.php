@@ -64,6 +64,9 @@ class Equipment
     #[Groups(['equipment:details', 'user:details'])]
     private Collection $interventions;
 
+    /**
+     * @var Collection<int, AppointmentRequest>
+     */
     #[ORM\OneToMany(mappedBy: 'equipment', targetEntity: AppointmentRequest::class)]
     #[Groups(['equipment:details'])]
     private Collection $appointmentRequests;
@@ -202,6 +205,9 @@ class Equipment
         return $this;
     }
 
+    /**
+     * @return Collection<int, AppointmentRequest>
+     */
     public function getAppointmentRequests(): Collection
     {
         return $this->appointmentRequests;

@@ -130,8 +130,8 @@ class EquipmentController extends AbstractController
             return new JsonResponse(['error' => 'Equipment not found'], 404);
         }
 
-        $intervention = $equipment->getInterventions();
-        if ($intervention) {
+        $interventions = $equipment->getInterventions();
+        if ($interventions->count() > 0) {
             return new JsonResponse(['error' => 'Cannot delete equipment with interventions'], 400);
         }
 
@@ -154,7 +154,7 @@ class EquipmentController extends AbstractController
     }
 
     #[Route('/equipment', name: 'app_equipment_get', methods: ['GET'])]
-    public function getEquipments(Request $request, EquipmentRepository $equipmentRepository)
+    public function getEquipments(Request $request, EquipmentRepository $equipmentRepository): JsonResponse
     {
         $reqId = $request->query->get('id');
         $reqUserId = $request->query->get('user_id');
@@ -166,13 +166,23 @@ class EquipmentController extends AbstractController
         $reqOrder = $request->query->get('order') ?? 'ASC';
         $reqReference = $request->query->get('reference') ?? '';
 
-        $equipments = $equipmentRepository->getEquipments($reqId, $reqUserId, $reqBrandId, $reqTypeEquipmentId, $reqPage, $reqSize, $reqName, $reqOrder, $reqReference);
+        $equipments = $equipmentRepository->getEquipments(
+            $reqId ? (int) $reqId : null, 
+            $reqUserId ? (int) $reqUserId : null, 
+            $reqBrandId ? (int) $reqBrandId : null, 
+            $reqTypeEquipmentId ? (int) $reqTypeEquipmentId : null, 
+            (int) $reqPage, 
+            (int) $reqSize, 
+            $reqName, 
+            $reqOrder, 
+            $reqReference
+        );
 
         return $this->json($equipments, 200, [], ['groups' => 'equipment:details']);
     }
 
     #[Route('/equipment/{id}', name: 'app_equipment_get_one', methods: ['GET'])]
-    public function getOneEquipment(int $id, EntityManagerInterface $em)
+    public function getOneEquipment(int $id, EntityManagerInterface $em): JsonResponse
     {
         $equipment = $em->getRepository(Equipment::class)->findOneBy(['id' => $id]);
 

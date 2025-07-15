@@ -31,6 +31,9 @@ class EquipmentRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Equipment>
+     */
     public function getEquipments(?int $id, ?int $userId, ?int $brandId, ?int $typeEquipmentId, ?int $page, ?int $size, ?string $name, ?string $order = 'ASC', ?string $reference = ''): array
     {
         $offset = ($page - 1) * $size;

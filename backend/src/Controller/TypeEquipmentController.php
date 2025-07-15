@@ -29,7 +29,7 @@ final class TypeEquipmentController extends AbstractController
             }
         }
 
-        $typeEquipment = $typeEquipmentRepository->getTypes($id, $page, $size, $name, $order);
+        $typeEquipment = $typeEquipmentRepository->getTypes($id ? (int) $id : null, $page, $size, $name, $order);
 
         return $this->json($typeEquipment, 200, [], ['groups' => ['type_equipment:get_one']]);
     }
@@ -59,10 +59,10 @@ final class TypeEquipmentController extends AbstractController
         $payload = $request->getPayload();
 
         $typeEquipment = new TypeEquipment();
-        if (! isset($payload['name'])) {
+        if (! $payload->has('name')) {
             return new JsonResponse(['error' => 'Name is required'], 400);
         }
-        $typeEquipment->setName($payload['name'] ?? '');
+        $typeEquipment->setName($payload->get('name') ?? '');
 
         $entityManagerInterface->persist($typeEquipment);
         $entityManagerInterface->flush();

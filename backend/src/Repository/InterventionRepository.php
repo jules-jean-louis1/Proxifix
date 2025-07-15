@@ -33,6 +33,9 @@ class InterventionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Intervention>
+     */
     public function findByCompanyId(int $companyId, int $page, int $limit, string $order, ?string $status): array
     {
         $offset = ($page - 1) * $limit;
@@ -53,6 +56,9 @@ class InterventionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getFreeSlots(\DateTime $date, ?int $companyId = null, ?int $interval_min = null, ?string $startTime = null, ?string $endTime = null, ?string $role = null): array
     {
         $conn = $this->getEntityManager()->getConnection();
@@ -90,6 +96,9 @@ class InterventionRepository extends ServiceEntityRepository
         return 0 == $count;
     }
 
+    /**
+     * @return array<Intervention>
+     */
     public function getInterventions(
         ?int $id = null,
         ?int $userId = null,

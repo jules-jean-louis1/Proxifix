@@ -16,6 +16,9 @@ class BrandRepository extends ServiceEntityRepository
         parent::__construct($registry, Brand::class);
     }
 
+    /**
+     * @return array<Brand>
+     */
     public function getBrands(?int $id, int $page, int $size, ?string $name, string $order): array
     {
         $offset = ($page - 1) * $size;
@@ -31,9 +34,7 @@ class BrandRepository extends ServiceEntityRepository
                 ->setParameter('name', '%'.strtolower($name).'%');
         }
 
-        if (null !== $order) {
-            $query->orderBy('b.name', $order);
-        }
+        $query->orderBy('b.name', $order);
 
         $query->setFirstResult($offset)
             ->setMaxResults($size);

@@ -32,6 +32,9 @@ class TypeInterventionRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return array<TypeIntervention>
+     */
     public function getTypeInterventions(
         ?int $id = null,
         ?string $name = null,

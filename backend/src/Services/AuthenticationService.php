@@ -34,7 +34,7 @@ class AuthenticationService
         }
 
         $user = $this->userRepository->findOneBy(['email' => $email]);
-        if (! $user || ! $this->passwordHasher->isPasswordValid($user, plainPassword: $password)) {
+        if (! $user || ! $this->passwordHasher->isPasswordValid($user, plainPassword: strval($password))) {
             return new JsonResponse(['error' => 'Invalid credentials'], 400);
         }
         $token = $this->tokenManager->create($user);

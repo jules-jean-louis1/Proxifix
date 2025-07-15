@@ -33,6 +33,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * @return array<User>
+     */
     public function customerList(int $page, int $limit): array
     {
         $offset = ($page - 1) * $limit;
@@ -46,7 +49,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
-    public function searchCustomer(string $searchQuery)
+    /**
+     * @return array<User>
+     */
+    public function searchCustomer(string $searchQuery): array
     {
         return $this->createQueryBuilder('u')
             ->where('JSON_GET_TEXT(u.roles, 0) = :role')
@@ -58,6 +64,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
+    /**
+     * @return array<User>
+     */
     public function getUsers(?int $companyId = null, ?string $searchQuery = '', ?int $page = 1, ?int $size = 25, ?string $order = '', ?string $role = 'ROLE_CUSTOMER'): array
     {
         $sql = 'SELECT u.* FROM "user" u WHERE 1=1';

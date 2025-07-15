@@ -198,7 +198,7 @@ class InterventionController extends AbstractController
             }
 
             if (isset($payload['status'])) {
-                $intervention->setStatus($payload['status'] ?? Intervention::PENDING);
+                $intervention->setStatus($payload['status']);
             }
 
             if (isset($payload['appointment_request_id'])) {
@@ -322,15 +322,15 @@ class InterventionController extends AbstractController
         $reqCompanyId = $request->query->get('company_id');
 
         $interventions = $interventionRepository->getInterventions(
-            $reqId,
-            $reqUserId,
-            $reqTechnicianId,
-            $reqCompanyId,
+            $reqId ? (int) $reqId : null,
+            $reqUserId ? (int) $reqUserId : null,
+            $reqTechnicianId ? (int) $reqTechnicianId : null,
+            $reqCompanyId ? (int) $reqCompanyId : null,
             $reqStatus,
-            $reqPage,
+            $reqPage ? (int) $reqPage : null,
             $reqOrder,
-            $reqTypeInterventionId,
-            $reqSize,
+            $reqTypeInterventionId ? (int) $reqTypeInterventionId : null,
+            $reqSize ? (int) $reqSize : null,
         );
 
         return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
@@ -402,10 +402,15 @@ class InterventionController extends AbstractController
     }
 
     #[Route('/intervention/status', name: 'app_intervention_status', methods: ['GET'])]
-    public function getInterventionStatus(
-        InterventionRepository $interventionRepository
-    ): JsonResponse {
-        $statuses = $interventionRepository->getAvailableStatuses();
+    public function getInterventionStatus(): JsonResponse 
+    {
+        $statuses = [
+            Intervention::PENDING,
+            Intervention::ASSIGNED, 
+            Intervention::IN_PROGRESS,
+            Intervention::COMPLETED,
+            Intervention::CANCELLED,
+        ];
 
         return $this->json($statuses, 200);
     }

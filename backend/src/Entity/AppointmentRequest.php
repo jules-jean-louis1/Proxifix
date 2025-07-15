@@ -97,7 +97,7 @@ class AppointmentRequest
 
     public function setDate(\DateTimeInterface $date): static
     {
-        $this->date = $date;
+        $this->date = $date instanceof \DateTimeImmutable ? $date : \DateTimeImmutable::createFromInterface($date);
 
         return $this;
     }

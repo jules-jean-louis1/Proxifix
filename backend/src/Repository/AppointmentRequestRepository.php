@@ -16,6 +16,9 @@ class AppointmentRequestRepository extends ServiceEntityRepository
         parent::__construct($registry, AppointmentRequest::class);
     }
 
+    /**
+     * @return array<AppointmentRequest>
+     */
     public function getAppointementByStatus(string $status, ?int $page, ?int $size, ?int $companyId = null): array
     {
         $offset = ($page - 1) * $size;
@@ -34,6 +37,9 @@ class AppointmentRequestRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @return array<AppointmentRequest>
+     */
     public function getAppointements(
         int $page,
         int $size,

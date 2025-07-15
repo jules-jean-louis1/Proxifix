@@ -374,7 +374,7 @@ final class CompanyController extends AbstractController
             return $this->json(['error' => 'Company not found'], 404);
         }
         $users = $company->getUsers();
-        if (! $users) {
+        if ($users->isEmpty()) {
             return $this->json(
                 ['error' => 'No users found for this company'],
                 404
@@ -413,23 +413,16 @@ final class CompanyController extends AbstractController
         if ($payload->has('specialization')) {
             $specializations = $payload->get('specialization');
 
-            // Gestion du cas où c'est un tableau ou une chaîne unique
-            if (is_array($specializations)) {
-                foreach ($specializations as $specializationSlug) {
-                    if (is_string($specializationSlug) || is_numeric($specializationSlug)) {
-                        $specializationEntity = $em->getRepository(CompanySpecialization::class)
-                            ->findOneBy(['slug' => $specializationSlug]);
-                        if ($specializationEntity) {
-                            $company->addSpecialization($specializationEntity);
-                        }
+            // Treat as single value (convert to array for consistent processing)
+            $specializationArray = [$specializations];
+            
+            foreach ($specializationArray as $specializationSlug) {
+                if (is_string($specializationSlug) || is_numeric($specializationSlug)) {
+                    $specializationEntity = $em->getRepository(CompanySpecialization::class)
+                        ->findOneBy(['slug' => $specializationSlug]);
+                    if ($specializationEntity) {
+                        $company->addSpecialization($specializationEntity);
                     }
-                }
-            } elseif (is_string($specializations) || is_numeric($specializations)) {
-                // Cas où une seule spécialisation est fournie
-                $specializationEntity = $em->getRepository(CompanySpecialization::class)
-                    ->findOneBy(['slug' => $specializations]);
-                if ($specializationEntity) {
-                    $company->addSpecialization($specializationEntity);
                 }
             }
         }
@@ -499,7 +492,16 @@ final class CompanyController extends AbstractController
         $reqOrder = $request->query->get('order') ?? 'ASC';
         $reqIsDeleted = 'true' === $request->query->get('is_deleted') ? true : false;
 
-        $companies = $companyRepository->getCompanies(null !== $reqId ? intval($reqId) : null, $reqPending, $reqSpecialization, $reqPage, $reqSize, $reqName, $reqOrder, $reqIsDeleted);
+        $companies = $companyRepository->getCompanies(
+            null !== $reqId ? intval($reqId) : null, 
+            $reqPending, 
+            $reqSpecialization ? (int) $reqSpecialization : null, 
+            $reqPage, 
+            $reqSize, 
+            $reqName, 
+            $reqOrder, 
+            $reqIsDeleted
+        );
 
         return $this->json($companies, 200, [], ['groups' => 'company:read']);
     }

@@ -16,6 +16,9 @@ class TypeEquipmentRepository extends ServiceEntityRepository
         parent::__construct($registry, TypeEquipment::class);
     }
 
+    /**
+     * @return array<TypeEquipment>
+     */
     public function getTypes(?int $id, ?int $page, ?int $size, ?string $name, ?string $order = 'ASC'): array
     {
         $offset = ($page - 1) * $size;

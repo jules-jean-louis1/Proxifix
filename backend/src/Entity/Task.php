@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\TaskRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -30,11 +32,19 @@ class Task
     #[Groups(['task:read', 'task:write', 'intervention:details', 'task:get_list', 'company:read', 'company:get_list'])]
     private ?string $description = null;
 
+    /**
+     * @var Collection<int, TaskIntervention>
+     */
     #[ORM\OneToMany(mappedBy: 'task', targetEntity: TaskIntervention::class)]
-    private $taskInterventions;
+    private Collection $taskInterventions;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     private ?Company $Company = null;
+
+    public function __construct()
+    {
+        $this->taskInterventions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -77,15 +87,20 @@ class Task
         return $this;
     }
 
-    public function getTaskInterventions()
+    /**
+     * @return Collection<int, TaskIntervention>
+     */
+    public function getTaskInterventions(): Collection
     {
         return $this->taskInterventions;
     }
 
     public function addTaskIntervention(TaskIntervention $taskIntervention): self
     {
-        $this->taskInterventions[] = $taskIntervention;
-        $taskIntervention->setTask($this);
+        if (!$this->taskInterventions->contains($taskIntervention)) {
+            $this->taskInterventions->add($taskIntervention);
+            $taskIntervention->setTask($this);
+        }
 
         return $this;
     }

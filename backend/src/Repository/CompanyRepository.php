@@ -16,6 +16,9 @@ class CompanyRepository extends ServiceEntityRepository
         parent::__construct($registry, Company::class);
     }
 
+    /**
+     * @return array<Company>
+     */
     public function getCompanies(
         ?int $id = null,
         bool $pending = false,

@@ -16,6 +16,12 @@ class TaskRepository extends ServiceEntityRepository
         parent::__construct($registry, Task::class);
     }
 
+    /**
+     * @return array<Task>
+     */
+    /**
+     * @return array<Task>
+     */
     public function getTasks(?int $id, ?int $companyId, ?string $name, ?int $page, ?int $size, ?string $order): array
     {
         $offset = ($page - 1) * $size;

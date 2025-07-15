@@ -60,10 +60,22 @@ class AppFixtures extends Fixture
 
         foreach ($data as $entityClass => $values) {
             foreach ($values as $value) {
-                $entity = new $entityClass();
-                $entity->setName($value);
-                if (TypeEquipment::class === $entityClass) {
-                    $entity->setCompany($company);
+                switch ($entityClass) {
+                    case TypeEquipment::class:
+                        $entity = new TypeEquipment();
+                        $entity->setName($value);
+                        $entity->setCompany($company);
+                        break;
+                    case Brand::class:
+                        $entity = new Brand();
+                        $entity->setName($value);
+                        break;
+                    case OperatingSystem::class:
+                        $entity = new OperatingSystem();
+                        $entity->setName($value);
+                        break;
+                    default:
+                        continue 2; // Skip unknown entity types
                 }
                 $manager->persist($entity);
             }
@@ -138,7 +150,7 @@ class AppFixtures extends Fixture
         for ($i = 1; $i <= 5; ++$i) {
             $equipment = new Equipment();
             $equipment->setName('Equipment '.$i);
-            $equipment->setReference('SN'.str_pad($i, 5, '0', STR_PAD_LEFT));
+            $equipment->setReference('SN'.str_pad((string) $i, 5, '0', STR_PAD_LEFT));
             $equipment->setUser($customer);
             $manager->persist($equipment);
         }

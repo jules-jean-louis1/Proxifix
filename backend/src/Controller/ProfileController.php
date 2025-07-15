@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +21,7 @@ final class ProfileController extends AbstractController
         $user = $this->getUser();
 
         // Vérifier si l'utilisateur est authentifié
-        if (! $user) {
+        if (!$user instanceof User) {
             return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
@@ -47,12 +48,11 @@ final class ProfileController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         JWTTokenManagerInterface $tokenManager): JsonResponse
     {
-        $this->token = $tokenStorage->getToken();
         $user = $this->getUser();
 
         $data = json_decode($request->getContent(), true);
 
-        if (! $user) {
+        if (!$user instanceof User) {
             return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
@@ -107,10 +107,9 @@ final class ProfileController extends AbstractController
     #[Route('/api/profile', name: 'app_profile_delete', methods: ['DELETE'])]
     public function profileDelete(TokenStorageInterface $tokenStorage, EntityManagerInterface $entityManager): JsonResponse
     {
-        $this->token = $tokenStorage->getToken();
         $user = $this->getUser();
 
-        if (! $user) {
+        if (!$user instanceof User) {
             return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
         }
         $entityManager->remove($user);

@@ -44,7 +44,17 @@ final class AppointmentController extends AbstractController
             $companyIdRequest = $user->getCompany()->getId();
         }
 
-        $appointments = $appointmentRequestRepository->getAppointements($pageRequest, $sizeRequest, $userIdRequest, $appointmentIdRequest, $statusRequest, $dateRequest, $orderRequest, $companyIdRequest, $idRequest);
+        $appointments = $appointmentRequestRepository->getAppointements(
+            (int) $pageRequest, 
+            (int) $sizeRequest, 
+            $userIdRequest, 
+            $appointmentIdRequest ? (int) $appointmentIdRequest : null, 
+            $statusRequest, 
+            $dateRequest ? new \DateTime($dateRequest) : null, 
+            $orderRequest, 
+            $companyIdRequest ? (int) $companyIdRequest : null, 
+            $idRequest ? (int) $idRequest : null
+        );
 
         $data = array_map(function ($appointment) {
             return [
@@ -184,7 +194,7 @@ final class AppointmentController extends AbstractController
                 $typeIntervention = $payload['type_intervention_id']
                 ? $em->getRepository(TypeIntervention::class)->find($payload['type_intervention_id'])
                 : $appointment->getTypeIntervention();
-                $startDate = isset($payload['new_start_date']) ? new \DateTimeImmutable($payload['new_start_date']) : $appointment->getDate();
+                $startDate = isset($payload['new_start_date']) ? new \DateTimeImmutable($payload['new_start_date']) : ($appointment->getDate() ? new \DateTimeImmutable($appointment->getDate()->format('Y-m-d H:i:s')) : new \DateTimeImmutable());
                 $endDate = isset($payload['end_date'])
                 ? new \DateTimeImmutable($payload['end_date'])
                 : (new \DateTimeImmutable($startDate->format('Y-m-d H:i:s')))->add(new \DateInterval('PT1H'));
@@ -314,7 +324,7 @@ final class AppointmentController extends AbstractController
     }
 
     #[Route('/appointment/{id}', name: 'get_one_appointment', methods: ['GET'])]
-    public function getOneAppointment(int $id, EntityManagerInterface $em)
+    public function getOneAppointment(int $id, EntityManagerInterface $em): JsonResponse
     {
         $user = $this->getUser();
         if (! $user instanceof User) {
