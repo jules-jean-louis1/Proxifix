@@ -26,7 +26,8 @@ class InterventionRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('i')
             ->leftJoin('i.status', 's')
             ->addSelect('s')
-            ->andWhere('i.user = :userId')
+            ->andWhere('i.customer = :userId')
+            ->orWhere('i.technician = :userId')
             ->setParameter('userId', $userId)
             ->getQuery()
             ->getResult();
@@ -93,6 +94,7 @@ class InterventionRepository extends ServiceEntityRepository
     public function getInterventions(
         ?int $id = null,
         ?int $userId = null,
+        ?int $technicianId = null,
         ?int $companyId = null,
         ?string $status = null,
         ?int $page = 1,
@@ -115,10 +117,14 @@ class InterventionRepository extends ServiceEntityRepository
         }
 
         if ($userId !== null) {
-            $query->andWhere('i.user = :user_id')
+            $query->andWhere('i.customer = :user_id')
                 ->setParameter('user_id', intval($userId));
         }
 
+        if ($technicianId !== null) {
+            $query->andWhere('i.technician = :technician_id')
+                ->setParameter('technician_id', intval($technicianId));
+        }
         if ($companyId !== null) {
             $query->andWhere('i.company = :company_id')
                 ->setParameter('company_id', intval($companyId));

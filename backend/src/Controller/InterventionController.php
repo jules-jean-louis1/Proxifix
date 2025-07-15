@@ -314,12 +314,14 @@ class InterventionController extends AbstractController
         $reqOrder              = $request->query->get('order');
         $reqStatus             = $request->query->get('status');
         $reqUserId             = $request->query->get('user_id');
+        $reqTechnicianId       = $request->query->get('technician_id');
         $reqTypeInterventionId = $request->query->get('type_intervention_id');
         $reqCompanyId          = $request->query->get('company_id');
 
         $interventions = $interventionRepository->getInterventions(
             $reqId,
             $reqUserId,
+            $reqTechnicianId,
             $reqCompanyId,
             $reqStatus,
             $reqPage,
