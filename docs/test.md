@@ -21,6 +21,13 @@ Creer la base de données de test si elle n'existe pas :
 php bin/console doctrine:database:create --env=test
 ```
 
+Si elle existe déjà, vous pouvez la supprimer et la recréer pour un état propre :
+
+```bash
+php bin/console doctrine:database:drop --force --env=test
+php bin/console doctrine:database:create --env=test
+```
+
 Ensuite, pour mettre à jour le schéma de la base de données et charger les fixtures, exécutez :
 ```bash
 php bin/console doctrine:migrations:migrate --force --env=test
@@ -91,6 +98,30 @@ php bin/console doctrine:fixtures:load --env=test
   - Vérifie que l’entreprise n’existe plus ensuite
 
 ---
+
+# ✅ Tests complets pour Customer :
+🔐 Tests d'Authentification :
+testRegisterCustomer : Création d'un nouveau customer avec des données valides
+testRegisterCustomerWithExistingEmail : Validation que l'email doit être unique
+testRegisterCustomerWithMissingFields : Validation des champs requis
+testLogin : Connexion avec un customer existant
+testLoginWithInvalidCredentials : Rejet des mauvais identifiants
+📊 Tests Fonctionnels :
+testGetEquipmentList : Récupération de la liste des équipements
+testCustomerCannotJoinCompany : Validation que les customers ne peuvent pas rejoindre une compagnie (test skippé car endpoint non disponible)
+🎯 Couverture des Tests :
+✅ Validation des données : Champs obligatoires, formats valides
+✅ Sécurité : Authentification, autorisation, unicité des emails
+✅ Endpoints disponibles : Seulement les endpoints qui existent vraiment
+✅ Codes de réponse HTTP : 200, 201, 400, 401, 409
+✅ Structure des réponses JSON : Validation des clés attendues
+🚀 Tests supplémentaires que vous pourriez ajouter :
+Validation d'email : Format email invalide
+Mots de passe : Longueur minimale, caractères spéciaux
+Pagination : Tests avec paramètres page/size pour les listes
+Filtres : Tests de recherche avec paramètres
+Tokens JWT : Expiration, format invalide
+Limites de taux : Protection contre le spam
 
 ## 6. Extensions à venir (Interventions, Equipments, AppointmentRequest)
 

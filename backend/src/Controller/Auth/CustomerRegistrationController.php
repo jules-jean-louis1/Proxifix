@@ -22,19 +22,29 @@ class CustomerRegistrationController extends AbstractController
 
             $payload = $request->getPayload();
 
-            $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $payload->get('email')]);
+            // Validation des champs requis
+            $email = $payload->get('email');
+            $password = $payload->get('password');
+            $firstName = $payload->get('first_name');
+            $lastName = $payload->get('last_name');
+
+            if (!$email || !$password || !$firstName || !$lastName) {
+                return $this->json(['error' => 'Missing required fields: email, password, first_name, last_name'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
             if ($existingUser) {
                 return $this->json(['error' => 'Email already exists'], Response::HTTP_CONFLICT);
             }
 
             $user = new User();
-            $hashedPassword = $passwordHasher->hashPassword($user, $payload->get('password'));
+            $hashedPassword = $passwordHasher->hashPassword($user, $password);
 
-            $user->setEmail($payload->get('email'))
+            $user->setEmail($email)
                 ->setPassword($hashedPassword)
                 ->setRoles(['ROLE_CUSTOMER'])
-                ->setFirstName($payload->get('first_name'))
-                ->setLastName($payload->get('last_name'))
+                ->setFirstName($firstName)
+                ->setLastName($lastName)
                 ->setCreatedAt(new \DateTimeImmutable())
                 ->setUpdatedAt(new \DateTimeImmutable());
 

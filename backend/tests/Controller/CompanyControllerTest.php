@@ -30,6 +30,7 @@ final class CompanyControllerTest extends ApiTestCase
             'logo' => 'https://www.testcompany.com/logo.png',
             'open_days' => 'Monday-Friday',
             'open_hours' => '9:00-17:00',
+            'is_approved' => true,
             'specialization' => [
                 ['slug' => 'informatique', 'id' => '2'],
             ],
@@ -67,6 +68,7 @@ final class CompanyControllerTest extends ApiTestCase
         $this->assertEquals('https://www.testcompany.com/logo.png', $responseData['logo']);
         $this->assertEquals('Monday-Friday', $responseData['open_days']);
         $this->assertEquals('9:00-17:00', $responseData['open_hours']);
+        $this->assertEquals(true, $responseData['is_approved']);
         $this->assertArrayHasKey('specialization', $responseData);
 
         // store for other tests (if you have DB reset between tests, store in class-level property or use test DB)
@@ -125,19 +127,21 @@ final class CompanyControllerTest extends ApiTestCase
         $this->assertEquals('Company updated', $responseData['about']);
     }
 
-    // /**
-    //  * Test delete company
-    //  */
-    public function testDeleteCompany(): void
+    public function testSoftDeleteCompany(): void
     {
         $client = $this->client;
         $token = $this->getToken('superadmin@test.com', 'superadminpass');
         $id = $GLOBALS['COMPANY_ID'] ?? 2;
-        $client->request('DELETE', '/api/company/'.$id, [], [], [
+        $client->request('PATCH', '/api/company/'.$id, [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             'CONTENT_TYPE' => 'application/json',
-        ]);
-        $this->assertResponseStatusCodeSame(200);
+        ], json_encode([
+            'is_deleted' => true,
+        ]));
+        $this->assertResponseIsSuccessful();
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertEquals(true, $responseData['is_deleted']);
+        $this->assertEquals('Company updated', $responseData['about']);
     }
 
     // /**
