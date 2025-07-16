@@ -35,6 +35,25 @@ export const getStatusColor = (status: string) => {
   }
 };
 
+export const getStatusColorBackground = (status: string) => {
+  switch (status) {
+    case INTERVENTION_STATUS.PENDING:
+      return "rgba(255, 152, 0, 0.2)"; // Amber
+    case INTERVENTION_STATUS.ASSIGNED:
+      return "rgba(255, 87, 34, 0.2)"; // Deep Orange
+    case INTERVENTION_STATUS.AWAITING:
+      return "rgba(33, 150, 243, 0.2)"; // Blue
+    case INTERVENTION_STATUS.IN_PROGRESS:
+      return "rgba(76, 175, 80, 0.2)"; // Green
+    case INTERVENTION_STATUS.COMPLETED:
+      return "rgba(139, 195, 74, 0.2)"; // Light Green
+    case INTERVENTION_STATUS.CANCELED:
+      return "rgba(244, 67, 54, 0.2)"; // Red
+    default:
+      return "rgba(0, 0, 0, 0.2)"; // Default color (black)
+  }
+};
+
 export const getStatus = (intervention: any): string => {
   switch (intervention.status) {
     case INTERVENTION_STATUS.PENDING:

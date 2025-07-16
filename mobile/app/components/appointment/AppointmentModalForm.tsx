@@ -49,7 +49,7 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
       title: "",
       description: "",
       date: "",
-    }
+    },
   });
   const { handleSubmit } = methods;
   const sessionCtx = useSessionContext();
@@ -78,23 +78,22 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
 
   useEffect(() => {
     if (appointment && mode === "update") {
-
       methods.setValue("equipment_id", appointment.equipment?.id || "");
       methods.setValue("company_id", appointment.company?.id || "");
       methods.setValue("title", appointment.title || "");
       methods.setValue("description", appointment.description || "");
       methods.setValue("date", appointment.date || "");
-      
+
       // Initialiser les états pour le TimeSlotPicker
       if (appointment.date) {
         const appointmentDate = new Date(appointment.date);
         setSelectedDateTime(appointmentDate);
-        
+
         const startTime = appointmentDate.toTimeString().slice(0, 8);
 
         const endDate = new Date(appointmentDate.getTime() + 60 * 60 * 1000);
         const endTime = endDate.toTimeString().slice(0, 8);
-        
+
         setSelectedTimeSlot({ start: startTime, end: endTime });
       }
     }
@@ -245,16 +244,17 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                     }}
                   />
                 )}
-              {mode === "create" && (                  <AppButton
-                    type="secondary"
-                    children="Annuler"
-                    onPress={() => {
-                      setModalVisible(false);
-                      methods.reset();
-                      setSelectedDateTime(null);
-                      setSelectedTimeSlot(null);
-                    }}
-                  />
+              {mode === "create" && (
+                <AppButton
+                  type="secondary"
+                  children="Annuler"
+                  onPress={() => {
+                    setModalVisible(false);
+                    methods.reset();
+                    setSelectedDateTime(null);
+                    setSelectedTimeSlot(null);
+                  }}
+                />
               )}
               <AppButton
                 type="primary"
@@ -279,6 +279,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
   },
   modalContent: {
     flex: 1,

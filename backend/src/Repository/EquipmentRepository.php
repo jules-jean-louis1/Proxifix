@@ -52,7 +52,7 @@ class EquipmentRepository extends ServiceEntityRepository
         }
 
         if (null !== $userId) {
-            $query->andWhere('e.customer = :user_id')
+            $query->andWhere('e.user = :user_id')
                 ->setParameter('user_id', intval($userId));
         }
 
