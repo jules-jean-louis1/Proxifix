@@ -28,7 +28,7 @@ class CustomerRegistrationController extends AbstractController
             $firstName = $payload->get('first_name');
             $lastName = $payload->get('last_name');
 
-            if (!$email || !$password || !$firstName || !$lastName) {
+            if (! $email || ! $password || ! $firstName || ! $lastName) {
                 return $this->json(['error' => 'Missing required fields: email, password, first_name, last_name'], Response::HTTP_BAD_REQUEST);
             }
 

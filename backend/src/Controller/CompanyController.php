@@ -236,10 +236,10 @@ final class CompanyController extends AbstractController
             $specializations = $data['specialization'];
             if (is_array($specializations)) {
                 // PUT : remplacement complet (clear + rebuild)
-                if ($request->getMethod() === 'PUT') {
+                if ('PUT' === $request->getMethod()) {
                     $company->getSpecialization()->clear();
                 }
-                
+
                 // PATCH : ajout seulement (pas de suppression)
                 // PUT : reconstruction après clear
                 foreach ($specializations as $spec) {
@@ -261,16 +261,16 @@ final class CompanyController extends AbstractController
             $users = $data['users'];
             if (is_array($users)) {
                 // PUT : remplacement complet (clear + rebuild)
-                if ($request->getMethod() === 'PUT') {
+                if ('PUT' === $request->getMethod()) {
                     $company->getUsers()->clear();
                 }
-                
+
                 // PATCH : ajout seulement (pas de suppression)
                 // PUT : reconstruction après clear
                 foreach ($users as $userId) {
                     if (is_numeric($userId)) {
                         $user = $entityManager->getRepository(User::class)->find($userId);
-                        if (!$user) {
+                        if (! $user) {
                             return $this->json(['error' => "User with ID $userId not found"], 404);
                         }
                         if (in_array(User::ROLE_CUSTOMER, $user->getRoles(), true)) {
@@ -287,10 +287,10 @@ final class CompanyController extends AbstractController
             $typeEquipments = $data['type_equipments'];
             if (is_array($typeEquipments)) {
                 // PUT : remplacement complet (clear + rebuild)
-                if ($request->getMethod() === 'PUT') {
+                if ('PUT' === $request->getMethod()) {
                     $company->getTypeEquipment()->clear();
                 }
-                
+
                 // PATCH : ajout seulement (pas de suppression)
                 // PUT : reconstruction après clear
                 foreach ($typeEquipments as $typeEquipmentId) {
@@ -307,10 +307,10 @@ final class CompanyController extends AbstractController
             $typeInterventions = $data['type_interventions'];
             if (is_array($typeInterventions)) {
                 // PUT : remplacement complet (clear + rebuild)
-                if ($request->getMethod() === 'PUT') {
+                if ('PUT' === $request->getMethod()) {
                     $company->getTypeInterventions()->clear();
                 }
-                
+
                 // PATCH : ajout seulement (pas de suppression)
                 // PUT : reconstruction après clear
                 foreach ($typeInterventions as $typeInterventionId) {
@@ -327,7 +327,7 @@ final class CompanyController extends AbstractController
             $tasks = $data['tasks'];
             if (is_array($tasks)) {
                 // PUT : remplacement complet (clear + rebuild)
-                if ($request->getMethod() === 'PUT') {
+                if ('PUT' === $request->getMethod()) {
                     $company->getTasks()->clear();
                 }
                 foreach ($tasks as $taskId) {

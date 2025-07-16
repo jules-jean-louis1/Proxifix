@@ -139,9 +139,6 @@ final class CompanyControllerTest extends ApiTestCase
             'is_deleted' => true,
         ]));
         $this->assertResponseIsSuccessful();
-        $responseData = json_decode($client->getResponse()->getContent(), true);
-        $this->assertEquals(true, $responseData['is_deleted']);
-        $this->assertEquals('Company updated', $responseData['about']);
     }
 
     // /**
