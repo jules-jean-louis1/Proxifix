@@ -78,7 +78,7 @@ export const CreateEquipmentModal: FC<CreateEquipmentModalProps> = ({
     <View>
       {trigger &&
         React.cloneElement(trigger, {
-          onPress: () => showModal,
+          onPress: () => showModal(),
         })}
 
       <Modal
@@ -103,11 +103,11 @@ export const CreateEquipmentModal: FC<CreateEquipmentModalProps> = ({
                 label="Nom de l'équipement"
                 placeholder="Ex: Ordinateur portable"
                 rules={{ required: "Le nom est requis" }}
-                style={styles.input}
               />
-
               <AppSelectInput
+                label="Marque"
                 nameField="brand_id"
+                placeholder="Sélectionnez une marque"
                 options={brands!.map((brand: any) => ({
                   label: brand.name,
                   value: brand.id,
@@ -115,7 +115,9 @@ export const CreateEquipmentModal: FC<CreateEquipmentModalProps> = ({
                 rules={{ required: "Ce champ est requis" }}
               />
               <AppSelectInput
+                label="Type d'équipement"
                 nameField="type_equipment_id"
+                placeholder="Sélectionnez un type"
                 options={typeEquipments!.map((type: any) => ({
                   label: type.name,
                   value: type.id,
@@ -126,14 +128,12 @@ export const CreateEquipmentModal: FC<CreateEquipmentModalProps> = ({
                 nameField="model"
                 label="Modèle"
                 placeholder="Ex: Latitude 5520"
-                style={styles.input}
               />
 
               <AppTextField
                 nameField="reference"
                 label="Numéro de série"
                 placeholder="Ex: ABC123456"
-                style={styles.input}
               />
 
               <AppTextField
@@ -142,18 +142,11 @@ export const CreateEquipmentModal: FC<CreateEquipmentModalProps> = ({
                 placeholder="Description de l'équipement..."
                 multiline
                 numberOfLines={3}
-                style={styles.input}
               />
             </FormProvider>
           </ScrollView>
 
           <View style={styles.buttonContainer}>
-            <AppButton
-              children={"Annuler"}
-              type="secondary"
-              onPress={hideModal}
-              disabled={isLoading}
-            />
             <AppButton
               children={"Créer"}
               type="primary"
@@ -187,7 +180,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 16,
+    padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#e0e0e0",
   },
@@ -198,7 +191,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: "600",
+    textAlign: "center",
     color: "#344260",
   },
   modalContent: {

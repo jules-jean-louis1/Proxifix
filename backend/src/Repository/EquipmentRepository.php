@@ -24,8 +24,7 @@ class EquipmentRepository extends ServiceEntityRepository
     public function findByUserId(int $userId): array
     {
         return $this->createQueryBuilder('e')
-            ->andWhere('e.customer = :userId')
-            ->orWhere('e.technician = :userId')
+            ->andWhere('e.user = :userId')
             ->setParameter('userId', $userId)
             ->getQuery()
             ->getResult();
@@ -52,7 +51,7 @@ class EquipmentRepository extends ServiceEntityRepository
         }
 
         if (null !== $userId) {
-            $query->andWhere('e.customer = :user_id')
+            $query->andWhere('e.user = :user_id')
                 ->setParameter('user_id', intval($userId));
         }
 

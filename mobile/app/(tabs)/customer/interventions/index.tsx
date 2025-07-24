@@ -115,12 +115,12 @@ export default function InterventionsPage() {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F0F3F4",
+    backgroundColor: "#FFF",
     padding: 16,
   },
   title: {

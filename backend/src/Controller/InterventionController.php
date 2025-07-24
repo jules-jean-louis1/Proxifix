@@ -414,4 +414,122 @@ class InterventionController extends AbstractController
 
         return $this->json($statuses, 200);
     }
+
+    #[Route('/intervention/{id}/task', name: 'app_intervention_tasks', methods: ['GET'])]
+    public function getInterventionTasks(int $id, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $intervention = $entityManager->getRepository(Intervention::class)->find($id);
+        if (! $intervention) {
+            return $this->json(['error' => 'Intervention not found'], 404);
+        }
+
+        $tasks = $intervention->getTaskInterventions()
+            ->map(function (TaskIntervention $taskIntervention) {
+                return $taskIntervention->getTask();
+            })
+            ->toArray();
+
+        return $this->json($tasks, 200, [], ['groups' => ['task:read']]);
+    }
+
+    #[Route('/intervention/{id}/task', name: 'app_intervention_add_task', methods: ['POST'])]
+    public function addTaskToIntervention(
+        int $id,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        try {
+            $payload = $request->toArray();
+
+            $intervention = $entityManager->getRepository(Intervention::class)->find($id);
+            if (! $intervention) {
+                return $this->json(['error' => 'Intervention not found'], 404);
+            }
+
+            if (! isset($payload['task_id'])) {
+                return $this->json(['error' => 'task_id is required'], 400);
+            }
+
+            $task = $entityManager->getRepository(Task::class)->find($payload['task_id']);
+            if (! $task) {
+                return $this->json(['error' => 'Task not found'], 404);
+            }
+
+            // Vérifier si la tâche n'est pas déjà associée à cette intervention
+            $existingTaskIntervention = $entityManager
+                ->getRepository(TaskIntervention::class)
+                ->findOneBy([
+                    'intervention' => $intervention,
+                    'task' => $task,
+                ]);
+
+            if ($existingTaskIntervention) {
+                return $this->json(['error' => 'Task is already associated with this intervention'], 409);
+            }
+
+            // Créer la nouvelle association
+            $taskIntervention = new TaskIntervention();
+            $taskIntervention->setTask($task);
+            $taskIntervention->setIntervention($intervention);
+
+            $entityManager->persist($taskIntervention);
+            $intervention->setUpdatedAt(new \DateTimeImmutable());
+
+            $entityManager->flush();
+
+            return $this->json([
+                'success' => 'Task added to intervention successfully',
+                'intervention_id' => $intervention->getId(),
+                'task_id' => $task->getId(),
+                'task_intervention_id' => $taskIntervention->getId(),
+            ], 201);
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/intervention/{id}/task/{taskId}', name: 'app_intervention_remove_task', methods: ['DELETE'])]
+    public function removeTaskFromIntervention(
+        int $id,
+        int $taskId,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        try {
+            $intervention = $entityManager->getRepository(Intervention::class)->find($id);
+            if (! $intervention) {
+                return $this->json(['error' => 'Intervention not found'], 404);
+            }
+
+            $task = $entityManager->getRepository(Task::class)->find($taskId);
+            if (! $task) {
+                return $this->json(['error' => 'Task not found'], 404);
+            }
+
+            // Trouver l'association TaskIntervention
+            $taskIntervention = $entityManager
+                ->getRepository(TaskIntervention::class)
+                ->findOneBy([
+                    'intervention' => $intervention,
+                    'task' => $task,
+                ]);
+
+            if (! $taskIntervention) {
+                return $this->json(['error' => 'Task is not associated with this intervention'], 404);
+            }
+
+            // Supprimer l'association
+            $entityManager->remove($taskIntervention);
+            $intervention->setUpdatedAt(new \DateTimeImmutable());
+
+            $entityManager->flush();
+
+            return $this->json([
+                'success' => 'Task removed from intervention successfully',
+                'intervention_id' => $intervention->getId(),
+                'task_id' => $task->getId(),
+            ], 200);
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], 400);
+        }
+    }
 }

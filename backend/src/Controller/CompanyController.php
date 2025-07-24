@@ -20,7 +20,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/api')]
 final class CompanyController extends AbstractController
 {
-    #[IsGranted('ROLE_SUPER_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/company', name: 'app_company_post', methods: ['POST'])]
     public function create(
         Request $request,
@@ -28,6 +28,10 @@ final class CompanyController extends AbstractController
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
+        $user = $this->getUser();
+        if (! $user instanceof User) {
+            return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
         // Validation des données requises
         $name = $data['name'] ?? null;
         if (! $name) {
@@ -50,7 +54,12 @@ final class CompanyController extends AbstractController
         $company->setCreatedAt(new \DateTimeImmutable());
         $company->setUpdatedAt(new \DateTimeImmutable());
         $company->setLogo($data['logo'] ?? '');
-        $company->setIsApproved($data['is_approved'] ?? false);
+
+        if (in_array(User::ROLE_ADMIN, $user->getRoles(), true)) {
+            $company->setIsApproved(false);
+        } else {
+            $company->setIsApproved($data['is_approved']);
+        }
         $company->setPhone($data['phone'] ?? '');
         $company->setMobile($data['mobile'] ?? '');
 
@@ -222,11 +231,17 @@ final class CompanyController extends AbstractController
             }
         }
 
-        // Specializations
+        // Specializations - Comportement différent selon la méthode HTTP
         if (array_key_exists('specialization', $data)) {
-            $company->getSpecialization()->clear();
             $specializations = $data['specialization'];
             if (is_array($specializations)) {
+                // PUT : remplacement complet (clear + rebuild)
+                if ('PUT' === $request->getMethod()) {
+                    $company->getSpecialization()->clear();
+                }
+
+                // PATCH : ajout seulement (pas de suppression)
+                // PUT : reconstruction après clear
                 foreach ($specializations as $spec) {
                     $specializationEntity = null;
                     if (is_numeric($spec)) {
@@ -241,28 +256,43 @@ final class CompanyController extends AbstractController
             }
         }
 
-        // Users
+        // Users - Comportement différent selon la méthode HTTP
         if (array_key_exists('users', $data)) {
-            $company->getUsers()->clear();
             $users = $data['users'];
             if (is_array($users)) {
+                // PUT : remplacement complet (clear + rebuild)
+                if ('PUT' === $request->getMethod()) {
+                    $company->getUsers()->clear();
+                }
+
+                // PATCH : ajout seulement (pas de suppression)
+                // PUT : reconstruction après clear
                 foreach ($users as $userId) {
-                    // On ne traite que les IDs numériques pour l'update
                     if (is_numeric($userId)) {
                         $user = $entityManager->getRepository(User::class)->find($userId);
-                        if ($user && $user->getRoles() !== ['ROLE_CUSTOMER']) {
-                            $company->addUser($user);
+                        if (! $user) {
+                            return $this->json(['error' => "User with ID $userId not found"], 404);
                         }
+                        if (in_array(User::ROLE_CUSTOMER, $user->getRoles(), true)) {
+                            return $this->json(['error' => 'Customer cannot be part of a company'], 400);
+                        }
+                        $company->addUser($user);
                     }
                 }
             }
         }
 
-        // TypeEquipments
+        // TypeEquipments - Comportement différent selon la méthode HTTP
         if (array_key_exists('type_equipments', $data)) {
-            $company->getTypeEquipment()->clear();
             $typeEquipments = $data['type_equipments'];
             if (is_array($typeEquipments)) {
+                // PUT : remplacement complet (clear + rebuild)
+                if ('PUT' === $request->getMethod()) {
+                    $company->getTypeEquipment()->clear();
+                }
+
+                // PATCH : ajout seulement (pas de suppression)
+                // PUT : reconstruction après clear
                 foreach ($typeEquipments as $typeEquipmentId) {
                     $type = $entityManager->getRepository(TypeEquipment::class)->find($typeEquipmentId);
                     if ($type) {
@@ -272,11 +302,17 @@ final class CompanyController extends AbstractController
             }
         }
 
-        // TypeInterventions
+        // TypeInterventions - Comportement différent selon la méthode HTTP
         if (array_key_exists('type_interventions', $data)) {
-            $company->getTypeInterventions()->clear();
             $typeInterventions = $data['type_interventions'];
             if (is_array($typeInterventions)) {
+                // PUT : remplacement complet (clear + rebuild)
+                if ('PUT' === $request->getMethod()) {
+                    $company->getTypeInterventions()->clear();
+                }
+
+                // PATCH : ajout seulement (pas de suppression)
+                // PUT : reconstruction après clear
                 foreach ($typeInterventions as $typeInterventionId) {
                     $type = $entityManager->getRepository(TypeIntervention::class)->find($typeInterventionId);
                     if ($type) {
@@ -286,11 +322,14 @@ final class CompanyController extends AbstractController
             }
         }
 
-        // Tasks
+        // Tasks - Comportement différent selon la méthode HTTP
         if (array_key_exists('tasks', $data)) {
-            $company->getTasks()->clear();
             $tasks = $data['tasks'];
             if (is_array($tasks)) {
+                // PUT : remplacement complet (clear + rebuild)
+                if ('PUT' === $request->getMethod()) {
+                    $company->getTasks()->clear();
+                }
                 foreach ($tasks as $taskId) {
                     $task = $entityManager->getRepository(Task::class)->find($taskId);
                     if ($task) {

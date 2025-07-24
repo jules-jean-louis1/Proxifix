@@ -15,8 +15,8 @@ final class EquipmentControllerTest extends ApiTestCase
         ], json_encode([
             'name' => 'Test Equipment',
             'reference' => 'SN12345',
-            'user_id' => 15,
-            'brand_id' => 17,
+            'user_id' => 7,
+            'brand_id' => 16,
             'type_equipment_id' => 11,
         ]));
         $this->assertResponseIsSuccessful();
@@ -37,8 +37,8 @@ final class EquipmentControllerTest extends ApiTestCase
         ], json_encode([
             'name' => 'Test Equipment edit',
             'reference' => 'SN12345_S',
-            'user_id' => 15,
-            'brand_id' => 17,
+            'user_id' => 7,
+            'brand_id' => 15,
             'type_equipment_id' => 11,
         ]));
         $this->assertResponseIsSuccessful();

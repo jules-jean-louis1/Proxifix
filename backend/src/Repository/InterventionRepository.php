@@ -151,6 +151,24 @@ class InterventionRepository extends ServiceEntityRepository
 
         return $query->getQuery()->getResult();
     }
+
+    /**
+     * @return array<\App\Entity\Task>
+     */
+    public function getTasks(?int $interventionId = null): array
+    {
+        $query = $this->createQueryBuilder('i')
+            ->select('t')
+            ->leftJoin('i.taskInterventions', 'ti')
+            ->leftJoin('ti.task', 't');
+
+        if (null !== $interventionId) {
+            $query->andWhere('i.id = :intervention_id')
+                ->setParameter('intervention_id', intval($interventionId));
+        }
+
+        return $query->getQuery()->getResult();
+    }
     //    /**
     //     * @return Intervention[] Returns an array of Intervention objects
     //     */

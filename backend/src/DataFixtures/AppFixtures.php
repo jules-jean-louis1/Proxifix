@@ -44,12 +44,11 @@ class AppFixtures extends Fixture
         $company->setUpdatedAt(new \DateTimeImmutable());
         // Create a default user admin
         $adminUser = new User();
-        $adminUser->setEmail('admin@techsolutions.com');
+        $adminUser->setEmail('super_admin@test.com');
         $adminUser->setPassword($this->passwordHasher->hashPassword($adminUser, 'password'));
         $adminUser->setRoles(['ROLE_SUPER_ADMIN']);
-        $adminUser->setFirstName('Admin');
-        $adminUser->setLastName('User');
-        $adminUser->setCompany($company);
+        $adminUser->setFirstName('Super');
+        $adminUser->setLastName('Admin');
         $manager->persist($adminUser);
 
         $data = [
@@ -130,6 +129,24 @@ class AppFixtures extends Fixture
         $admin->setLastName('User');
         $admin->setPassword($this->passwordHasher->hashPassword($admin, 'adminpass'));
         $manager->persist($admin);
+
+        $adminTechSolution = new User();
+        $adminTechSolution->setEmail('admin@techsolutions.com');
+        $adminTechSolution->setRoles(['ROLE_ADMIN']);
+        $adminTechSolution->setFirstName('Admin');
+        $adminTechSolution->setLastName('User');
+        $adminTechSolution->setPassword($this->passwordHasher->hashPassword($admin, 'adminpass'));
+        $adminTechSolution->setCompany($company);
+        $manager->persist($adminTechSolution);
+
+        $technicianTechSolution = new User();
+        $technicianTechSolution->setEmail('technician@techsolutions.com');
+        $technicianTechSolution->setRoles(['ROLE_TECHNICIAN']);
+        $technicianTechSolution->setFirstName('Technician');
+        $technicianTechSolution->setLastName('User');
+        $technicianTechSolution->setPassword($this->passwordHasher->hashPassword($technicianTechSolution, 'technicianpass'));
+        $technicianTechSolution->setCompany($company);
+        $manager->persist($technicianTechSolution);
 
         // Create a technician user
         $technician = new User();
