@@ -1,0 +1,70 @@
+services:
+  database:
+    image: postgres:${POSTGRES_VERSION:-15}-alpine
+    environment:
+      POSTGRES_DB: ${DB_DEV_NAME:-cda_app}
+      POSTGRES_PASSWORD: ${DB_DEV_PASSWORD:-password}
+      POSTGRES_USER: ${DB_DEV_USER:-cda_app}
+    networks:
+      - symfony
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+    ports:
+      - "${DB_DEV_PORT:-5434}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_DEV_USER:-cda_app}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  database_test:
+    image: postgres:${POSTGRES_VERSION:-15}-alpine
+    environment:
+      POSTGRES_DB: ${DB_TEST_NAME:-cda_app_test}
+      POSTGRES_PASSWORD: ${DB_TEST_PASSWORD:-password}
+      POSTGRES_USER: ${DB_TEST_USER:-cda_app}
+    networks:
+      - symfony
+    volumes:
+      - database_test_data:/var/lib/postgresql/data:rw
+    ports:
+      - "${DB_TEST_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_TEST_USER:-cda_app}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  php:
+    build: ./php
+    volumes:
+      - ../backend:/var/www/symfony
+    networks:
+      - symfony
+    environment:
+      DATABASE_URL: "postgresql://${DB_DEV_USER:-cda_app}:${DB_DEV_PASSWORD:-password}@database:5432/${DB_DEV_NAME:-cda_app}?serverVersion=15&charset=utf8"
+      DATABASE_TEST_URL: "postgresql://${DB_TEST_USER:-cda_app}:${DB_TEST_PASSWORD:-password}@database_test:5432/${DB_TEST_NAME:-cda_app_test}?serverVersion=15&charset=utf8"
+      APP_ENV: ${APP_ENV:-dev}
+    depends_on:
+      database:
+        condition: service_healthy
+      database_test:
+        condition: service_healthy
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "${NGINX_PORT:-80}:80"
+    volumes:
+      - ../backend:/var/www/symfony
+    networks:
+      - symfony
+    depends_on:
+      - php
+
+networks:
+  symfony:
+
+volumes:
+  database_data:
+  database_test_data:

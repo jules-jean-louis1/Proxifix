@@ -24,13 +24,13 @@ export default function HomeScreen() {
           children="Espace Client"
           type="primary"
           icon={"account"}
-          onPress={() => router.push({ pathname: "/loginCustomer" })}
+          onPress={() => router.push({ pathname: "/(auth)/loginCustomer" })}
         />
         <AppButton
           children="Espace Technicien"
           type="tertiary"
           icon={"account"}
-          onPress={() => router.push({ pathname: "/loginAdmin" })}
+          onPress={() => router.push({ pathname: "/(auth)/loginAdmin" })}
         />
       </View>
     </View>
