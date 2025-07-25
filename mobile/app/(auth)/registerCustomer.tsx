@@ -2,10 +2,10 @@ import React from "react";
 import { View, StyleSheet, Alert } from "react-native";
 import { Text } from "react-native-paper";
 import { useForm, FormProvider } from "react-hook-form";
-import { AppButton } from "./components/buttons/AppButton";
-import { AppTextField } from "./components/inputs/AppTextField";
-import { useApi } from "./utils/useApi";
 import { useRouter } from "expo-router";
+import { useApi } from "../utils/useApi";
+import { AppTextField } from "../components/inputs/AppTextField";
+import { AppButton } from "../components/buttons/AppButton";
 
 export default function RegisterForm() {
   const methods = useForm();
