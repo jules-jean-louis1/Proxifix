@@ -85,7 +85,7 @@ class Intervention
     #[Groups(['intervention:read', 'intervention:details'])]
     private Collection $taskInterventions;
 
-    #[ORM\ManyToOne(inversedBy: null)]
+    #[ORM\OneToOne(inversedBy: 'intervention')]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['intervention:read', 'intervention:details'])]
     private ?AppointmentRequest $appointmentRequest = null;

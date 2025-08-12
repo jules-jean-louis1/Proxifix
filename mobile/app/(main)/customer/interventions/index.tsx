@@ -84,7 +84,7 @@ export default function InterventionsPage() {
               />
             ))
           ) : (
-            <Text style={styles.errorText}>Aucune intervention trouvée.</Text>
+            <Text style={styles.textEmptyData}>Aucune intervention trouvée.</Text>
           )}
         </View>
         {appointments && appointments.length !== 0 && (
@@ -177,6 +177,13 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 18,
     textAlign: "center",
+  },
+  textEmptyData: {
+    fontSize: 16,
+    color: "#000000ff",
+    textAlign: "center",
+    fontWeight: "semibold",
+    marginTop: 20,
   },
   fabContainer: {
     position: "absolute",

@@ -89,7 +89,7 @@ const EquipmentsPage = () => {
         showBack
         onBackPress={() => router.push("/customer")}
       />
-      <ScrollView>
+      <ScrollView style={styles.container}>
         <FlatList
           data={equipments}
           keyExtractor={(item) => item.id!.toString()}

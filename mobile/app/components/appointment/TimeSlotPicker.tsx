@@ -38,9 +38,9 @@ export const TimeSlotPicker: FC<TimeSlotPickerProps> = ({
     try {
       const formatDate = format(selectedDay, "yyyy-MM-dd");
       const response = await api.get(
-        `/appointment/free-slots?company_id=${companyId}&date=${formatDate}&interval=15`
+        `/availability/free-slots?company_id=${companyId}&date=${formatDate}&interval_minutes=15`
       );
-      setAvailableSlots(response.data || []);
+      setAvailableSlots(response.data?.data?.free_slots || []);
     } catch (error) {
       console.error("Error fetching time slots:", error);
       setAvailableSlots([]);
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   },
   dayButtonToday: {
     borderWidth: 2,
-    borderColor: "#007AFF",
+    borderColor: "#E53953",
   },
   dayText: {
     fontSize: 12,
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   dayTextToday: {
-    color: "#007AFF",
+    color: "#E53953",
   },
   dateText: {
     fontSize: 18,
@@ -210,11 +210,11 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   dateTextToday: {
-    color: "#007AFF",
+    color: "#E53953",
   },
   todayLabel: {
     fontSize: 10,
-    color: "#007AFF",
+    color: "#E53953",
     marginTop: 2,
     fontWeight: "500",
   },

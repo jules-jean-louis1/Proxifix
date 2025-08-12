@@ -59,10 +59,10 @@ final class ProfileController extends AbstractController
         if (isset($data['email'])) {
             $user->setEmail($data['email']);
         }
-        if (isset($data['firstName'])) {
+        if (isset($data['first_name'])) {
             $user->setFirstName($data['first_name']);
         }
-        if (isset($data['lastName'])) {
+        if (isset($data['last_name'])) {
             $user->setLastName($data['last_name']);
         }
         if (isset($data['password'])) {

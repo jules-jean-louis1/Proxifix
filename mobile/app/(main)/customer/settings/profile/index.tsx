@@ -14,7 +14,7 @@ const Profile = () => {
   const methods = useForm();
   const { handleSubmit } = methods;
   const api = useApi();
-  const [user, setUser] = useState<any>([]);
+  const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const Profile = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !user) {
     return (
       <View style={styles.container}>
         <Text>Chargement...</Text>
@@ -54,7 +54,10 @@ const Profile = () => {
       <ToolBarCustomer
         title="Mes coordonnées"
         showBack
-        onBackPress={() => router.push("/customer/settings")}
+        onBackPress={() => {
+          router.push("/customer/settings");
+          methods.reset();
+        }}
         bottomBar
       />
       <ScrollView style={{ flex: 1 }}>
@@ -75,60 +78,58 @@ const Profile = () => {
                   message: "Adresse email invalide",
                 },
               }}
-              value={sessionData?.email}
+              defaultValue={user?.email}
             />
             <AppTextField
-              nameField="Nom"
+              nameField="last_name"
               label="Nom"
               placeholder="Entrez votre nom"
-              value={sessionData?.last_name}
+              defaultValue={user?.last_name}
               rules={{ required: "Le nom est obligatoire" }}
             />
             <AppTextField
-              nameField="Prénom"
+              nameField="first_name"
               label="Prénom"
               placeholder="Entrez votre prénom"
-              value={sessionData?.first_name}
+              defaultValue={user?.first_name}
               rules={{ required: "Le prénom est obligatoire" }}
             />
             <AppTextField
-              nameField="Téléphone"
+              nameField="phone"
               label="Téléphone"
               placeholder="Entrez votre numéro de téléphone"
               rules={{
-                required: "Le numéro de téléphone est obligatoire",
                 pattern: {
                   value: /^\d{10}$/,
                   message: "Numéro de téléphone invalide",
                 },
               }}
-              value={"a changer"}
+              defaultValue={user?.phone || ""}
             />
             <AppTextField
               nameField="password"
               label="Mot de passe"
               placeholder="Entrez votre mot de passe"
               secureTextEntry
-              rules={{ required: "Le mot de passe est obligatoire" }}
-              value={""}
+              defaultValue={""}
             />
             <AppTextField
               nameField="address"
               label="Adresse Postal"
               placeholder="Entrez votre adresse"
-              defaultValue={user.address || ""}
+              defaultValue={user.address ? user.address : ""}
             />
             <AppTextField
               nameField="zip_code"
               label="Code Postal"
               placeholder="Entrez votre code postal"
-              defaultValue={user.zip_code || ""}
+              defaultValue={user.zip_code ? user.zip_code : ""}
             />
             <AppTextField
               nameField="city"
               label="Ville"
               placeholder="Entrez votre ville"
-              defaultValue={user.city || ""}
+              defaultValue={user.city ? user.city : ""}
             />
             <AppButton
               type="primary"
@@ -179,7 +180,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#fff",
     flexDirection: "column",
-    marginBottom: 50
+    marginBottom: 50,
   },
   navigation: {
     width: "100%",

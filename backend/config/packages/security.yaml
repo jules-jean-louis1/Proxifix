@@ -30,6 +30,11 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             provider: user
 
+        public:
+            pattern: ^/api/auth/(customer|admin)/register
+            stateless: true
+            security: false
+
         api:
             pattern: ^/api
             stateless: true
@@ -42,11 +47,10 @@ security:
     access_control:
         # Routes publiques (pas d'authentification requise)
         - { path: ^/api/auth/refresh, roles: PUBLIC_ACCESS }
-        - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
-        - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs
+        - { path: ^/api$, roles: PUBLIC_ACCESS } # Permet d'accéder à l'interface Swagger UI
+        - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Permet d'accéder à la documentation (JSON)
         - { path: ^/api/auth/login, roles: PUBLIC_ACCESS }
-        - { path: ^/api/auth/customer/register, roles: PUBLIC_ACCESS }
-        - { path: ^/api/auth/admin/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/(customer|admin)/register, roles: PUBLIC_ACCESS }
         
         # Routes spécifiques avec des rôles particuliers (plus spécifiques en premier)
         - { path: ^/api/admin/interventions, roles: ROLE_TECHNICIAN }

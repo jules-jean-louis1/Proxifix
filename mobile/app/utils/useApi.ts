@@ -1,34 +1,65 @@
-import axios, { AxiosInstance } from "axios";
-import { useSession } from "../context/ctx";
+import axios from "axios";
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 
-const apiUrl = process.env.EXPO_PUBLIC_API_URL || "https://api.example.com";
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
-let currentToken: string | null = null;
-let setSessionExternal: ((s: string) => void) | null = null;
-let signOutExternal: (() => void) | null = null;
-
-const api: AxiosInstance = axios.create({
-  baseURL: apiUrl,
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// REQUEST INTERCEPTOR
-api.interceptors.request.use(
-  (config) => {
-    if (currentToken) {
-      config.headers.Authorization = `Bearer ${currentToken}`;
-      // console.log("➡️ Using token:", currentToken);
+// Helper pour récupérer la session stockée
+const getStoredSession = async (): Promise<string | null> => {
+  if (Platform.OS === 'web') {
+    try {
+      return localStorage.getItem('session');
+    } catch (e) {
+      console.error('Local storage is unavailable:', e);
+      return null;
     }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+  } else {
+    return await SecureStore.getItemAsync('session');
+  }
+};
 
-// RESPONSE INTERCEPTOR
+// Helper pour supprimer la session stockée
+const removeStoredSession = async (): Promise<void> => {
+  if (Platform.OS === 'web') {
+    try {
+      localStorage.removeItem('session');
+    } catch (e) {
+      console.error('Local storage is unavailable:', e);
+    }
+  } else {
+    await SecureStore.deleteItemAsync('session');
+  }
+};
+
+// Ajout automatique du token à chaque requête
+api.interceptors.request.use(async (config) => {
+  const sessionStr = await getStoredSession();
+  if (sessionStr) {
+    try {
+      const session = JSON.parse(sessionStr);
+      if (session.token) {
+        config.headers.Authorization = `Bearer ${session.token}`;
+      }
+    } catch (e) {
+      console.error('Error parsing session:', e);
+    }
+  }
+  return config;
+});
+
+// Intercepteur de réponse pour gérer les erreurs d'authentification
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 
@@ -36,14 +67,17 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // Use the latest session stored in context
-        const sessionStr = setSessionExternal ? await getLatestSessionFromContext() : null;
-        const parsed = sessionStr ? JSON.parse(sessionStr) : null;
-        const refreshToken = parsed?.refreshToken;
+        // Récupérer la session pour obtenir le refresh token
+        const sessionStr = await getStoredSession();
+        if (!sessionStr) throw new Error("No session available");
+
+        const session = JSON.parse(sessionStr);
+        const refreshToken = session?.refreshToken;
 
         if (!refreshToken) throw new Error("No refresh token available");
 
-        const res = await axios.post(`${apiUrl}/auth/refresh`, {
+        // Faire la requête de refresh
+        const res = await axios.post(`${API_BASE_URL}/auth/refresh`, {
           refresh_token: refreshToken,
         });
 
@@ -53,19 +87,22 @@ api.interceptors.response.use(
           refreshToken: refresh_token,
         };
 
-        // Immediately update current token and axios headers
-        currentToken = token;
-        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        originalRequest.headers["Authorization"] = `Bearer ${token}`;
-
-        // Update context session
-        if (setSessionExternal) {
-          setSessionExternal(JSON.stringify(newSession));
+        // Sauvegarder la nouvelle session
+        const newSessionStr = JSON.stringify(newSession);
+        if (Platform.OS === 'web') {
+          localStorage.setItem('session', newSessionStr);
+        } else {
+          await SecureStore.setItemAsync('session', newSessionStr);
         }
 
+        // Mettre à jour le header de la requête originale
+        originalRequest.headers["Authorization"] = `Bearer ${token}`;
+
+        // Relancer la requête originale
         return axios(originalRequest);
       } catch (refreshError) {
-        if (signOutExternal) signOutExternal();
+        // Si le refresh échoue, supprimer la session
+        await removeStoredSession();
         return Promise.reject(refreshError);
       }
     }
@@ -74,34 +111,6 @@ api.interceptors.response.use(
   }
 );
 
-// Helper to safely fetch the latest session string from context
-const getLatestSessionFromContext = async (): Promise<string | null> => {
-  // This can be adapted for AsyncStorage if needed later
-  // But right now we're just exposing session from context
-  return new Promise((resolve) => {
-    // Wait a tick to ensure context updated (just in case)
-    setTimeout(() => {
-      resolve(currentSessionFromContext);
-    }, 0);
-  });
-};
-
-let currentSessionFromContext: string | null = null;
-
 export const useApi = () => {
-  const { session, setSession, signOut } = useSession();
-
-  // Update global access
-  setSessionExternal = setSession;
-  signOutExternal = signOut;
-  currentSessionFromContext = session ?? null;
-
-  const parsedSession = session ? JSON.parse(session) : null;
-  if (parsedSession?.token && parsedSession.token !== currentToken) {
-    console.log("🔄 Syncing token from useApi:", parsedSession.token);
-    currentToken = parsedSession.token;
-    api.defaults.headers.common["Authorization"] = `Bearer ${currentToken}`;
-  }
-
   return api;
 };
