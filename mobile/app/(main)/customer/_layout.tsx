@@ -1,10 +1,19 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { Slot, Tabs } from "expo-router";
+import { Slot, Tabs, Redirect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import TabBar from "@/app/components/navigation/TabBar";
+import { useSessionContext } from "../../context/useSessionContext";
 
 export default function CustomerLayout() {
+  const sessionCtx = useSessionContext();
+  const isAdmin = sessionCtx?.getIsAdmin() ?? false;
+
+  // Rediriger vers admin si c'est un admin
+  if (isAdmin) {
+    return <Redirect href="/admin" />;
+  }
+
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: "#01358D", headerShown: false }} tabBar={(props) => <TabBar />}>
       <Tabs.Screen
