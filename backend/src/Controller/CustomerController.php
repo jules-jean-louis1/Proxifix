@@ -127,8 +127,9 @@ final class CustomerController extends AbstractController
         $order = $request->get('order');
         $page = $request->get('page', 1);
         $limit = $request->get('limit', 25);
+        $customerCompanyId = $request->get('customer_company_id');
 
-        $customer = $userRepository->getUsers($id, $query, $page, $limit, $order);
+        $customer = $userRepository->getUsers($id, $query, $page, $limit, $order, 'ROLE_CUSTOMER', $customerCompanyId);
 
         return $this->json($customer, Response::HTTP_OK, [], ['groups' => 'user:details', 'equipment:details']);
     }
@@ -161,7 +162,7 @@ final class CustomerController extends AbstractController
         $customer->setZipCode($payload->get('zip_code') ?? null);
         $customer->setPhone($payload->get('phone') ?? null);
         $customer->setAddress($payload->get('address') ?? null);
-        $customer->setRoles([User::ROLE_CUSTOMER]);
+        $customer->setRole(User::ROLE_CUSTOMER);
         $customer->setCreatedAt(new \DateTimeImmutable());
         $customer->setUpdatedAt(new \DateTimeImmutable());
         $entityManagerInterface->persist($customer);

@@ -11,7 +11,7 @@ export default function MainLayout() {
 
   useEffect(() => {
     setIsAdmin(sessionCtx?.getIsAdmin() ?? false);
-    console.log("Session Context:", sessionCtx?.getIsAdmin());
+    console.log("Session context:", sessionCtx?.session);
   }, [sessionCtx]);
 
   if (isLoading) {

@@ -171,8 +171,8 @@ class AvailabilityService
             ->setParameter('company_id', $companyId);
 
         if ($roleSearch !== null) {
-            $qb->andWhere('JSON_CONTAINS(u.roles, :role) = 1')
-               ->setParameter('role', json_encode($roleSearch));
+            $qb->andWhere('u.role = :role')
+               ->setParameter('role', $roleSearch);
         }
 
         return (int) $qb->getQuery()->getSingleScalarResult();

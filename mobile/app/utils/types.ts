@@ -1,7 +1,7 @@
 export interface SessionToken {
   iat: number;
   exp: number;
-  roles: string[];
+  role: string;
   username: string;
   id: number;
   first_name: string;

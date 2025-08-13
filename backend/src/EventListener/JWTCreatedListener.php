@@ -19,6 +19,7 @@ class JWTCreatedListener
         $payload['first_name'] = $user->getFirstName();
         $payload['last_name'] = $user->getLastName();
         $payload['email'] = $user->getEmail();
+        $payload['role'] = $user->getRole(); // Ajouter le champ role (VARCHAR)
         $payload['company'] = [
             'id' => $user->getCompany() ? $user->getCompany()->getId() : null,
             'name' => $user->getCompany() ? $user->getCompany()->getName() : null,

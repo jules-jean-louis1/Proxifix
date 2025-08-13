@@ -6,8 +6,8 @@ echo "Setting up JWT keys..."
 mkdir -p config/jwt
 if [ ! -f "config/jwt/private.pem" ] || [ ! -f "config/jwt/public.pem" ]; then
     echo "Generating JWT keys..."
-    openssl genpkey -out config/jwt/private.pem -algorithm rsa -aes256 -pass pass:proaxive_jwt_passphrase
-    openssl pkey -in config/jwt/private.pem -passin pass:proaxive_jwt_passphrase -out config/jwt/public.pem -pubout
+    openssl genpkey -out config/jwt/private.pem -algorithm rsa -aes256 -pass pass:${JWT_PASSPHRASE}
+    openssl pkey -in config/jwt/private.pem -passin pass:${JWT_PASSPHRASE} -out config/jwt/public.pem -pubout
 fi
 
 # S'assurer que les permissions sont correctes

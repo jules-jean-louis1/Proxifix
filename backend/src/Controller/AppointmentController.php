@@ -36,11 +36,11 @@ final class AppointmentController extends AbstractController
 
         $user = $this->getUser();
 
-        if ($user instanceof User && in_array(User::ROLE_CUSTOMER, $user->getRoles(), true)) {
+        if ($user instanceof User && $user->getRole() === User::ROLE_CUSTOMER) {
             $userIdRequest = $user->getId();
         }
 
-        if ($user instanceof User && (in_array(User::ROLE_ADMIN, $user->getRoles(), true) || in_array(User::ROLE_TECHNICIAN, $user->getRoles(), true))) {
+        if ($user instanceof User && ($user->getRole() === User::ROLE_ADMIN || $user->getRole() === User::ROLE_TECHNICIAN)) {
             $companyIdRequest = $user->getCompany()->getId();
         }
 
@@ -311,7 +311,7 @@ final class AppointmentController extends AbstractController
         if (! $appointment) {
             return $this->json(['error' => 'Appointment not found'], Response::HTTP_NOT_FOUND);
         }
-        if ($user->getRoles() === ['ROLE_CUSTOMER']) {
+        if ($user->getRole() === 'ROLE_CUSTOMER') {
             if ($appointment->getUser()->getId() !== $user->getId()) {
                 return $this->json(['errors' => 'access denied'], Response::HTTP_FORBIDDEN);
             }
@@ -334,7 +334,7 @@ final class AppointmentController extends AbstractController
 
         $appointment = $em->getRepository(AppointmentRequest::class)->find($id);
 
-        if ($user->getRoles() === ['ROLE_CUSTOMER']) {
+        if ($user->getRole() === 'ROLE_CUSTOMER') {
             if ($appointment->getUser()->getId() !== $userId) {
                 return $this->json(['error' => 'Access denied'], Response::HTTP_FORBIDDEN);
             }

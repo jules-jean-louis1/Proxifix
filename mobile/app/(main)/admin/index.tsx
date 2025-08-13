@@ -15,8 +15,9 @@ export default function AdminHome() {
 
     useEffect(() => {
         if (!sessionData) return;
+        console.log("Session data:", sessionData);
         fetchInterventions();
-    }, [sessionData]);
+    }, []);
 
     const fetchInterventions = async () => {
         if (!sessionData) {

@@ -58,7 +58,7 @@ services:
       APP_ENV: ${APP_ENV:-dev}
       JWT_SECRET_KEY: /var/www/symfony/config/jwt/private.pem
       JWT_PUBLIC_KEY: /var/www/symfony/config/jwt/public.pem
-      JWT_PASSPHRASE: ${JWT_SECRET_KEY:-proxifix_jwt_passphrase}
+      JWT_PASSPHRASE: ${JWT_PASSPHRASE:-proxifix_jwt_passphrase}
     depends_on:
       database:
         condition: service_healthy

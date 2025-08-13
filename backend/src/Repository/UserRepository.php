@@ -41,7 +41,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $offset = ($page - 1) * $limit;
 
         return $this->createQueryBuilder('u')
-            ->where('JSON_GET_TEXT(u.roles, 0) = :role')
+            ->where('u.role = :role')
             ->setParameter('role', 'ROLE_CUSTOMER')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
@@ -55,7 +55,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function searchCustomer(string $searchQuery): array
     {
         return $this->createQueryBuilder('u')
-            ->where('JSON_GET_TEXT(u.roles, 0) = :role')
+            ->where('u.role = :role')
             ->andWhere('u.first_name = :searchQuery')
             ->orWhere('u.last_name = :searchQuery')
             ->setParameter('role', 'ROLE_CUSTOMER')
@@ -67,40 +67,46 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * @return array<User>
      */
-    public function getUsers(?int $companyId = null, ?string $searchQuery = '', ?int $page = 1, ?int $size = 25, ?string $order = '', ?string $role = 'ROLE_CUSTOMER'): array
+    public function getUsers(?int $companyId = null, ?string $searchQuery = '', ?int $page = 1, ?int $size = 25, ?string $order = '', ?string $role = 'ROLE_CUSTOMER', ?int $customerCompanyId = null): array
     {
-        $sql = 'SELECT u.* FROM "user" u WHERE 1=1';
-        $params = [];
-
+        $qb = $this->createQueryBuilder('u');
+        
+        // Filtre par company_id si fourni
         if (null !== $companyId) {
-            $sql .= ' AND u.company_id = :companyId';
-            $params['companyId'] = $companyId;
+            $qb->andWhere('u.company = :companyId')
+               ->setParameter('companyId', $companyId);
         }
 
-        if ($searchQuery) {
-            $sql .= ' AND (UPPER(u.first_name) LIKE UPPER(:searchQuery) OR UPPER(u.last_name) LIKE UPPER(:searchQuery) OR UPPER(u.email) LIKE UPPER(:searchQuery))';
-            $params['searchQuery'] = '%'.$searchQuery.'%';
+        // Recherche par nom, prénom ou email
+        if (!empty($searchQuery)) {
+            $qb->andWhere('(UPPER(u.first_name) LIKE UPPER(:searchQuery) OR UPPER(u.last_name) LIKE UPPER(:searchQuery) OR UPPER(u.email) LIKE UPPER(:searchQuery))')
+               ->setParameter('searchQuery', '%' . $searchQuery . '%');
         }
 
+        // Filtre par rôle
         if ($role) {
-            $sql .= ' OR CAST(u.roles AS text) LIKE :rolePattern';
-            $params['rolePattern'] = '%"'.$role.'"%';
+            $qb->andWhere('u.role = :role')
+               ->setParameter('role', $role);
         }
 
-        $sql .= ' ORDER BY u.created_at DESC LIMIT :size OFFSET :offset';
-        $params['size'] = $size;
-        $params['offset'] = ($page - 1) * $size;
-
-        $connection = $this->getEntityManager()->getConnection();
-        $result = $connection->executeQuery($sql, $params);
-
-        // Convertir les résultats en entités User
-        $users = [];
-        foreach ($result->fetchAllAssociative() as $row) {
-            $users[] = $this->find($row['id']);
+        // Filtrer par les clients qui ont des interventions ou des rendez-vous avec une entreprise spécifique
+        if ($customerCompanyId) {
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->exists('SELECT 1 FROM App\Entity\Intervention i WHERE i.customer = u.id AND i.company = :customerCompanyId'),
+                $qb->expr()->exists('SELECT 1 FROM App\Entity\AppointmentRequest ar WHERE ar.user = u.id AND ar.company = :customerCompanyId')
+            ))
+            ->setParameter('customerCompanyId', $customerCompanyId);
         }
 
-        return $users;
+        // Pagination
+        $offset = ($page - 1) * $size;
+        $qb->setFirstResult($offset)
+           ->setMaxResults($size);
+
+        // Ordre
+        $qb->orderBy('u.created_at', 'DESC');
+
+        return $qb->getQuery()->getResult();
     }
     //    /**
     //     * @return User[] Returns an array of User objects

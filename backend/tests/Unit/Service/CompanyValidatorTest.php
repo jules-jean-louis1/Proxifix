@@ -16,7 +16,7 @@ final class CompanyValidatorTest extends TestCase
         // Arrange
         $company = new Company();
         $customer = new User();
-        $customer->setRoles([User::ROLE_CUSTOMER]);
+        $customer->setRole(User::ROLE_CUSTOMER);
 
         // Act & Assert - Simuler la validation métier
         $canAddCustomer = $this->canAddUserToCompany($customer);
@@ -28,7 +28,7 @@ final class CompanyValidatorTest extends TestCase
         // Arrange
         $company = new Company();
         $technician = new User();
-        $technician->setRoles([User::ROLE_TECHNICIAN]);
+        $technician->setRole(User::ROLE_TECHNICIAN);
 
         // Act
         $canAddTechnician = $this->canAddUserToCompany($technician);
@@ -83,7 +83,7 @@ final class CompanyValidatorTest extends TestCase
     private function canAddUserToCompany(User $user): bool
     {
         // Logique métier : un customer ne peut pas être ajouté à une compagnie
-        return ! in_array(User::ROLE_CUSTOMER, $user->getRoles(), true);
+        return $user->getRole() !== User::ROLE_CUSTOMER;
     }
 
     private function isValidCompanyType(string $type): bool
