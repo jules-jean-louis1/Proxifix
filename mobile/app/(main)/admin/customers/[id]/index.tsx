@@ -28,6 +28,16 @@ const AdminCustomerDetailsPage: FC = () => {
     })();
   }, [id]);
 
+    const handleSubmit = async (data: any) => {
+        try {
+        const response = await api.patch(`/customer/${data.id}`, data);
+        setCustomer(data); 
+        router.back(); 
+        } catch (error) {
+        console.error(error);
+        }
+    };
+
   if (isLoading) {
     return (
       <View style={styles.container}>
@@ -49,7 +59,7 @@ const AdminCustomerDetailsPage: FC = () => {
           <AdminCustomerForm
             mode="edit"
             initialData={customer}
-            onSubmit={setCustomer}
+            onSubmit={handleSubmit}
           />
         )}
       </ScrollView>

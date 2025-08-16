@@ -1,27 +1,47 @@
-import { View } from "react-native";
+import { View, ScrollView } from "react-native";
 import React from "react";
 import { router } from "expo-router";
+import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
+import { AdminCustomerForm } from "@/app/components/admin/customer/AdminCustomerForm";
+import { useApi } from "@/app/utils/useApi";
 
 const AdminCustomerNew = () => {
+  const api = useApi();
+
   const handleSubmit = async (data: any) => {
     try {
-      // API call pour créer le client
-      // await createCustomer(data);
+      const response = await api.post('/customer', data);
+      console.log('Client créé:', response.data);
       router.back(); // Retour à la liste
     } catch (error) {
-      console.error(error);
+      console.error('Erreur lors de la création:', error);
     }
   };
 
   return (
     <View style={{ flex: 1 }}>
-      {/* <CustomerForm 
-        mode="create"
-        onSubmit={handleSubmit}
-        onCancel={() => router.back()}
-      /> */}
+      <ToolBarCustomer
+        title="Nouveau Client"
+        bottomBar
+        onBackPress={() => router.back()}
+        showBack
+      />
+      <ScrollView style={styles.container}>
+        <AdminCustomerForm 
+          mode="create"
+          onSubmit={handleSubmit}
+          onCancel={() => router.back()}
+        />
+      </ScrollView>
     </View>
   );
+};
+
+const styles = {
+  container: {
+    flex: 1,
+    padding: 16,
+  },
 };
 
 export default AdminCustomerNew;
