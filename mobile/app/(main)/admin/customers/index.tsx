@@ -124,6 +124,8 @@ const styles = StyleSheet.create({
   },
   fab: {
     margin: 16,
+    marginBottom: 70,
+    backgroundColor: "#01358D",
   },
 });
 

@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
+import { AdminInterventionCard } from "@/app/components/admin/intervention/AdminInterventionCard";
 
 export default function AdminHome() {
   const api = useApi();
@@ -74,17 +75,12 @@ export default function AdminHome() {
 
           {interventions.length > 0 ? (
             interventions.map((intervention: any) => (
-              <View key={intervention.id} style={styles.interventionCard}>
-                <Text variant="titleMedium">{intervention.title}</Text>
-                <Text variant="bodyMedium">Status: {intervention.status}</Text>
-                <Text variant="bodySmall">
-                  Client: {intervention.customer?.first_name}{" "}
-                  {intervention.customer?.last_name}
-                </Text>
-                <Text variant="bodySmall">
-                  Date: {new Date(intervention.start_date).toLocaleDateString()}
-                </Text>
-              </View>
+              <AdminInterventionCard
+                key={intervention.id}
+                intervention={intervention}
+                showTechnician={false}
+                onPress={() => router.push("/admin/interventions")}
+              />
             ))
           ) : (
             <Text style={styles.noDataText}>Aucune intervention assignée</Text>
@@ -112,52 +108,39 @@ export default function AdminHome() {
           <Text style={styles.subtitle}>
             Dashboard Admin - {sessionData?.company?.name}
           </Text>
-
-          <Text variant="titleMedium" style={styles.sectionTitle}>
-            Interventions récentes ({interventions.length})
-          </Text>
-
-          {interventions.slice(0, 5).map((intervention: any) => (
-            <View key={intervention.id} style={styles.interventionCard}>
-              <Text variant="titleMedium">{intervention.title}</Text>
-              <Text variant="bodyMedium">Status: {intervention.status}</Text>
-              <Text variant="bodySmall">
-                Technicien:{" "}
-                {intervention.technician?.first_name || "Non assigné"}
-              </Text>
-              <Text variant="bodySmall">
-                Client: {intervention.customer?.first_name}{" "}
-                {intervention.customer?.last_name}
-              </Text>
-            </View>
-          ))}
-
           <View style={styles.buttonContainer}>
             <AppButton
-                type="primary"
-                children="Gérer les clients"
-                onPress={() => router.push("/admin/customers")}
-                style={styles.button}
+              type="primary"
+              children="Gérer les clients"
+              onPress={() => router.push("/admin/customers")}
             />
             <AppButton
               type="primary"
               children="Gérer les interventions"
               onPress={() => router.push("/admin/interventions")}
-              style={styles.button}
             />
             <AppButton
               type="primary"
               children="Ajouter une intervention"
               onPress={() => router.push("/admin/interventions/new")}
-              style={styles.button}
             />
             <AppButton
               type="primary"
               children="Ajouter un technicien"
               onPress={() => router.push("/admin/registerTech")}
-              style={styles.button}
             />
           </View>
+          <Text variant="titleMedium" style={styles.sectionTitle}>
+            Interventions récentes ({interventions.length})
+          </Text>
+          {interventions.slice(0, 5).map((intervention: any) => (
+            <AdminInterventionCard
+              key={intervention.id}
+              intervention={intervention}
+              showTechnician={true}
+              onPress={() => router.push("/admin/interventions")}
+            />
+          ))}
         </ScrollView>
       </View>
     );
@@ -200,23 +183,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     color: "#01358D",
   },
-  interventionCard: {
-    backgroundColor: "#FFFFFF",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
   buttonContainer: {
-    marginTop: 24,
-    gap: 12,
+    gap: 4,
   },
   button: {
     marginBottom: 12,

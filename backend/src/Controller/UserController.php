@@ -130,7 +130,7 @@ final class UserController extends AbstractController
         return $this->json(['success' => 'User updated', 'user' => $existingUser], Response::HTTP_CREATED, ['user:details']);
     }
 
-    #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_TECHNICIAN')]
     #[Route('/user', name: 'app_user_list_admin', methods: ['GET'])]
     public function listUsers(EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage, UserRepository $userRepository, Request $request): JsonResponse
     {
