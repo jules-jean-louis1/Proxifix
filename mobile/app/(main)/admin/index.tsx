@@ -64,7 +64,7 @@ export default function AdminHome() {
   // Interface pour les techniciens
   if (sessionCtx?.isTechnician()) {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.containerWrapper}>
         <ScrollView style={styles.container}>
           <Text variant="titleLarge" style={styles.title}>
             Bonjour {sessionData?.first_name} {sessionData?.last_name}
@@ -100,7 +100,7 @@ export default function AdminHome() {
   // Interface pour les admins
   if (sessionCtx?.isAdmin()) {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.containerWrapper}>
         <ScrollView style={styles.container}>
           <Text variant="titleLarge" style={styles.title}>
             Bonjour {sessionData?.first_name} {sessionData?.last_name}
@@ -154,6 +154,11 @@ export default function AdminHome() {
   );
 }
 const styles = StyleSheet.create({
+  containerWrapper: {
+    flex: 1,
+    backgroundColor: "#F9F9F9",
+    paddingBottom: 40,
+  },
   container: {
     flex: 1,
     backgroundColor: "#F9F9F9",

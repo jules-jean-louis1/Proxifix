@@ -62,11 +62,8 @@ const AdminCustomersPage: FC = () => {
   }, [searchValue, loadCustomers]);
 
   return (
-    <View style={styles.container}>
-      <ToolBarCustomer
-        title="Clients"
-        bottomBar
-      />
+    <View style={styles.containerWrapper}>
+      <ToolBarCustomer title="Clients" bottomBar />
 
       {/* Barre de recherche */}
       <View style={styles.searchContainer}>
@@ -106,6 +103,11 @@ const AdminCustomersPage: FC = () => {
 };
 
 const styles = StyleSheet.create({
+  containerWrapper: {
+    flex: 1,
+    backgroundColor: "#F9F9F9",
+    paddingBottom: 40,
+  },
   container: {
     flex: 1,
   },
