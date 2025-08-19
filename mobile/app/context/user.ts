@@ -16,11 +16,36 @@ export const USER_AVAILABLES_ROLES = [
 
 export const getIsAdmin = (sessionData: SessionToken) => {
   if (
-    sessionData?.roles.some(
-      (role: string) =>
-        role === USER_ROLE.ADMIN || role === USER_ROLE.TECHNICIAN
-    )
+    sessionData?.role === USER_ROLE.ADMIN ||
+    sessionData?.role === USER_ROLE.TECHNICIAN ||
+    sessionData?.role === USER_ROLE.SUPER_ADMIN
   ) {
+    return true;
+  }
+  return false;
+};
+
+export const isTechnician = (sessionData: SessionToken) => {
+  if (sessionData?.role === USER_ROLE.TECHNICIAN) {
+    return true;
+  }
+  return false;
+};
+
+export const isCustomer = (sessionData: SessionToken) => {
+  if (sessionData?.role === USER_ROLE.CUSTOMER) {
+    return true;
+  }
+  return false;
+};
+export const isSuperAdmin = (sessionData: SessionToken) => {
+  if (sessionData?.role === USER_ROLE.SUPER_ADMIN) {
+    return true;
+  }
+  return false;
+};
+export const isAdmin = (sessionData: SessionToken) => {
+  if (sessionData?.role === USER_ROLE.ADMIN) {
     return true;
   }
   return false;

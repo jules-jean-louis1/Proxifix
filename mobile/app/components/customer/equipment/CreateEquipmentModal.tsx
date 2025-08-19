@@ -9,11 +9,11 @@ import {
 } from "react-native";
 import { FormProvider, useForm } from "react-hook-form";
 import { Feather } from "@expo/vector-icons";
-import { AppTextField } from "../inputs/AppTextField";
-import { AppSelectInput } from "../inputs/AppSelectInput";
+import { AppTextField } from "../../inputs/AppTextField";
+import { AppSelectInput } from "../../inputs/AppSelectInput";
 import { useApi } from "@/app/utils/useApi";
 import { useSessionContext } from "@/app/context/useSessionContext";
-import { AppButton } from "../buttons/AppButton";
+import { AppButton } from "../../buttons/AppButton";
 
 interface CreateEquipmentModalProps {
   onSuccess?: (newEquipment: any) => void;

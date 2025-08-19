@@ -25,6 +25,11 @@ if ! test -f "$env_file"; then
     exit 1
 fi
 
+# Load environment variables from .env file
+set -a
+source "$env_file"
+set +a
+
 launch_compose="docker-compose"
 if ! command -v ${launch_compose} &> /dev/null; then
     launch_compose="docker compose"
@@ -34,10 +39,10 @@ if ! command -v ${launch_compose} &> /dev/null; then
     fi
 fi
 
-# Ensure PROJECT variable is set
-if [[ -z "${PROJECT}" ]]; then
-    echo "The PROJECT environment variable is not set. Please set it before running the script."
+# Ensure PROJECT_NAME variable is set
+if [[ -z "${PROJECT_NAME}" ]]; then
+    echo "The PROJECT_NAME environment variable is not set. Please set it before running the script."
     exit 1
 fi
 
-${launch_compose} --project-name="${PROJECT}" --project-directory=./docker "$@"
+${launch_compose} --project-name="${PROJECT_NAME}" --project-directory=./docker "$@"

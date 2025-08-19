@@ -11,6 +11,7 @@ export default function MainLayout() {
 
   useEffect(() => {
     setIsAdmin(sessionCtx?.getIsAdmin() ?? false);
+    console.log("Session context:", sessionCtx?.session);
   }, [sessionCtx]);
 
   if (isLoading) {
@@ -23,9 +24,8 @@ export default function MainLayout() {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      {!isAdmin && <Stack.Screen name="customer" options={{ headerShown: false }} />}
-
-      {isAdmin && <Stack.Screen name="admin" options={{ headerShown: false }} />}
+      <Stack.Screen name="customer" options={{ headerShown: false }} />
+      <Stack.Screen name="admin" options={{ headerShown: false }} />
     </Stack>
   );
 }

@@ -17,6 +17,11 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api')]
 class EquipmentController extends AbstractController
 {
+    public function __construct(
+        private readonly EquipmentRepository $equipmentRepository
+    ) {
+    }
+
     #[Route('/equipment', name: 'app_equipment_create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
@@ -144,7 +149,7 @@ class EquipmentController extends AbstractController
     #[Route('/customer/{customerId}', name: 'app_equipment_customer_list', methods: ['GET'])]
     public function getEquipmentUser(int $customerId, EntityManagerInterface $em): JsonResponse
     {
-        $equipments = $em->getRepository(Equipment::class)->findByUserId($customerId);
+        $equipments = $this->equipmentRepository->findByUserId($customerId);
 
         if (empty($equipments)) {
             return new JsonResponse(['error' => 'No equipment found for this user'], 204);

@@ -208,6 +208,9 @@ final class UserControllerUnitTest extends TestCase
         return in_array($role, $validRoles, true);
     }
 
+    /**
+     * @param array<int, string> $roles
+     */
     private function hasRoleConflict(array $roles): bool
     {
         // Un utilisateur ne peut pas être client ET admin/technicien
@@ -223,6 +226,11 @@ final class UserControllerUnitTest extends TestCase
         return false;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed>
+     */
     private function sanitizeUserData(array $data): array
     {
         $cleanData = [];

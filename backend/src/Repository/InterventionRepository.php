@@ -57,24 +57,50 @@ class InterventionRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array<mixed>
+     * Récupère les interventions qui se chevauchent avec un créneau donné.
+     *
+     * @return Intervention[]
      */
-    public function getFreeSlots(\DateTime $date, ?int $companyId = null, ?int $interval_min = null, ?string $startTime = null, ?string $endTime = null, ?string $role = null): array
-    {
-        $conn = $this->getEntityManager()->getConnection();
+    public function findOverlappingInterventions(
+        \DateTimeImmutable $startDate,
+        \DateTimeImmutable $endDate,
+        ?int $companyId = null
+    ): array {
+        $qb = $this->createQueryBuilder('i')
+            ->where('i.start_date < :end_date')
+            ->andWhere('i.end_date > :start_date')
+            ->setParameter('start_date', $startDate)
+            ->setParameter('end_date', $endDate);
 
-        $query = <<<SQL
-            SELECT *
-            FROM get_free_slots(:p_date, :p_company_id, :p_interval_minutes)
-        SQL;
+        if (null !== $companyId) {
+            $qb->andWhere('i.company = :company_id')
+               ->setParameter('company_id', $companyId);
+        }
 
-        $result = $conn->executeQuery($query, [
-            'p_date' => $date->format('Y-m-d'),
-            'p_company_id' => $companyId ?? 0,
-            'p_interval_minutes' => $interval_min ?? 60,
-        ]);
+        return $qb->getQuery()->getResult();
+    }
 
-        return $result->fetchAllAssociative();
+    /**
+     * Compte le nombre d'interventions pour une période donnée.
+     */
+    public function countInterventionsInPeriod(
+        \DateTime $startDate,
+        \DateTime $endDate,
+        ?int $companyId = null
+    ): int {
+        $qb = $this->createQueryBuilder('i')
+            ->select('COUNT(i.id)')
+            ->where('i.start_date >= :start_date')
+            ->andWhere('i.end_date <= :end_date')
+            ->setParameter('start_date', $startDate)
+            ->setParameter('end_date', $endDate);
+
+        if (null !== $companyId) {
+            $qb->andWhere('i.company = :company_id')
+               ->setParameter('company_id', $companyId);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     public function isSlotsAvailable(int $companyId, string|\DateTimeImmutable $start_date, string|\DateTimeImmutable|null $end_date = null): bool

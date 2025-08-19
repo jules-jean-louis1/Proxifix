@@ -53,12 +53,10 @@ class InterventionController extends AbstractController
                 }
 
                 // Vérifier que c'est bien un technicien/admin
-                $roles = $technician->getRoles();
-                if (! in_array('ROLE_TECHNICIAN', $roles) && ! in_array('ROLE_ADMIN', $roles)) {
-                    return $this->json(['error' => 'User is not a technician or admin'], Response::HTTP_BAD_REQUEST);
-                }
-
-                $intervention->setTechnician($technician);
+                $role = $technician->getRole();
+                if ('ROLE_TECHNICIAN' !== $role && 'ROLE_ADMIN' !== $role) {
+                    return $this->json(['error' => 'User is not a technician or admin'], 400);
+                }                $intervention->setTechnician($technician);
                 $intervention->setStatus(Intervention::ASSIGNED);
             }
 
@@ -333,7 +331,7 @@ class InterventionController extends AbstractController
             $reqSize ? (int) $reqSize : null,
         );
 
-        return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
+        return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details', 'user:details']]);
     }
 
     #[Route('/intervention/{id}', name: 'app_intervention_details', methods: ['GET'])]
@@ -379,8 +377,8 @@ class InterventionController extends AbstractController
             }
 
             // Vérifier que c'est bien un technicien/admin
-            $roles = $technician->getRoles();
-            if (! in_array('ROLE_TECHNICIAN', $roles) && ! in_array('ROLE_ADMIN', $roles)) {
+            $role = $technician->getRole();
+            if ('ROLE_TECHNICIAN' !== $role && 'ROLE_ADMIN' !== $role) {
                 return $this->json(['error' => 'User is not a technician or admin'], 400);
             }
 

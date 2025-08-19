@@ -5,7 +5,7 @@ import { Divider, List, Text } from "react-native-paper";
 import { router } from "expo-router";
 import { AppButton } from "@/app/components/buttons/AppButton";
 import { useSession } from "@/app/context/ctx";
-import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
+import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
 
 export const ProfilePage = () => {
   const sessionCtx = useSessionContext();

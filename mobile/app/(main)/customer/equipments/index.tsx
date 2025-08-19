@@ -14,9 +14,9 @@ import { useSessionContext } from "@/app/context/useSessionContext";
 import React from "react";
 import { components } from "@/app/types/types";
 import { router } from "expo-router";
-import { EquipmentModalForm } from "@/app/components/equipment/EquipmentModalForm";
+import { EquipmentModalForm } from "@/app/components/customer/equipment/EquipmentModalForm";
 import { FAB } from "react-native-paper";
-import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
+import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
 
 const EquipmentsPage = () => {
   const [equipments, setEquipments] = useState<
@@ -89,7 +89,7 @@ const EquipmentsPage = () => {
         showBack
         onBackPress={() => router.push("/customer")}
       />
-      <ScrollView>
+      <ScrollView style={styles.container}>
         <FlatList
           data={equipments}
           keyExtractor={(item) => item.id!.toString()}

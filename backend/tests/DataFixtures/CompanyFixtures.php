@@ -65,7 +65,7 @@ class CompanyFixtures extends Fixture
         $admin->setEmail('admin@example.com');
         $admin->setFirstName('Admin');
         $admin->setLastName('User');
-        $admin->setRoles(['ROLE_ADMIN']);
+        $admin->setRole('ROLE_ADMIN');
         $admin->setPassword($this->passwordHasher->hashPassword($admin, 'adminpass'));
         $admin->setCreatedAt(new \DateTimeImmutable());
         $admin->setUpdatedAt(new \DateTimeImmutable());
@@ -75,7 +75,7 @@ class CompanyFixtures extends Fixture
         $customer->setEmail('customer@example.com');
         $customer->setFirstName('Customer');
         $customer->setLastName('User');
-        $customer->setRoles(['ROLE_CUSTOMER']);
+        $customer->setRole('ROLE_CUSTOMER');
         $customer->setPassword($this->passwordHasher->hashPassword($customer, 'customerpass'));
         $customer->setCreatedAt(new \DateTimeImmutable());
         $customer->setUpdatedAt(new \DateTimeImmutable());

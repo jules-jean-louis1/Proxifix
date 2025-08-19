@@ -40,7 +40,7 @@ class AdminRegistrationController extends AbstractController
         $user->setPassword($hashedPassword);
 
         $role = $payload->get('roles') ?? User::ROLE_TECHNICIAN;
-        $user->setRoles([$role]);
+        $user->setRole($role);
 
         $entityManager->persist($user);
         $entityManager->flush();

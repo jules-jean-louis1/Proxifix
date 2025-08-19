@@ -55,7 +55,7 @@ final class CompanyController extends AbstractController
         $company->setUpdatedAt(new \DateTimeImmutable());
         $company->setLogo($data['logo'] ?? '');
 
-        if (in_array(User::ROLE_ADMIN, $user->getRoles(), true)) {
+        if (User::ROLE_ADMIN === $user->getRole()) {
             $company->setIsApproved(false);
         } else {
             $company->setIsApproved($data['is_approved']);
@@ -111,7 +111,7 @@ final class CompanyController extends AbstractController
                         if (! $user) {
                             return $this->json(['error' => "User with ID $userData not found"], 404);
                         }
-                        if ($user->getRoles() === ['ROLE_CUSTOMER']) {
+                        if ('ROLE_CUSTOMER' === $user->getRole()) {
                             return $this->json(
                                 ['error' => 'Customer cannot be part of a company'],
                                 400
@@ -125,7 +125,7 @@ final class CompanyController extends AbstractController
                         $user->setPassword($userData['password']);
                         $user->setFirstName($userData['first_name'] ?? '');
                         $user->setLastName($userData['last_name'] ?? '');
-                        $user->setRoles($userData['roles'] ?? ['ROLE_TECHNICIAN']); // Par défaut, on ajoute le rôle technicien
+                        $user->setRole($userData['role'] ?? 'ROLE_TECHNICIAN'); // Par défaut, on ajoute le rôle technicien
                         $user->setCreatedAt(new \DateTimeImmutable());
                         $user->setUpdatedAt(new \DateTimeImmutable());
                         $entityManager->persist($user);
@@ -273,7 +273,7 @@ final class CompanyController extends AbstractController
                         if (! $user) {
                             return $this->json(['error' => "User with ID $userId not found"], 404);
                         }
-                        if (in_array(User::ROLE_CUSTOMER, $user->getRoles(), true)) {
+                        if (User::ROLE_CUSTOMER === $user->getRole()) {
                             return $this->json(['error' => 'Customer cannot be part of a company'], 400);
                         }
                         $company->addUser($user);
@@ -433,7 +433,7 @@ final class CompanyController extends AbstractController
         $user->setEmail($payload->get('email'));
         $user->setFirstName($payload->get('first_name'));
         $user->setLastName($payload->get('last_name'));
-        $user->setRoles(['ROLE_ADMIN']);
+        $user->setRole('ROLE_ADMIN');
         $user->setPassword($passwordHasher->hashPassword($user, $payload->get('password')));
         $user->setCreatedAt(new \DateTimeImmutable());
         $user->setUpdatedAt(new \DateTimeImmutable());

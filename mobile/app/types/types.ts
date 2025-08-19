@@ -859,7 +859,7 @@ export interface components {
         User: {
             readonly id?: number;
             email?: string;
-            roles: string[];
+            role: string;
             /** @description The hashed password */
             password?: string;
             first_name: string;

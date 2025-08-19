@@ -1,6 +1,21 @@
 #!/bin/bash
 set -e
 
+# Créer le répertoire des clés JWT et générer les clés si elles n'existent pas
+echo "Setting up JWT keys..."
+mkdir -p config/jwt
+if [ ! -f "config/jwt/private.pem" ] || [ ! -f "config/jwt/public.pem" ]; then
+    echo "Generating JWT keys..."
+    openssl genpkey -out config/jwt/private.pem -algorithm rsa -aes256 -pass pass:${JWT_PASSPHRASE}
+    openssl pkey -in config/jwt/private.pem -passin pass:${JWT_PASSPHRASE} -out config/jwt/public.pem -pubout
+fi
+
+# S'assurer que les permissions sont correctes
+chown www-data:www-data config/jwt/private.pem config/jwt/public.pem
+chmod 600 config/jwt/private.pem
+chmod 644 config/jwt/public.pem
+echo "JWT keys setup completed!"
+
 # Attendre que la base de données soit prête
 echo "Waiting for database to be ready..."
 until php bin/console doctrine:query:sql "SELECT 1" > /dev/null 2>&1; do

@@ -7,16 +7,16 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { AppButton } from "../buttons/AppButton";
+import { AppButton } from "../../buttons/AppButton";
 import { FormProvider, useForm } from "react-hook-form";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import { useApi } from "@/app/utils/useApi";
-import { AppSelectInput } from "../inputs/AppSelectInput";
+import { AppSelectInput } from "../../inputs/AppSelectInput";
 import { Feather } from "@expo/vector-icons";
-import { AppTextField } from "../inputs/AppTextField";
+import { AppTextField } from "../../inputs/AppTextField";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
 import { APPOINTMENT_STATUS } from "@/app/utils/intervention";
-import { CreateEquipmentModal } from "../equipment/CreateEquipmentModal";
+import { CreateEquipmentModal } from "@/app/components/customer/equipment/CreateEquipmentModal";
 import { TimeSlotPicker } from "./TimeSlotPicker";
 
 interface AppointmentModalFormProps {

@@ -35,9 +35,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     /**
-     * @var string[] The user roles
+     * @var string The user role
      */
-    #[ORM\Column(type: Types::JSON)]
+    #[ORM\Column(type: Types::STRING, length: 50)]
     #[Assert\NotBlank]
     #[
         Assert\Choice(
@@ -51,7 +51,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         )
     ]
     #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
-    private array $roles = [];
+    private string $role = self::ROLE_CUSTOMER;
 
     /**
      * @var string The hashed password
@@ -170,24 +170,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        $roles = $this->roles;
-
-        return array_values(array_unique($roles));
+        return [$this->role];
     }
 
     /**
-     * @param list<string> $roles
+     * Set the user role.
+     */
+    public function setRole(string $role): static
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    /**
+     * Get the user role.
+     */
+    public function getRole(): string
+    {
+        return $this->role;
+    }
+
+    /**
+     * @param list<string> $roles (for backward compatibility)
      */
     public function setRoles(array $roles): static
     {
-        $this->roles = $roles;
+        $this->role = $roles[0] ?? self::ROLE_CUSTOMER;
 
         return $this;
     }
 
     public function hasRole(string $role): bool
     {
-        return in_array($role, $this->roles, true);
+        return $this->role === $role;
     }
 
     /**

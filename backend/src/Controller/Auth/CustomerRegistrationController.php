@@ -42,7 +42,7 @@ class CustomerRegistrationController extends AbstractController
 
             $user->setEmail($email)
                 ->setPassword($hashedPassword)
-                ->setRoles(['ROLE_CUSTOMER'])
+                ->setRole('ROLE_CUSTOMER')
                 ->setFirstName($firstName)
                 ->setLastName($lastName)
                 ->setCreatedAt(new \DateTimeImmutable())

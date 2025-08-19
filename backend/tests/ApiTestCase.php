@@ -2,11 +2,12 @@
 
 namespace App\Tests;
 
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 abstract class ApiTestCase extends WebTestCase
 {
-    protected $client;
+    protected KernelBrowser $client;
 
     protected function setUp(): void
     {

@@ -11,8 +11,8 @@ permissions:
 
 jobs:
   test:
-    name: "${{ matrix.operating-system }} / PHP ${{ matrix.php-version }}"
-    runs-on: ${{ matrix.operating-system }}
+    name:  "PHP 8.3 / Postgres 15"
+    runs-on: ubuntu-latest
     continue-on-error: false
     defaults:
       run:
@@ -33,11 +33,6 @@ jobs:
           --health-timeout 5s
           --health-retries 3
 
-    strategy:
-      matrix:
-        operating-system: ["ubuntu-latest"]
-        php-version: ["8.3"]
-
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
@@ -47,11 +42,8 @@ jobs:
         with:
           coverage: "none"
           extensions: "intl, mbstring, pdo_pgsql, zip"
-          php-version: ${{ matrix.php-version }}
+          php-version: "8.3"
           tools: composer:v2
-
-      - name: "Add PHPUnit matcher"
-        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: "Install dependencies"
         run: composer install --ansi --no-interaction --no-progress --no-scripts

@@ -8,12 +8,12 @@ import {
 } from "react-native";
 import { useApi } from "@/app/utils/useApi";
 import { useSessionContext } from "@/app/context/useSessionContext";
-import { AppointmentModalForm } from "@/app/components/appointment/AppointmentModalForm";
-import { AppointmentCard } from "@/app/components/appointment/AppointmentCard";
-import { InterventionCard } from "@/app/components/intervention/InterventionCard";
+import { AppointmentModalForm } from "@/app/components/customer/appointment/AppointmentModalForm";
+import { AppointmentCard } from "@/app/components/customer/appointment/AppointmentCard";
+import { InterventionCard } from "@/app/components/customer/intervention/InterventionCard";
 import { FAB, MD2Colors } from "react-native-paper";
 import { useRouter } from "expo-router";
-import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
+import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
 
 export default function InterventionsPage() {
   const api = useApi();
@@ -84,7 +84,7 @@ export default function InterventionsPage() {
               />
             ))
           ) : (
-            <Text style={styles.errorText}>Aucune intervention trouvée.</Text>
+            <Text style={styles.textEmptyData}>Aucune intervention trouvée.</Text>
           )}
         </View>
         {appointments && appointments.length !== 0 && (
@@ -177,6 +177,13 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 18,
     textAlign: "center",
+  },
+  textEmptyData: {
+    fontSize: 16,
+    color: "#000000ff",
+    textAlign: "center",
+    fontWeight: "semibold",
+    marginTop: 20,
   },
   fabContainer: {
     position: "absolute",
