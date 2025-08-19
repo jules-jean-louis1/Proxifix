@@ -134,6 +134,9 @@ final class EquipmentServiceTest extends TestCase
     }
 
     // Méthodes privées simulant la logique métier
+    /**
+     * @param array<string, mixed> $data
+     */
     private function validateEquipmentData(array $data): bool
     {
         return ! empty($data['name'])

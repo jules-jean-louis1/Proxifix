@@ -124,6 +124,7 @@ class AvailabilityService
      * Formate les créneaux libres pour la réponse.
      *
      * @param array<int, array<string, mixed>> $slots
+     *
      * @return array<int, array<string, mixed>>
      */
     private function formatFreeSlots(array $slots): array
@@ -140,8 +141,6 @@ class AvailabilityService
     /**
      * Récupère les interventions pour une date donnée.
      *
-     * @param \DateTime $date
-     * @param int|null $companyId
      * @return array<int, \App\Entity\Intervention>
      */
     private function getInterventionsForDate(\DateTime $date, ?int $companyId): array
@@ -189,10 +188,6 @@ class AvailabilityService
     /**
      * Génère tous les créneaux possibles pour la journée.
      *
-     * @param \DateTime $date
-     * @param string $startTime
-     * @param string $endTime
-     * @param int $intervalMinutes
      * @return array<int, array<string, string|\DateTime>>
      */
     private function generateAllSlots(\DateTime $date, string $startTime, string $endTime, int $intervalMinutes): array
@@ -227,8 +222,8 @@ class AvailabilityService
      * Filtre les créneaux libres en fonction des interventions existantes.
      *
      * @param array<int, array<string, string|\DateTime>> $allSlots
-     * @param array<int, \App\Entity\Intervention> $existingInterventions
-     * @param int $availableTechnicians
+     * @param array<int, \App\Entity\Intervention>        $existingInterventions
+     *
      * @return array<int, array<string, string|\DateTime>>
      */
     private function filterFreeSlots(array $allSlots, array $existingInterventions, int $availableTechnicians): array
@@ -262,8 +257,6 @@ class AvailabilityService
      * Vérifie si deux créneaux se chevauchent.
      *
      * @param array<string, string|\DateTime> $slot
-     * @param \App\Entity\Intervention $intervention
-     * @return bool
      */
     private function slotsOverlap(array $slot, \App\Entity\Intervention $intervention): bool
     {
@@ -293,9 +286,6 @@ class AvailabilityService
     /**
      * Récupère les créneaux occupés pour une période.
      *
-     * @param \DateTime $startDate
-     * @param \DateTime $endDate
-     * @param int|null $companyId
      * @return array<int, array<string, mixed>>
      */
     private function getBusySlots(\DateTime $startDate, \DateTime $endDate, ?int $companyId): array
@@ -336,9 +326,6 @@ class AvailabilityService
      * Calcule le taux de disponibilité.
      *
      * @param array<int, array<string, mixed>> $busySlots
-     * @param int $technicianCount
-     * @param int $totalDays
-     * @return float
      */
     private function calculateAvailabilityRate(array $busySlots, int $technicianCount, int $totalDays): float
     {
