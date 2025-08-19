@@ -8,7 +8,7 @@ import { AdminTechnicianCard } from "@/app/components/admin/technician/AdminTech
 import { FAB } from "react-native-paper";
 import { AppTextField } from "@/app/components/inputs/AppTextField";
 import { FormProvider, useForm } from "react-hook-form";
-import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
+import { ToolBarAdmin } from "@/app/components/admin/navigation/ToolBarAdmin";
 
 const AdminTechniciansPage: FC = () => {
   const router = useRouter();
@@ -63,7 +63,7 @@ const AdminTechniciansPage: FC = () => {
 
   return (
     <View style={styles.container}>
-      <ToolBarCustomer
+      <ToolBarAdmin
         title="Techniciens"
         bottomBar
       />

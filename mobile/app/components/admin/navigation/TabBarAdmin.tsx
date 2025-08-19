@@ -46,10 +46,10 @@ const TabBarAdmin = () => {
       label: 'Clients'
     },
     {
-      id: 'settings',
-      route: '/admin/settings',
-      icon: 'settings' as const,
-      label: 'Paramètres'
+      id: 'equipments',
+      route: '/admin/equipments',
+      icon: 'smartphone' as const,
+      label: 'Équipements'
     }
   ], []);
 

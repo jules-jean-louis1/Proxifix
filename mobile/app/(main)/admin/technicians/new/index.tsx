@@ -3,7 +3,7 @@ import React from "react";
 import { router } from "expo-router";
 import { AdminTechnicianForm } from "@/app/components/admin/technician/AdminTechnicianForm";
 import { useApi } from "@/app/utils/useApi";
-import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
+import { ToolBarAdmin } from "@/app/components/admin/navigation/ToolBarAdmin";
 
 const AdminTechnicianNew = () => {
   const api = useApi();
@@ -20,7 +20,7 @@ const AdminTechnicianNew = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ToolBarCustomer
+      <ToolBarAdmin
         title="Nouveau Technicien"
         bottomBar
         onBackPress={() => router.back()}

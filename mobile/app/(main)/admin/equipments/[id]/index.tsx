@@ -5,28 +5,28 @@ import { FC, useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import React from "react";
 import { Text } from "react-native-paper";
-import { AdminTechnicianForm } from "@/app/components/admin/technician/AdminTechnicianForm";
+import { AdminEquipmentForm } from "@/app/components/admin/equipment/AdminEquipmentForm";
 import { ToolBarAdmin } from "@/app/components/admin/navigation/ToolBarAdmin";
 
-const AdminTechnicianDetailsPage: FC = () => {
+const AdminEquipmentDetailsPage: FC = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const api = useApi();
   const sessionCtx = useSessionContext();
   const sessionData = sessionCtx?.session;
-  const [technician, setTechnician] = useState<any>(null);
+  const [equipment, setEquipment] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!sessionData) return;
     (async () => {
-      const technicianId = id as string;
-      if (!technicianId) return;
+      const equipmentId = id as string;
+      if (!equipmentId) return;
       try {
-        const response = await api.get(`/user/${technicianId}`);
-        setTechnician(response.data);
+        const response = await api.get(`/equipment/${equipmentId}`);
+        setEquipment(response.data);
       } catch (error) {
-        console.error("Erreur lors du chargement du technicien:", error);
+        console.error("Erreur lors du chargement de l'équipement:", error);
       } finally {
         setIsLoading(false);
       }
@@ -35,8 +35,8 @@ const AdminTechnicianDetailsPage: FC = () => {
 
   const handleSubmit = async (data: any) => {
     try {
-      const response = await api.patch(`/user/${data.id}`, data);
-      setTechnician(data); 
+      const response = await api.patch(`/equipment/${data.id}`, data);
+      setEquipment(data); 
       router.back(); 
     } catch (error) {
       console.error(error);
@@ -54,16 +54,16 @@ const AdminTechnicianDetailsPage: FC = () => {
   return (
     <View style={{ flex: 1 }}>
       <ToolBarAdmin
-        title="Détails Technicien"
+        title="Détails Équipement"
         bottomBar
         onBackPress={() => router.back()}
         showBack
       />
       <ScrollView style={styles.container}>
-        {technician && (
-          <AdminTechnicianForm
+        {equipment && (
+          <AdminEquipmentForm
             mode="edit"
-            initialData={technician}
+            initialData={equipment}
             onSubmit={handleSubmit}
           />
         )}
@@ -79,4 +79,4 @@ const styles = {
   },
 };
 
-export default AdminTechnicianDetailsPage;
+export default AdminEquipmentDetailsPage;

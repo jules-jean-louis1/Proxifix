@@ -2,9 +2,9 @@ import { Feather } from "@expo/vector-icons";
 import React, { FC, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { View, Text, Modal, StyleSheet, TouchableOpacity } from "react-native";
-import { AppTextField } from "../inputs/AppTextField";
-import { AppSelectInput } from "../inputs/AppSelectInput";
-import { AppButton } from "../buttons/AppButton";
+import { AppTextField } from "../../inputs/AppTextField";
+import { AppSelectInput } from "../../inputs/AppSelectInput";
+import { AppButton } from "../../buttons/AppButton";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import { useApi } from "@/app/utils/useApi";
 

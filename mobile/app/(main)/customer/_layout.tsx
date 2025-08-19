@@ -2,8 +2,8 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Slot, Tabs, Redirect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import TabBar from "@/app/components/navigation/TabBar";
 import { useSessionContext } from "../../context/useSessionContext";
+import TabBarCustomer from "@/app/components/customer/navigation/TabBarCustomer";
 
 export default function CustomerLayout() {
   const sessionCtx = useSessionContext();
@@ -15,7 +15,7 @@ export default function CustomerLayout() {
   }
 
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "#01358D", headerShown: false }} tabBar={(props) => <TabBar />}>
+    <Tabs screenOptions={{ tabBarActiveTintColor: "#01358D", headerShown: false }} tabBar={(props) => <TabBarCustomer />}>
       <Tabs.Screen
         name="index"
         options={{

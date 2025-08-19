@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { LoginForm } from "../components/auth/LoginForm";
 import { Divider } from "react-native-paper";
-import { ToolBarCustomer } from "../components/navigation/ToolBarCustomer";
+import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
 
 export default function LoginCustomer() {
   const [success, setSuccess] = useState<boolean | null>(null);

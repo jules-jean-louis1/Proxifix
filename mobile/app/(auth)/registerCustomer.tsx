@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { useApi } from "../utils/useApi";
 import { AppTextField } from "../components/inputs/AppTextField";
 import { AppButton } from "../components/buttons/AppButton";
-import { ToolBarCustomer } from "../components/navigation/ToolBarCustomer";
+import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
 import { Snackbar } from "react-native-paper";
 
 export default function RegisterForm() {

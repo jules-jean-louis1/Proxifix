@@ -3,9 +3,11 @@ import { useSessionContext } from "@/app/context/useSessionContext";
 import { useApi } from "@/app/utils/useApi";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 import { AdminInterventionCard } from "@/app/components/admin/intervention/AdminInterventionCard";
+import { Feather } from "@expo/vector-icons";
+import { ToolBarAdmin } from "@/app/components/admin/navigation/ToolBarAdmin";
 
 export default function AdminHome() {
   const api = useApi();
@@ -65,6 +67,17 @@ export default function AdminHome() {
   if (sessionCtx?.isTechnician()) {
     return (
       <View style={styles.containerWrapper}>
+        <ToolBarAdmin
+          rightContent={
+            <Pressable
+              onPress={() => {
+                router.push("/admin/settings");
+              }}
+            >
+              <Feather name="settings" size={24} color="#344260" />
+            </Pressable>
+          }
+        />
         <ScrollView style={styles.container}>
           <Text variant="titleLarge" style={styles.title}>
             Bonjour {sessionData?.first_name} {sessionData?.last_name}
@@ -101,6 +114,17 @@ export default function AdminHome() {
   if (sessionCtx?.isAdmin()) {
     return (
       <View style={styles.containerWrapper}>
+        <ToolBarAdmin
+          rightContent={
+            <Pressable
+              onPress={() => {
+                router.push("/admin/settings");
+              }}
+            >
+              <Feather name="settings" size={24} color="#344260" />
+            </Pressable>
+          }
+        />
         <ScrollView style={styles.container}>
           <Text variant="titleLarge" style={styles.title}>
             Bonjour {sessionData?.first_name} {sessionData?.last_name}
@@ -156,19 +180,19 @@ export default function AdminHome() {
 const styles = StyleSheet.create({
   containerWrapper: {
     flex: 1,
-    backgroundColor: "#F9F9F9",
+    backgroundColor: "#ffffffff",
     paddingBottom: 40,
   },
   container: {
     flex: 1,
-    backgroundColor: "#F9F9F9",
+    backgroundColor: "#FFF",
     padding: 16,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F9F9F9",
+    backgroundColor: "#FFF",
   },
   loadingText: {
     fontSize: 16,

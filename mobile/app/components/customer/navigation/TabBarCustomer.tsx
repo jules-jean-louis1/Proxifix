@@ -3,7 +3,7 @@ import { useRouter, usePathname } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
 
-const TabBar = () => {
+const TabBarCustomer: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -106,7 +106,7 @@ const TabBar = () => {
   );
 };
 
-export default TabBar;
+export default TabBarCustomer;
 
 const styles = StyleSheet.create({
   tabBar: {

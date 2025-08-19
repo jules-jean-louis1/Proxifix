@@ -6,7 +6,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useApi } from "@/app/utils/useApi";
 import { AppButton } from "@/app/components/buttons/AppButton";
 import { router } from "expo-router";
-import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
+import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
 
 const Profile = () => {
   const sessionCtx = useSessionContext();

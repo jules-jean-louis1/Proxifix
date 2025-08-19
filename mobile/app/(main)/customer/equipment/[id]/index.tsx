@@ -3,8 +3,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { EquipmentModalForm } from "@/app/components/equipment/EquipmentModalForm";
-import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
+import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
+import { EquipmentModalForm } from "@/app/components/customer/equipment/EquipmentModalForm";
 
 export default function EquipmentDetails() {
   const { id } = useLocalSearchParams();

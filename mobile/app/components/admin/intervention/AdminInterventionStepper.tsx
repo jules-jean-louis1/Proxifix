@@ -1,7 +1,7 @@
 import { AppButton } from "@/app/components/buttons/AppButton";
 import { AppSelectInput } from "@/app/components/inputs/AppSelectInput";
 import { AppTextField } from "@/app/components/inputs/AppTextField";
-import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
+import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import { getStatus } from "@/app/utils/intervention";
 import { useApi } from "@/app/utils/useApi";

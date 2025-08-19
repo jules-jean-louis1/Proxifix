@@ -4,9 +4,9 @@ import { View, StyleSheet, Image, Pressable, ScrollView } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { useApi } from "@/app/utils/useApi";
 import { Feather } from "@expo/vector-icons";
-import { EquipmentCardHome } from "@/app/components/equipment/EquipmentCardHome";
+import { EquipmentCardHome } from "@/app/components/customer/equipment/EquipmentCardHome";
 import { router } from "expo-router";
-import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
+import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
 
 export const CustomerHome = () => {
   const sessionCtx = useSessionContext();

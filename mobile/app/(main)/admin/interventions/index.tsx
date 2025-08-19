@@ -1,5 +1,5 @@
 import { AdminInterventionCard } from "@/app/components/admin/intervention/AdminInterventionCard";
-import { ToolBarCustomer } from "@/app/components/navigation/ToolBarCustomer";
+import { ToolBarAdmin } from "@/app/components/admin/navigation/ToolBarAdmin";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import { useApi } from "@/app/utils/useApi";
 import { useRouter } from "expo-router";
@@ -40,7 +40,7 @@ const AdminInterventionsPage = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ToolBarCustomer title="Interventions" bottomBar />
+      <ToolBarAdmin title="Interventions" bottomBar />
       <ScrollView style={styles.container}>
         {interventions.map((intervention) => (
           <AdminInterventionCard
