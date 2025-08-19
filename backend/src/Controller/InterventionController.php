@@ -331,7 +331,7 @@ class InterventionController extends AbstractController
             $reqSize ? (int) $reqSize : null,
         );
 
-        return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details']]);
+        return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details', 'user:details']]);
     }
 
     #[Route('/intervention/{id}', name: 'app_intervention_details', methods: ['GET'])]

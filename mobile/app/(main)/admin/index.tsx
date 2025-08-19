@@ -127,7 +127,7 @@ export default function AdminHome() {
             <AppButton
               type="primary"
               children="Ajouter un technicien"
-              onPress={() => router.push("/admin/registerTech")}
+              onPress={() => router.push("/admin/technicians/new")}
             />
           </View>
           <Text variant="titleMedium" style={styles.sectionTitle}>

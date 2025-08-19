@@ -179,4 +179,19 @@ final class UserController extends AbstractController
 
         return $this->json(['success' => 'User deleted'], Response::HTTP_OK);
     }
+    #[IsGranted('ROLE_TECHNICIAN')]
+    #[Route('/user/{id}', name: 'app_user_show_admin', methods: ['GET'])]
+    public function showUser(EntityManagerInterface $entityManager, int $id, TokenStorageInterface $tokenStorage): JsonResponse
+    {
+        $user = $this->getUser();
+        if (! $user instanceof User) {
+            return $this->json(['error' => 'No right to view user'], Response::HTTP_FORBIDDEN);
+        }       
+        $userToShow = $entityManager->getRepository(User::class)->find($id);
+        if (! $userToShow) {
+            return $this->json(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->json($userToShow, Response::HTTP_OK, ['groups' => 'user:details']);
+    }
 }

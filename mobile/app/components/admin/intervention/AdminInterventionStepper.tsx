@@ -253,10 +253,13 @@ export const AdminInterventionStepper: React.FC<
   const handleFormSubmit = async (data: any) => {
     setIsLoading(true);
     try {
+      // Formater les tâches pour le backend (attendues sous 'task' avec juste les ids)
+      const formattedTasks = selectedTasks.map(task => ({ id: task.id }));
+      
       await onSubmit({
         ...data,
         company_id: sessionData?.company?.id,
-        tasks: selectedTasks,
+        task: formattedTasks, // Backend attend 'task' (pas 'tasks')
       });
       setIsSubmitted(true);
       setActiveStep("confirmation");

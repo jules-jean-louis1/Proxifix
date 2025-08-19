@@ -2,23 +2,22 @@ import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import React, { useMemo } from "react";
 import { usePathname, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
+import { useSessionContext } from "@/app/context/useSessionContext";
 
 const TabBarAdmin = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const session = useSessionContext();
+  const isAdmin = session?.isAdmin();
 
   const isActive = (route: string) => {
-    // Correspondance exacte d'abord
     if (pathname === route) return true;
     
-    // Pour les routes avec sous-pages, vérifier startsWith mais pas pour la home
-    if (route === '/admin') return false; // Home ne peut être active que si correspondance exacte
+    if (route === '/admin') return false;
     
-    // Pour les autres, vérifier si c'est une sous-page
     return pathname?.startsWith(route + '/') || false;
   };
 
-  // Configuration des onglets pour éviter la répétition
   const tabs = useMemo(() => [
     {
       id: 'home',
@@ -32,6 +31,14 @@ const TabBarAdmin = () => {
       icon: 'list' as const,
       label: 'Interventions'
     },
+    ...(isAdmin ? [
+      {
+        id: 'technicians',
+        route: '/admin/technicians',
+        icon: 'tool' as const,
+        label: 'Techniciens'
+      }
+    ] : []),
     {
       id: 'customers',
       route: '/admin/customers',

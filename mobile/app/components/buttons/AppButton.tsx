@@ -9,37 +9,46 @@ interface AppButtonProps extends ButtonProps {
 export const AppButton: React.FC<AppButtonProps> = ({
   children,
   type,
+  style,
   ...props
 }) => {
   const buttonStyle: ViewStyle = styles[type];
   const textStyle: TextStyle = styles[`${type}Text`];
 
   return (
-    <Button style={buttonStyle} labelStyle={textStyle} {...props}>
+    <Button 
+      mode="contained"
+      style={[buttonStyle, style]} 
+      labelStyle={textStyle} 
+      contentStyle={styles.buttonContent}
+      {...props}
+    >
       {children}
     </Button>
   );
 };
 
 const styles = StyleSheet.create({
+  buttonContent: {
+    paddingVertical: 4,
+    paddingHorizontal: 16,
+    minHeight: 48,
+  },
   primary: {
     backgroundColor: "#F9556D",
     width: "100%",
-    paddingVertical: 15,
     marginVertical: 10,
-    alignItems: "center",
     borderRadius: 8,
   },
   primaryText: {
     color: "#FFFFFF",
     fontFamily: "Rubik-Bold.ttf",
+    fontSize: 16,
   },
   secondary: {
     backgroundColor: "#F0F3F4",
     width: "100%",
-    paddingVertical: 15,
     marginVertical: 10,
-    alignItems: "center",
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#F9556D",
@@ -47,17 +56,17 @@ const styles = StyleSheet.create({
   secondaryText: {
     color: "#F9556D",
     fontFamily: "Rubik-Bold.ttf",
+    fontSize: 16,
   },
   tertiary: {
     backgroundColor: "#01358D",
     width: "100%",
-    paddingVertical: 15,
     marginVertical: 10,
-    alignItems: "center",
     borderRadius: 8,
   },
   tertiaryText: {
     color: "#FFFFFF",
     fontFamily: "Rubik-Bold.ttf",
+    fontSize: 16,
   },
 });
