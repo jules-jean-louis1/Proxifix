@@ -60,23 +60,63 @@ const EquipmentsPage = () => {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.loadingText}>Loading...</Text>
+      <View style={{ flex: 1 }}>
+        <ToolBarCustomer
+          title={"Mes équipements"}
+          bottomBar
+          showBack
+          onBackPress={() => router.push("/customer")}
+        />
+        <View style={styles.container}>
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>{error}</Text>
+      <View style={{ flex: 1 }}>
+        <ToolBarCustomer
+          title={"Mes équipements"}
+          bottomBar
+          showBack
+          onBackPress={() => router.push("/customer")}
+        />
+        <View style={styles.container}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
       </View>
     );
   }
   if (equipments.length === 0) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.loadingText}>Aucun équipement trouvé.</Text>
+      <View style={{ flex: 1 }}>
+        <ToolBarCustomer
+          title={"Mes équipements"}
+          bottomBar
+          showBack
+          onBackPress={() => router.push("/customer")}
+        />
+        <ScrollView style={styles.container}>
+          <Text style={styles.loadingText}>Aucun équipement trouvé.</Text>
+        </ScrollView>
+        <View pointerEvents="box-none" style={styles.fabContainer}>
+          <EquipmentModalForm
+            type="create"
+            brands={brands}
+            typeEquipment={typeEquipment}
+            os={os}
+            setEquipments={setEquipments}
+            button={
+              <FAB
+                icon="plus"
+                style={styles.fab}
+                label="Ajouter un équipement"
+              />
+            }
+          />
+        </View>
       </View>
     );
   }
