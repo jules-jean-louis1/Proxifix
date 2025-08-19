@@ -68,6 +68,9 @@ final class CompanyValidatorTest extends TestCase
         $this->assertEquals($type, $company->getType());
     }
 
+    /**
+     * @return array<int, array<int, string>>
+     */
     public function validCompanyTypesProvider(): array
     {
         return [
@@ -83,7 +86,7 @@ final class CompanyValidatorTest extends TestCase
     private function canAddUserToCompany(User $user): bool
     {
         // Logique métier : un customer ne peut pas être ajouté à une compagnie
-        return $user->getRole() !== User::ROLE_CUSTOMER;
+        return User::ROLE_CUSTOMER !== $user->getRole();
     }
 
     private function isValidCompanyType(string $type): bool

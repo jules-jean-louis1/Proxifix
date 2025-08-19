@@ -34,7 +34,7 @@ class AvailabilityServiceTest extends TestCase
         $reflection = new \ReflectionClass($service);
         $method = $reflection->getMethod('validateParameters');
         $method->setAccessible(true);
-        
+
         // This would throw an exception in the real implementation
         // For now, we'll manually throw to test the expectation
         throw new \InvalidArgumentException('L\'intervalle doit être d\'au moins 5 minutes');
@@ -43,7 +43,7 @@ class AvailabilityServiceTest extends TestCase
     public function testTimeFormatValidation(): void
     {
         $this->assertTrue(true); // Placeholder test
-        
+
         // Test des formats d'heure valides
         $validTimes = ['09:00:00', '23:59:59', '00:00:00'];
         $invalidTimes = ['25:00:00', '09:60:00', '09:00'];
@@ -68,7 +68,7 @@ class AvailabilityServiceTest extends TestCase
         // Test du calcul de durée
         $start = new \DateTime('09:00:00');
         $end = new \DateTime('09:30:00');
-        
+
         $duration = ($end->getTimestamp() - $start->getTimestamp()) / 60;
         $this->assertEquals(30, $duration, 'La durée devrait être de 30 minutes');
     }

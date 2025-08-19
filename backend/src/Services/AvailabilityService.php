@@ -10,19 +10,20 @@ class AvailabilityService
     public function __construct(
         private readonly InterventionRepository $interventionRepository,
         private readonly UserRepository $userRepository
-    ) {}
+    ) {
+    }
 
     /**
-     * Calcule les créneaux libres pour une date donnée
-     * 
-     * @param \DateTime $date Date pour laquelle chercher les créneaux
-     * @param int|null $companyId ID de l'entreprise (optionnel)
-     * @param int $intervalMinutes Durée des créneaux en minutes (défaut: 30)
-     * @param string $startTime Heure de début (défaut: 09:00:00)
-     * @param string $endTime Heure de fin (défaut: 18:00:00)
-     * @param string|null $roleSearch Rôle spécifique à rechercher (optionnel)
-     * 
-     * @return array Liste des créneaux libres
+     * Calcule les créneaux libres pour une date donnée.
+     *
+     * @param \DateTime   $date            Date pour laquelle chercher les créneaux
+     * @param int|null    $companyId       ID de l'entreprise (optionnel)
+     * @param int         $intervalMinutes Durée des créneaux en minutes (défaut: 30)
+     * @param string      $startTime       Heure de début (défaut: 09:00:00)
+     * @param string      $endTime         Heure de fin (défaut: 18:00:00)
+     * @param string|null $roleSearch      Rôle spécifique à rechercher (optionnel)
+     *
+     * @return array<int, array<string, mixed>> Liste des créneaux libres
      */
     public function getFreeSlots(
         \DateTime $date,
@@ -37,13 +38,13 @@ class AvailabilityService
 
         // Récupération des interventions existantes pour la date
         $existingInterventions = $this->getInterventionsForDate($date, $companyId);
-        
+
         // Récupération du nombre de techniciens disponibles
         $availableTechnicians = $this->getAvailableTechnicians($companyId, $roleSearch);
-        
+
         // Génération de tous les créneaux possibles
         $allSlots = $this->generateAllSlots($date, $startTime, $endTime, $intervalMinutes);
-        
+
         // Filtrage des créneaux libres
         $freeSlots = $this->filterFreeSlots($allSlots, $existingInterventions, $availableTechnicians);
 
@@ -51,12 +52,12 @@ class AvailabilityService
     }
 
     /**
-     * Vérifie si un créneau spécifique est disponible
-     * 
-     * @param int $companyId ID de l'entreprise
-     * @param \DateTimeImmutable|string $startDate Date/heure de début
-     * @param \DateTimeImmutable|string|null $endDate Date/heure de fin
-     * 
+     * Vérifie si un créneau spécifique est disponible.
+     *
+     * @param int                            $companyId ID de l'entreprise
+     * @param \DateTimeImmutable|string      $startDate Date/heure de début
+     * @param \DateTimeImmutable|string|null $endDate   Date/heure de fin
+     *
      * @return bool True si le créneau est disponible
      */
     public function isSlotAvailable(
@@ -68,13 +69,13 @@ class AvailabilityService
     }
 
     /**
-     * Récupère les statistiques de disponibilité pour une période
-     * 
+     * Récupère les statistiques de disponibilité pour une période.
+     *
      * @param \DateTime $startDate Date de début
-     * @param \DateTime $endDate Date de fin
-     * @param int|null $companyId ID de l'entreprise
-     * 
-     * @return array Statistiques de disponibilité
+     * @param \DateTime $endDate   Date de fin
+     * @param int|null  $companyId ID de l'entreprise
+     *
+     * @return array<string, mixed> Statistiques de disponibilité
      */
     public function getAvailabilityStats(
         \DateTime $startDate,
@@ -94,7 +95,7 @@ class AvailabilityService
     }
 
     /**
-     * Valide les paramètres d'entrée
+     * Valide les paramètres d'entrée.
      */
     private function validateParameters(int $intervalMinutes, string $startTime, string $endTime): void
     {
@@ -102,7 +103,7 @@ class AvailabilityService
             throw new \InvalidArgumentException('L\'intervalle doit être d\'au moins 5 minutes');
         }
 
-        if (!$this->isValidTimeFormat($startTime) || !$this->isValidTimeFormat($endTime)) {
+        if (! $this->isValidTimeFormat($startTime) || ! $this->isValidTimeFormat($endTime)) {
             throw new \InvalidArgumentException('Format d\'heure invalide. Utilisez HH:MM:SS');
         }
 
@@ -112,7 +113,7 @@ class AvailabilityService
     }
 
     /**
-     * Valide le format d'heure
+     * Valide le format d'heure.
      */
     private function isValidTimeFormat(string $time): bool
     {
@@ -120,7 +121,10 @@ class AvailabilityService
     }
 
     /**
-     * Formate les créneaux libres pour la réponse
+     * Formate les créneaux libres pour la réponse.
+     *
+     * @param array<int, array<string, mixed>> $slots
+     * @return array<int, array<string, mixed>>
      */
     private function formatFreeSlots(array $slots): array
     {
@@ -134,7 +138,11 @@ class AvailabilityService
     }
 
     /**
-     * Récupère les interventions pour une date donnée
+     * Récupère les interventions pour une date donnée.
+     *
+     * @param \DateTime $date
+     * @param int|null $companyId
+     * @return array<int, \App\Entity\Intervention>
      */
     private function getInterventionsForDate(\DateTime $date, ?int $companyId): array
     {
@@ -148,7 +156,7 @@ class AvailabilityService
             ->setParameter('start_of_day', $startOfDay)
             ->setParameter('end_of_day', $endOfDay);
 
-        if ($companyId !== null) {
+        if (null !== $companyId) {
             $qb->andWhere('i.company = :company_id')
                ->setParameter('company_id', $companyId);
         }
@@ -157,11 +165,11 @@ class AvailabilityService
     }
 
     /**
-     * Récupère le nombre de techniciens disponibles
+     * Récupère le nombre de techniciens disponibles.
      */
     private function getAvailableTechnicians(?int $companyId, ?string $roleSearch): int
     {
-        if ($companyId === null) {
+        if (null === $companyId) {
             return 0;
         }
 
@@ -170,7 +178,7 @@ class AvailabilityService
             ->where('u.company = :company_id')
             ->setParameter('company_id', $companyId);
 
-        if ($roleSearch !== null) {
+        if (null !== $roleSearch) {
             $qb->andWhere('u.role = :role')
                ->setParameter('role', $roleSearch);
         }
@@ -179,20 +187,26 @@ class AvailabilityService
     }
 
     /**
-     * Génère tous les créneaux possibles pour la journée
+     * Génère tous les créneaux possibles pour la journée.
+     *
+     * @param \DateTime $date
+     * @param string $startTime
+     * @param string $endTime
+     * @param int $intervalMinutes
+     * @return array<int, array<string, string|\DateTime>>
      */
     private function generateAllSlots(\DateTime $date, string $startTime, string $endTime, int $intervalMinutes): array
     {
         $slots = [];
-        
+
         // Créer les DateTime pour le début et la fin
-        $currentStart = new \DateTime($date->format('Y-m-d') . ' ' . $startTime);
-        $dayEnd = new \DateTime($date->format('Y-m-d') . ' ' . $endTime);
-        
+        $currentStart = new \DateTime($date->format('Y-m-d').' '.$startTime);
+        $dayEnd = new \DateTime($date->format('Y-m-d').' '.$endTime);
+
         while ($currentStart < $dayEnd) {
             $currentEnd = clone $currentStart;
-            $currentEnd->add(new \DateInterval('PT' . $intervalMinutes . 'M'));
-            
+            $currentEnd->add(new \DateInterval('PT'.$intervalMinutes.'M'));
+
             // Vérifier que le créneau ne dépasse pas l'heure de fin
             if ($currentEnd <= $dayEnd) {
                 $slots[] = [
@@ -202,54 +216,63 @@ class AvailabilityService
                     'end_datetime' => clone $currentEnd,
                 ];
             }
-            
+
             $currentStart = $currentEnd;
         }
-        
+
         return $slots;
     }
 
     /**
-     * Filtre les créneaux libres en fonction des interventions existantes
+     * Filtre les créneaux libres en fonction des interventions existantes.
+     *
+     * @param array<int, array<string, string|\DateTime>> $allSlots
+     * @param array<int, \App\Entity\Intervention> $existingInterventions
+     * @param int $availableTechnicians
+     * @return array<int, array<string, string|\DateTime>>
      */
     private function filterFreeSlots(array $allSlots, array $existingInterventions, int $availableTechnicians): array
     {
-        if ($availableTechnicians === 0) {
+        if (0 === $availableTechnicians) {
             return [];
         }
 
         $freeSlots = [];
-        
+
         foreach ($allSlots as $slot) {
             $conflictCount = 0;
-            
+
             // Compter les interventions qui se chevauchent avec ce créneau
             foreach ($existingInterventions as $intervention) {
                 if ($this->slotsOverlap($slot, $intervention)) {
-                    $conflictCount++;
+                    ++$conflictCount;
                 }
             }
-            
+
             // Si le nombre de conflits est inférieur au nombre de techniciens disponibles
             if ($conflictCount < $availableTechnicians) {
                 $freeSlots[] = $slot;
             }
         }
-        
+
         return $freeSlots;
     }
 
     /**
-     * Vérifie si deux créneaux se chevauchent
+     * Vérifie si deux créneaux se chevauchent.
+     *
+     * @param array<string, string|\DateTime> $slot
+     * @param \App\Entity\Intervention $intervention
+     * @return bool
      */
-    private function slotsOverlap(array $slot, array $intervention): bool
+    private function slotsOverlap(array $slot, \App\Entity\Intervention $intervention): bool
     {
-        $slotStart = $slot['start_datetime'];
-        $slotEnd = $slot['end_datetime'];
-        
-        $interventionStart = $intervention['start_date'];
-        $interventionEnd = $intervention['end_date'];
-        
+        $slotStart = new \DateTime($slot['start_datetime']);
+        $slotEnd = new \DateTime($slot['end_datetime']);
+
+        $interventionStart = $intervention->getStartDate();
+        $interventionEnd = $intervention->getEndDate();
+
         // Deux créneaux se chevauchent si :
         // - Le début du slot est avant la fin de l'intervention ET
         // - La fin du slot est après le début de l'intervention
@@ -257,18 +280,23 @@ class AvailabilityService
     }
 
     /**
-     * Calcule la durée en minutes entre deux heures
+     * Calcule la durée en minutes entre deux heures.
      */
     private function calculateDurationInMinutes(string $startTime, string $endTime): int
     {
         $start = new \DateTime($startTime);
         $end = new \DateTime($endTime);
-        
+
         return (int) ($end->getTimestamp() - $start->getTimestamp()) / 60;
     }
 
     /**
-     * Récupère les créneaux occupés pour une période
+     * Récupère les créneaux occupés pour une période.
+     *
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @param int|null $companyId
+     * @return array<int, array<string, mixed>>
      */
     private function getBusySlots(\DateTime $startDate, \DateTime $endDate, ?int $companyId): array
     {
@@ -279,7 +307,7 @@ class AvailabilityService
             ->setParameter('start_date', $startDate)
             ->setParameter('end_date', $endDate);
 
-        if ($companyId !== null) {
+        if (null !== $companyId) {
             $qb->andWhere('i.company = :company_id')
                ->setParameter('company_id', $companyId);
         }
@@ -288,11 +316,11 @@ class AvailabilityService
     }
 
     /**
-     * Récupère le nombre de techniciens dans l'entreprise
+     * Récupère le nombre de techniciens dans l'entreprise.
      */
     private function getTechnicianCount(?int $companyId): int
     {
-        if ($companyId === null) {
+        if (null === $companyId) {
             return 0;
         }
 
@@ -305,11 +333,16 @@ class AvailabilityService
     }
 
     /**
-     * Calcule le taux de disponibilité
+     * Calcule le taux de disponibilité.
+     *
+     * @param array<int, array<string, mixed>> $busySlots
+     * @param int $technicianCount
+     * @param int $totalDays
+     * @return float
      */
     private function calculateAvailabilityRate(array $busySlots, int $technicianCount, int $totalDays): float
     {
-        if ($technicianCount === 0 || $totalDays === 0) {
+        if (0 === $technicianCount || 0 === $totalDays) {
             return 0.0;
         }
 

@@ -191,7 +191,7 @@ class AppFixtures extends Fixture
 
         // Create appointments and interventions for first 2 customers with TechSolutions
         $typeIntervention = $manager->getRepository(TypeIntervention::class)->findOneBy(['name' => 'Dépannage']) ?? new TypeIntervention();
-        if (!$typeIntervention->getId()) {
+        if (! $typeIntervention->getId()) {
             $typeIntervention->setName('Dépannage');
             $typeIntervention->setCreatedAt(new \DateTimeImmutable());
             $typeIntervention->setUpdatedAt(new \DateTimeImmutable());

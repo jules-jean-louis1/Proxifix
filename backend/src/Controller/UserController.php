@@ -42,7 +42,7 @@ final class UserController extends AbstractController
 
         $userRole = $user->getRole();
 
-        if ($userRole === User::ROLE_ADMIN) {
+        if (User::ROLE_ADMIN === $userRole) {
             $companyId = $user->getCompany()->getId();
             if (null === $companyId) {
                 return $this->json(['error' => 'No company found.'], Response::HTTP_BAD_REQUEST);
@@ -53,7 +53,7 @@ final class UserController extends AbstractController
                     return $this->json(['error' => 'Role not found'], Response::HTTP_BAD_REQUEST);
                 }
             }
-        } elseif ($userRole === User::ROLE_SUPER_ADMIN) {
+        } elseif (User::ROLE_SUPER_ADMIN === $userRole) {
             $company = $payload->get('company_id') ? $entityManager->getRepository(Company::class)->find($payload->get('company_id')) : null;
             if (! $company) {
                 return $this->json(['error' => 'Company not found'], Response::HTTP_BAD_REQUEST);
@@ -89,7 +89,7 @@ final class UserController extends AbstractController
         if (! $existingUser) {
             return $this->json(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
         }
-        if ($existingUser->getRole() === User::ROLE_ADMIN || $existingUser->getRole() === User::ROLE_SUPER_ADMIN) {
+        if (User::ROLE_ADMIN === $existingUser->getRole() || User::ROLE_SUPER_ADMIN === $existingUser->getRole()) {
             return $this->json(['error' => 'No right to edit this user'], Response::HTTP_FORBIDDEN);
         }
 
@@ -164,14 +164,14 @@ final class UserController extends AbstractController
     public function deleteUser(EntityManagerInterface $entityManager, int $id, TokenStorageInterface $tokenStorage): JsonResponse
     {
         $user = $this->getUser();
-        if (! $user instanceof User || $user->getRole() !== User::ROLE_ADMIN) {
+        if (! $user instanceof User || User::ROLE_ADMIN !== $user->getRole()) {
             return $this->json(['error' => 'No right to delete user'], Response::HTTP_FORBIDDEN);
         }
         $userToDelete = $entityManager->getRepository(User::class)->find($id);
         if (! $userToDelete) {
             return $this->json(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
         }
-        if ($userToDelete->getRole() === User::ROLE_ADMIN || $userToDelete->getRole() === User::ROLE_SUPER_ADMIN) {
+        if (User::ROLE_ADMIN === $userToDelete->getRole() || User::ROLE_SUPER_ADMIN === $userToDelete->getRole()) {
             return $this->json(['error' => 'No right to delete this user'], Response::HTTP_FORBIDDEN);
         }
         $entityManager->remove($userToDelete);
@@ -179,6 +179,7 @@ final class UserController extends AbstractController
 
         return $this->json(['success' => 'User deleted'], Response::HTTP_OK);
     }
+
     #[IsGranted('ROLE_TECHNICIAN')]
     #[Route('/user/{id}', name: 'app_user_show_admin', methods: ['GET'])]
     public function showUser(EntityManagerInterface $entityManager, int $id, TokenStorageInterface $tokenStorage): JsonResponse
@@ -186,7 +187,7 @@ final class UserController extends AbstractController
         $user = $this->getUser();
         if (! $user instanceof User) {
             return $this->json(['error' => 'No right to view user'], Response::HTTP_FORBIDDEN);
-        }       
+        }
         $userToShow = $entityManager->getRepository(User::class)->find($id);
         if (! $userToShow) {
             return $this->json(['error' => 'User not found'], Response::HTTP_NOT_FOUND);

@@ -15,7 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/api')]
 final class BrandController extends AbstractController
 {
-        #[Route('/brand', name: 'app_brand_get', methods: ['GET'])]
+    #[Route('/brand', name: 'app_brand_get', methods: ['GET'])]
     public function get(BrandRepository $brandRepository, Request $request): JsonResponse
     {
         $reqId = $request->query->get('id');
@@ -24,8 +24,8 @@ final class BrandController extends AbstractController
         $reqName = $request->query->get('name');
         $reqOrder = $request->query->get('order') ?? 'ASC';
 
-        $brands = $brandRepository->getBrands(null !== $reqId ? intval($reqId) : null, 
-        $reqPage, $reqSize, $reqName, $reqOrder);
+        $brands = $brandRepository->getBrands(null !== $reqId ? intval($reqId) : null,
+            $reqPage, $reqSize, $reqName, $reqOrder);
 
         $data = array_map(function ($brands) {
             return [
@@ -102,5 +102,4 @@ final class BrandController extends AbstractController
 
         return $this->json(['success' => 'Brand deleted successfully'], Response::HTTP_OK);
     }
-
 }

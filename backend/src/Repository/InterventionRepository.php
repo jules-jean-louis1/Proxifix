@@ -57,11 +57,8 @@ class InterventionRepository extends ServiceEntityRepository
     }
 
     /**
-     * Récupère les interventions qui se chevauchent avec un créneau donné
-     * 
-     * @param \DateTimeImmutable $startDate
-     * @param \DateTimeImmutable $endDate
-     * @param int|null $companyId
+     * Récupère les interventions qui se chevauchent avec un créneau donné.
+     *
      * @return Intervention[]
      */
     public function findOverlappingInterventions(
@@ -75,7 +72,7 @@ class InterventionRepository extends ServiceEntityRepository
             ->setParameter('start_date', $startDate)
             ->setParameter('end_date', $endDate);
 
-        if ($companyId !== null) {
+        if (null !== $companyId) {
             $qb->andWhere('i.company = :company_id')
                ->setParameter('company_id', $companyId);
         }
@@ -84,12 +81,7 @@ class InterventionRepository extends ServiceEntityRepository
     }
 
     /**
-     * Compte le nombre d'interventions pour une période donnée
-     * 
-     * @param \DateTime $startDate
-     * @param \DateTime $endDate
-     * @param int|null $companyId
-     * @return int
+     * Compte le nombre d'interventions pour une période donnée.
      */
     public function countInterventionsInPeriod(
         \DateTime $startDate,
@@ -103,7 +95,7 @@ class InterventionRepository extends ServiceEntityRepository
             ->setParameter('start_date', $startDate)
             ->setParameter('end_date', $endDate);
 
-        if ($companyId !== null) {
+        if (null !== $companyId) {
             $qb->andWhere('i.company = :company_id')
                ->setParameter('company_id', $companyId);
         }

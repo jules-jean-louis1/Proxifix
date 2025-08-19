@@ -223,6 +223,10 @@ final class UserControllerUnitTest extends TestCase
         return false;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
     private function sanitizeUserData(array $data): array
     {
         $cleanData = [];

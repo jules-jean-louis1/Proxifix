@@ -55,7 +55,7 @@ final class CompanyController extends AbstractController
         $company->setUpdatedAt(new \DateTimeImmutable());
         $company->setLogo($data['logo'] ?? '');
 
-        if ($user->getRole() === User::ROLE_ADMIN) {
+        if (User::ROLE_ADMIN === $user->getRole()) {
             $company->setIsApproved(false);
         } else {
             $company->setIsApproved($data['is_approved']);
@@ -111,7 +111,7 @@ final class CompanyController extends AbstractController
                         if (! $user) {
                             return $this->json(['error' => "User with ID $userData not found"], 404);
                         }
-                        if ($user->getRole() === 'ROLE_CUSTOMER') {
+                        if ('ROLE_CUSTOMER' === $user->getRole()) {
                             return $this->json(
                                 ['error' => 'Customer cannot be part of a company'],
                                 400
@@ -273,7 +273,7 @@ final class CompanyController extends AbstractController
                         if (! $user) {
                             return $this->json(['error' => "User with ID $userId not found"], 404);
                         }
-                        if ($user->getRole() === User::ROLE_CUSTOMER) {
+                        if (User::ROLE_CUSTOMER === $user->getRole()) {
                             return $this->json(['error' => 'Customer cannot be part of a company'], 400);
                         }
                         $company->addUser($user);

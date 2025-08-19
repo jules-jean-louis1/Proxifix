@@ -119,6 +119,9 @@ final class EquipmentServiceTest extends TestCase
         $this->assertEquals($expectedIsActive, $isActive);
     }
 
+    /**
+     * @return array<string, array<int, string|bool>>
+     */
     public function equipmentStatusProvider(): array
     {
         return [

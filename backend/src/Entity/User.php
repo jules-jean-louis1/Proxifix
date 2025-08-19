@@ -174,7 +174,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * Set the user role
+     * Set the user role.
      */
     public function setRole(string $role): static
     {
@@ -184,7 +184,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * Get the user role
+     * Get the user role.
      */
     public function getRole(): string
     {

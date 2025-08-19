@@ -14,10 +14,11 @@ class AvailabilityController extends AbstractController
 {
     public function __construct(
         private readonly AvailabilityService $availabilityService
-    ) {}
+    ) {
+    }
 
     /**
-     * Récupère les créneaux libres pour une date donnée
+     * Récupère les créneaux libres pour une date donnée.
      */
     #[Route('/free-slots', name: 'free_slots', methods: ['GET'])]
     public function getFreeSlots(Request $request): JsonResponse
@@ -56,17 +57,15 @@ class AvailabilityController extends AbstractController
                 ],
                 'message' => 'Créneaux libres récupérés avec succès',
             ]);
-
         } catch (\InvalidArgumentException $e) {
             return $this->json([
                 'success' => false,
                 'error' => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
-
         } catch (\Exception $e) {
             // Log l'erreur pour debugging (optionnel)
             // $this->logger->error('Erreur lors de la récupération des créneaux: ' . $e->getMessage());
-            
+
             return $this->json([
                 'success' => false,
                 'error' => 'Une erreur inattendue s\'est produite lors du calcul des créneaux',
@@ -75,7 +74,7 @@ class AvailabilityController extends AbstractController
     }
 
     /**
-     * Vérifie si un créneau spécifique est disponible
+     * Vérifie si un créneau spécifique est disponible.
      */
     #[Route('/check-slot', name: 'check_slot', methods: ['POST'])]
     public function checkSlotAvailability(Request $request): JsonResponse
@@ -83,7 +82,7 @@ class AvailabilityController extends AbstractController
         try {
             $data = json_decode($request->getContent(), true);
 
-            if (!isset($data['company_id'], $data['start_date'])) {
+            if (! isset($data['company_id'], $data['start_date'])) {
                 return $this->json([
                     'success' => false,
                     'error' => 'Les paramètres company_id et start_date sont requis',
@@ -106,7 +105,6 @@ class AvailabilityController extends AbstractController
                 ],
                 'message' => $isAvailable ? 'Créneau disponible' : 'Créneau non disponible',
             ]);
-
         } catch (\Exception $e) {
             return $this->json([
                 'success' => false,
@@ -116,7 +114,7 @@ class AvailabilityController extends AbstractController
     }
 
     /**
-     * Récupère les statistiques de disponibilité pour une période
+     * Récupère les statistiques de disponibilité pour une période.
      */
     #[Route('/stats', name: 'stats', methods: ['GET'])]
     public function getAvailabilityStats(Request $request): JsonResponse
@@ -147,13 +145,11 @@ class AvailabilityController extends AbstractController
                 ],
                 'message' => 'Statistiques de disponibilité récupérées avec succès',
             ]);
-
         } catch (\InvalidArgumentException $e) {
             return $this->json([
                 'success' => false,
                 'error' => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
-
         } catch (\Exception $e) {
             return $this->json([
                 'success' => false,
@@ -163,7 +159,7 @@ class AvailabilityController extends AbstractController
     }
 
     /**
-     * Parse une date depuis une chaîne de caractères
+     * Parse une date depuis une chaîne de caractères.
      */
     private function parseDate(?string $dateString): \DateTime
     {

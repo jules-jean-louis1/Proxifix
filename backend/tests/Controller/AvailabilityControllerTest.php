@@ -10,7 +10,7 @@ class AvailabilityControllerTest extends WebTestCase
     public function testGetFreeSlotsWithValidParameters(): void
     {
         $client = static::createClient();
-        
+
         $client->request('GET', '/api/availability/free-slots', [
             'date' => '2025-08-01',
             'company_id' => 1,
@@ -18,9 +18,9 @@ class AvailabilityControllerTest extends WebTestCase
         ]);
 
         $this->assertResponseIsSuccessful();
-        
+
         $responseData = json_decode($client->getResponse()->getContent(), true);
-        
+
         $this->assertTrue($responseData['success']);
         $this->assertArrayHasKey('data', $responseData);
         $this->assertArrayHasKey('free_slots', $responseData['data']);
@@ -30,13 +30,13 @@ class AvailabilityControllerTest extends WebTestCase
     public function testGetFreeSlotsWithInvalidDate(): void
     {
         $client = static::createClient();
-        
+
         $client->request('GET', '/api/availability/free-slots', [
             'date' => 'invalid-date',
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
-        
+
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertFalse($responseData['success']);
         $this->assertArrayHasKey('error', $responseData);
@@ -45,14 +45,14 @@ class AvailabilityControllerTest extends WebTestCase
     public function testGetFreeSlotsWithInvalidInterval(): void
     {
         $client = static::createClient();
-        
+
         $client->request('GET', '/api/availability/free-slots', [
             'date' => '2025-08-01',
             'interval_minutes' => 3, // Trop petit, minimum 5
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
-        
+
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertFalse($responseData['success']);
         $this->assertStringContainsString('au moins 5 minutes', $responseData['error']);
@@ -61,8 +61,8 @@ class AvailabilityControllerTest extends WebTestCase
     public function testCheckSlotAvailability(): void
     {
         $client = static::createClient();
-        
-        $client->request('POST', '/api/availability/check-slot', [], [], 
+
+        $client->request('POST', '/api/availability/check-slot', [], [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'company_id' => 1,
@@ -72,7 +72,7 @@ class AvailabilityControllerTest extends WebTestCase
         );
 
         $this->assertResponseIsSuccessful();
-        
+
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertTrue($responseData['success']);
         $this->assertArrayHasKey('is_available', $responseData['data']);
@@ -81,8 +81,8 @@ class AvailabilityControllerTest extends WebTestCase
     public function testCheckSlotAvailabilityWithMissingParameters(): void
     {
         $client = static::createClient();
-        
-        $client->request('POST', '/api/availability/check-slot', [], [], 
+
+        $client->request('POST', '/api/availability/check-slot', [], [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'start_date' => '2025-08-01 10:00:00',
@@ -91,7 +91,7 @@ class AvailabilityControllerTest extends WebTestCase
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
-        
+
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertFalse($responseData['success']);
         $this->assertStringContainsString('company_id', $responseData['error']);
@@ -100,7 +100,7 @@ class AvailabilityControllerTest extends WebTestCase
     public function testGetAvailabilityStats(): void
     {
         $client = static::createClient();
-        
+
         $client->request('GET', '/api/availability/stats', [
             'start_date' => '2025-08-01',
             'end_date' => '2025-08-07',
@@ -108,11 +108,11 @@ class AvailabilityControllerTest extends WebTestCase
         ]);
 
         $this->assertResponseIsSuccessful();
-        
+
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertTrue($responseData['success']);
         $this->assertArrayHasKey('statistics', $responseData['data']);
-        
+
         $stats = $responseData['data']['statistics'];
         $this->assertArrayHasKey('total_days', $stats);
         $this->assertArrayHasKey('busy_slots_count', $stats);

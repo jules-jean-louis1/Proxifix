@@ -70,7 +70,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function getUsers(?int $companyId = null, ?string $searchQuery = '', ?int $page = 1, ?int $size = 25, ?string $order = '', ?string $role = 'ROLE_CUSTOMER', ?int $customerCompanyId = null): array
     {
         $qb = $this->createQueryBuilder('u');
-        
+
         // Filtre par company_id si fourni
         if (null !== $companyId) {
             $qb->andWhere('u.company = :companyId')
@@ -78,9 +78,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
 
         // Recherche par nom, prénom ou email
-        if (!empty($searchQuery)) {
+        if (! empty($searchQuery)) {
             $qb->andWhere('(UPPER(u.first_name) LIKE UPPER(:searchQuery) OR UPPER(u.last_name) LIKE UPPER(:searchQuery) OR UPPER(u.email) LIKE UPPER(:searchQuery))')
-               ->setParameter('searchQuery', '%' . $searchQuery . '%');
+               ->setParameter('searchQuery', '%'.$searchQuery.'%');
         }
 
         // Filtre par rôle

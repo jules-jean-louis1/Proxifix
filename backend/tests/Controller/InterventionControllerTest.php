@@ -18,8 +18,8 @@ final class InterventionControllerTest extends ApiTestCase
             'description' => 'This is a test intervention',
             'type_intervention_id' => 1,
             'company_id' => 1,
-            'user_id' => 7,
-            'equipment_id' => 6,
+            'user_id' => 6,
+            'equipment_id' => 1,
             'technician_id' => 5,
             'status' => 'pending',
         ]));

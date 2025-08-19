@@ -10,6 +10,7 @@ use App\Entity\TypeIntervention;
 use App\Entity\User;
 use App\Repository\AppointmentRequestRepository;
 use App\Repository\InterventionRepository;
+use App\Services\AvailabilityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,6 +22,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/api')]
 final class AppointmentController extends AbstractController
 {
+    public function __construct(
+        private readonly AvailabilityService $availabilityService
+    ) {
+    }
+
     #[Route('/appointment', name: 'get_appointment', methods: ['GET'])]
     public function getAppointment(Request $request, AppointmentRequestRepository $appointmentRequestRepository, EntityManagerInterface $em): JsonResponse
     {
@@ -36,11 +42,11 @@ final class AppointmentController extends AbstractController
 
         $user = $this->getUser();
 
-        if ($user instanceof User && $user->getRole() === User::ROLE_CUSTOMER) {
+        if ($user instanceof User && User::ROLE_CUSTOMER === $user->getRole()) {
             $userIdRequest = $user->getId();
         }
 
-        if ($user instanceof User && ($user->getRole() === User::ROLE_ADMIN || $user->getRole() === User::ROLE_TECHNICIAN)) {
+        if ($user instanceof User && (User::ROLE_ADMIN === $user->getRole() || User::ROLE_TECHNICIAN === $user->getRole())) {
             $companyIdRequest = $user->getCompany()->getId();
         }
 
@@ -76,7 +82,7 @@ final class AppointmentController extends AbstractController
     }
 
     #[Route('/appointment/free-slots', name: 'get_available_slots', methods: ['GET'])]
-    public function getAvailableSlots(Request $req, InterventionRepository $interventionRepository): JsonResponse
+    public function getAvailableSlots(Request $req): JsonResponse
     {
         $date = $req->query->get('date');
         $companyId = $req->query->get('company_id') ?? $req->query->get('companyId'); // Support both formats
@@ -99,7 +105,7 @@ final class AppointmentController extends AbstractController
         $intervalMin = $interval ? (int) $interval : 60;
         $companyIdInt = $companyId ? (int) $companyId : null;
 
-        $slots = $interventionRepository->getFreeSlots($dateObj, $companyIdInt, $intervalMin, $startTime, $endTime, $role);
+        $slots = $this->availabilityService->getFreeSlots($dateObj, $companyIdInt, $intervalMin, $startTime, $endTime, $role);
 
         return $this->json($slots, Response::HTTP_OK);
     }
@@ -311,7 +317,7 @@ final class AppointmentController extends AbstractController
         if (! $appointment) {
             return $this->json(['error' => 'Appointment not found'], Response::HTTP_NOT_FOUND);
         }
-        if ($user->getRole() === 'ROLE_CUSTOMER') {
+        if ('ROLE_CUSTOMER' === $user->getRole()) {
             if ($appointment->getUser()->getId() !== $user->getId()) {
                 return $this->json(['errors' => 'access denied'], Response::HTTP_FORBIDDEN);
             }
@@ -334,7 +340,7 @@ final class AppointmentController extends AbstractController
 
         $appointment = $em->getRepository(AppointmentRequest::class)->find($id);
 
-        if ($user->getRole() === 'ROLE_CUSTOMER') {
+        if ('ROLE_CUSTOMER' === $user->getRole()) {
             if ($appointment->getUser()->getId() !== $userId) {
                 return $this->json(['error' => 'Access denied'], Response::HTTP_FORBIDDEN);
             }
