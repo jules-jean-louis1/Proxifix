@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 /**
  * Migration to remove PostgreSQL get_free_slots function
- * This function is no longer needed as the logic has been moved to PHP services
+ * This function is no longer needed as the logic has been moved to PHP services.
  */
 final class Version20250731120000 extends AbstractMigration
 {
@@ -23,7 +23,7 @@ final class Version20250731120000 extends AbstractMigration
         // Suppression de la fonction PostgreSQL get_free_slots
         $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer, time, time, text) CASCADE;');
         $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer) CASCADE;');
-        
+
         // Correction de la relation OneToOne entre AppointmentRequest et Intervention
         // Ajout d'une contrainte UNIQUE sur appointment_request_id dans la table intervention
         $this->addSql('ALTER TABLE intervention ADD CONSTRAINT UNIQ_D11814AB9D6A1065 UNIQUE (appointment_request_id)');
@@ -33,7 +33,7 @@ final class Version20250731120000 extends AbstractMigration
     {
         // Suppression de la contrainte UNIQUE
         $this->addSql('ALTER TABLE intervention DROP CONSTRAINT IF EXISTS UNIQ_D11814AB9D6A1065');
-        
+
         // Recréation de la fonction en cas de rollback
         $this->addSql("CREATE OR REPLACE FUNCTION get_free_slots(
                                 p_date DATE,

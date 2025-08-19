@@ -10,30 +10,30 @@ final class InterventionControllerTest extends ApiTestCase
     {
         $client = $this->client;
         $token = $this->getToken('technician@techsolutions.com', 'technicianpass');
-        
+
         // Récupération dynamique des entités depuis les fixtures
         $entityManager = self::getContainer()->get('doctrine')->getManager();
-        
+
         // Récupérer une company existante
         $company = $entityManager->getRepository(\App\Entity\Company::class)->findOneBy([]);
         $this->assertNotNull($company, 'No company found in fixtures');
-        
+
         // Récupérer un customer existant
         $customer = $entityManager->getRepository(\App\Entity\User::class)->findOneBy(['role' => 'ROLE_CUSTOMER']);
         $this->assertNotNull($customer, 'No customer found in fixtures');
-        
+
         // Récupérer un equipment qui appartient à ce customer
         $equipment = $entityManager->getRepository(\App\Entity\Equipment::class)->findOneBy(['user' => $customer]);
         $this->assertNotNull($equipment, 'No equipment found for this customer');
-        
+
         // Récupérer un technician existant
         $technician = $entityManager->getRepository(\App\Entity\User::class)->findOneBy(['role' => 'ROLE_TECHNICIAN']);
         $this->assertNotNull($technician, 'No technician found in fixtures');
-        
+
         // Récupérer un type d'intervention existant
         $typeIntervention = $entityManager->getRepository(\App\Entity\TypeIntervention::class)->findOneBy([]);
         $this->assertNotNull($typeIntervention, 'No type intervention found in fixtures');
-        
+
         $client->request('POST', '/api/intervention', [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             'CONTENT_TYPE' => 'application/json',
@@ -61,13 +61,13 @@ final class InterventionControllerTest extends ApiTestCase
     {
         $client = $this->client;
         $token = $this->getToken('admin@test.com', 'adminpass');
-        
+
         // Récupérer une intervention existante depuis les fixtures
         $entityManager = self::getContainer()->get('doctrine')->getManager();
         $intervention = $entityManager->getRepository(\App\Entity\Intervention::class)->findOneBy([]);
         $this->assertNotNull($intervention, 'No intervention found in fixtures');
-        
-        $client->request('GET', '/api/intervention?id=' . $intervention->getId(), [], [], [
+
+        $client->request('GET', '/api/intervention?id='.$intervention->getId(), [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer '.$token,
         ]);
 
@@ -83,16 +83,16 @@ final class InterventionControllerTest extends ApiTestCase
     {
         $client = $this->client;
         $token = $this->getToken('technician@techsolutions.com', 'technicianpass');
-        
+
         // Récupérer une intervention et une task existantes
         $entityManager = self::getContainer()->get('doctrine')->getManager();
         $intervention = $entityManager->getRepository(\App\Entity\Intervention::class)->findOneBy([]);
         $this->assertNotNull($intervention, 'No intervention found in fixtures');
-        
+
         $task = $entityManager->getRepository(\App\Entity\Task::class)->findOneBy([]);
         $this->assertNotNull($task, 'No task found in fixtures');
-        
-        $client->request('POST', '/api/intervention/' . $intervention->getId() . '/task', [], [], [
+
+        $client->request('POST', '/api/intervention/'.$intervention->getId().'/task', [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             'CONTENT_TYPE' => 'application/json',
         ], json_encode([
@@ -113,27 +113,27 @@ final class InterventionControllerTest extends ApiTestCase
     {
         $client = $this->client;
         $token = $this->getToken('technician@techsolutions.com', 'technicianpass');
-        
+
         // Récupérer une intervention et une task existantes
         $entityManager = self::getContainer()->get('doctrine')->getManager();
         $intervention = $entityManager->getRepository(\App\Entity\Intervention::class)->findOneBy([]);
         $this->assertNotNull($intervention, 'No intervention found in fixtures');
-        
+
         $task = $entityManager->getRepository(\App\Entity\Task::class)->findOneBy([]);
         $this->assertNotNull($task, 'No task found in fixtures');
-        
+
         // D'abord, ajouter la tâche à l'intervention
-        $client->request('POST', '/api/intervention/' . $intervention->getId() . '/task', [], [], [
+        $client->request('POST', '/api/intervention/'.$intervention->getId().'/task', [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer '.$token,
             'CONTENT_TYPE' => 'application/json',
         ], json_encode([
             'task_id' => $task->getId(),
         ]));
-        
+
         $this->assertResponseStatusCodeSame(201);
-        
+
         // Ensuite, supprimer la tâche de l'intervention
-        $client->request('DELETE', '/api/intervention/' . $intervention->getId() . '/task/' . $task->getId(), [], [], [
+        $client->request('DELETE', '/api/intervention/'.$intervention->getId().'/task/'.$task->getId(), [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer '.$token,
         ]);
 
