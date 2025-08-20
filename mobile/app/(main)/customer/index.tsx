@@ -2,7 +2,7 @@ import { useSessionContext } from "@/app/context/useSessionContext";
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Image, Pressable, ScrollView } from "react-native";
 import { Button, Text } from "react-native-paper";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 import { Feather } from "@expo/vector-icons";
 import { EquipmentCardHome } from "@/app/components/customer/equipment/EquipmentCardHome";
 import { router } from "expo-router";

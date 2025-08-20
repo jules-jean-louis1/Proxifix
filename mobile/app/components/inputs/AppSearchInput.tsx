@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Controller, useFormContext } from "react-hook-form";
 import DropdownSelect from 'react-native-input-select';
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 
 interface AppSearchInputProps {
   nameField: string;

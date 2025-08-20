@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from "react-native";
 import { Controller, useFormContext } from "react-hook-form";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 import { TextInput } from "react-native-paper";
 
 interface AppSimpleSearchInputProps {

@@ -4,7 +4,7 @@ import { AppTextField } from "@/app/components/inputs/AppTextField";
 import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import { getStatus } from "@/app/utils/intervention";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";

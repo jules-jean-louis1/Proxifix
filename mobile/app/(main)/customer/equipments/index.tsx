@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import React from "react";
 import { components } from "@/app/types/types";

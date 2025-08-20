@@ -6,7 +6,7 @@ import { AppTextField } from "../../inputs/AppTextField";
 import { AppSelectInput } from "../../inputs/AppSelectInput";
 import { AppButton } from "../../buttons/AppButton";
 import { useSessionContext } from "@/app/context/useSessionContext";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 
 interface EquipmentModalFormProps {
   type: "create" | "update" | "delete";

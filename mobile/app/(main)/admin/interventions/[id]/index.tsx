@@ -2,7 +2,7 @@ import React from 'react';
 import { Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { AdminInterventionStepper } from '@/app/components/admin/intervention/AdminInterventionStepper';
-import { useApi } from '@/app/utils/useApi';
+import { useApi } from '@/app/hooks/useApi';
 
 const AdminInterventionEditPage = () => {
   const { id, step } = useLocalSearchParams<{ id: string; step?: string }>();

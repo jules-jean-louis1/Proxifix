@@ -6,7 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import { AppointmentModalForm } from "@/app/components/customer/appointment/AppointmentModalForm";
 import { AppointmentCard } from "@/app/components/customer/appointment/AppointmentCard";

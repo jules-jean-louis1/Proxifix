@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 import { FC, useEffect, useState, useCallback } from "react";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import { ScrollView, StyleSheet, View } from "react-native";

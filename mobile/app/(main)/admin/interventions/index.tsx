@@ -1,7 +1,7 @@
 import { AdminInterventionCard } from "@/app/components/admin/intervention/AdminInterventionCard";
 import { ToolBarAdmin } from "@/app/components/admin/navigation/ToolBarAdmin";
 import { useSessionContext } from "@/app/context/useSessionContext";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import { ScrollView, View } from "react-native";
