@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import { useSession } from "../context/authContext";
 import { useEffect, useState } from "react";
 import React from "react";
@@ -11,7 +11,6 @@ export default function MainLayout() {
 
   useEffect(() => {
     setIsAdmin(sessionCtx?.getIsAdmin() ?? false);
-    console.log("Session context:", sessionCtx?.session);
   }, [sessionCtx]);
 
   if (isLoading) {
@@ -19,13 +18,16 @@ export default function MainLayout() {
   }
 
   if (!session) {
-    return <Stack.Screen name="loginCustomer" />;
+    return <Redirect href="/" />;
   }
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="customer" options={{ headerShown: false }} />
-      <Stack.Screen name="admin" options={{ headerShown: false }} />
+      {isAdmin ? (
+        <Stack.Screen name="admin" options={{ headerShown: false }} />
+      ) : (
+        <Stack.Screen name="customer" options={{ headerShown: false }} />
+      )}
     </Stack>
   );
 }

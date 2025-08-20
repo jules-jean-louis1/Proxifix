@@ -1,6 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import { Slot, Tabs, Redirect } from "expo-router";
+import { Tabs, Redirect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { useSessionContext } from "../../context/useSessionContext";
 import TabBarCustomer from "@/app/components/customer/navigation/TabBarCustomer";
@@ -8,14 +7,21 @@ import TabBarCustomer from "@/app/components/customer/navigation/TabBarCustomer"
 export default function CustomerLayout() {
   const sessionCtx = useSessionContext();
   const isAdmin = sessionCtx?.getIsAdmin() ?? false;
+  const isLoggedIn = sessionCtx?.session != null;
 
-  // Rediriger vers admin si c'est un admin
+  if (!isLoggedIn) {
+    return <Redirect href="/" />;
+  }
+
   if (isAdmin) {
     return <Redirect href="/admin" />;
   }
 
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "#01358D", headerShown: false }} tabBar={(props) => <TabBarCustomer />}>
+    <Tabs
+      screenOptions={{ tabBarActiveTintColor: "#01358D", headerShown: false }}
+      tabBar={(props) => <TabBarCustomer />}
+    >
       <Tabs.Screen
         name="index"
         options={{
