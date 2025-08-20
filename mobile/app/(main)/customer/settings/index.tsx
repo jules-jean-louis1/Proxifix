@@ -4,7 +4,7 @@ import { useSessionContext } from "@/app/context/useSessionContext";
 import { Divider, List, Text } from "react-native-paper";
 import { router } from "expo-router";
 import { AppButton } from "@/app/components/buttons/AppButton";
-import { useSession } from "@/app/context/ctx";
+import { useSession } from "@/app/context/authContext";
 import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
 
 export const ProfilePage = () => {

@@ -1,5 +1,5 @@
 import { jwtDecode } from "jwt-decode";
-import { useSession } from "./ctx";
+import { useSession } from "./authContext";
 import { getIsAdmin, isAdmin, isCustomer, isSuperAdmin, isTechnician } from "./user";
 import { SessionToken } from "../utils/types";
 

@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import { useSession } from "../context/ctx";
+import { useSession } from "../context/authContext";
 import { useEffect, useState } from "react";
 import React from "react";
 import { useSessionContext } from "../context/useSessionContext";
