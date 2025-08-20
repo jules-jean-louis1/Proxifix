@@ -24,7 +24,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: password
           POSTGRES_USER: postgres
-          POSTGRES_DB: proaxive_test
+          POSTGRES_DB: proxifix_dev_test
         ports:
           - 5432:5432
         options: >-
@@ -51,8 +51,8 @@ jobs:
       - name: "Generate JWT keys"
         run: |
           mkdir -p config/jwt
-          openssl genpkey -out config/jwt/private.pem -algorithm rsa -aes256 -pass pass:proaxive_jwt_passphrase
-          openssl pkey -in config/jwt/private.pem -passin pass:proaxive_jwt_passphrase -out config/jwt/public.pem -pubout
+          openssl genpkey -out config/jwt/private.pem -algorithm rsa -aes256 -pass pass:proxifix_jwt_passphrase
+          openssl pkey -in config/jwt/private.pem -passin pass:proxifix_jwt_passphrase -out config/jwt/public.pem -pubout
 
       - name: "Prepare test database"
         run: |

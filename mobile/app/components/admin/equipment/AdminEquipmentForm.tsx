@@ -5,7 +5,7 @@ import { AppTextField } from "../../inputs/AppTextField";
 import { AppButton } from "../../buttons/AppButton";
 import { AppSelectInput } from "../../inputs/AppSelectInput";
 import { AppSimpleSearchInput } from "../../inputs/AppSimpleSearchInput";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 
 interface Equipment {
   id: number;

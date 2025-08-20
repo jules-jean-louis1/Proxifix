@@ -6,7 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import { AppointmentModalForm } from "@/app/components/customer/appointment/AppointmentModalForm";
 import { AppointmentCard } from "@/app/components/customer/appointment/AppointmentCard";
@@ -32,10 +32,10 @@ export default function InterventionsPage() {
         setLoading(true);
         setError(null);
         const response = await api.get(
-          `/intervention?user_id=${sessionData?.id}`
+          `/intervention?user_id=${sessionData?.id}`,
         );
         const appointmentsResponse = await api.get(
-          `/appointment?user_id=${sessionData?.id}`
+          `/appointment?user_id=${sessionData?.id}`,
         );
         setInterventions(response.data);
         setAppointments(appointmentsResponse.data);
@@ -67,7 +67,7 @@ export default function InterventionsPage() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ToolBarCustomer title="Mes interventions" bottomBar/>
+      <ToolBarCustomer title="Mes interventions" bottomBar />
       <ScrollView style={styles.container}>
         <View>
           <Text style={styles.dateText}>Vos interventions</Text>
@@ -84,7 +84,9 @@ export default function InterventionsPage() {
               />
             ))
           ) : (
-            <Text style={styles.textEmptyData}>Aucune intervention trouvée.</Text>
+            <Text style={styles.textEmptyData}>
+              Aucune intervention trouvée.
+            </Text>
           )}
         </View>
         {appointments && appointments.length !== 0 && (
@@ -115,7 +117,7 @@ export default function InterventionsPage() {
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -192,6 +194,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "flex-end",
     zIndex: 100,
+    backgroundColor: "#F9556D",
   },
   fab: {
     margin: 16,

@@ -1,10 +1,10 @@
 {
-  "name": "proaxive_dev",
+  "name": "proxifix_dev",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generate:types": "npx openapi-typescript http://localhost:8000/api/docs.json -o /home/jules/Documents/Dev/proaxive_dev/mobile/app/types/types.ts"
+    "generate:types": "npx openapi-typescript http://localhost:8000/api/docs.json -o /home/jules/Documents/Dev/proxifix_dev/mobile/app/types/types.ts"
   },
   "keywords": [],
   "author": "",

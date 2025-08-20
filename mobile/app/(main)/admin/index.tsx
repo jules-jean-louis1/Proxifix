@@ -1,6 +1,6 @@
 import { AppButton } from "@/app/components/buttons/AppButton";
 import { useSessionContext } from "@/app/context/useSessionContext";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";

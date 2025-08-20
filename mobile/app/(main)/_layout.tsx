@@ -1,5 +1,5 @@
-import { Stack } from "expo-router";
-import { useSession } from "../context/ctx";
+import { Redirect, Stack } from "expo-router";
+import { useSession } from "../context/authContext";
 import { useEffect, useState } from "react";
 import React from "react";
 import { useSessionContext } from "../context/useSessionContext";
@@ -19,13 +19,16 @@ export default function MainLayout() {
   }
 
   if (!session) {
-    return <Stack.Screen name="loginCustomer" />;
+    return <Redirect href="/" />;
   }
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="customer" options={{ headerShown: false }} />
-      <Stack.Screen name="admin" options={{ headerShown: false }} />
+      {isAdmin ? (
+        <Stack.Screen name="admin" options={{ headerShown: false }} />
+      ) : (
+        <Stack.Screen name="customer" options={{ headerShown: false }} />
+      )}
     </Stack>
   );
 }

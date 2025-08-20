@@ -14,7 +14,7 @@ Application complète de gestion d'interventions techniques pour les entreprises
 ```bash
 # 1. Cloner le projet
 git clone [url-du-repo]
-cd proaxive_dev
+cd proxifix_dev
 
 # 2. Configurer l'environnement Docker
 cp docker/.env.tpl docker/.env
@@ -118,7 +118,7 @@ POSTGRES_USER=app
 POSTGRES_PASSWORD=password
 
 # Projet
-PROJECT_NAME=proaxive-dev
+PROJECT_NAME=proxifix-dev
 ```
 
 ### SSL/HTTPS (Production)

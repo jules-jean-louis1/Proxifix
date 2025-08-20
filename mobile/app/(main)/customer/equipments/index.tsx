@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import React from "react";
 import { components } from "@/app/types/types";
@@ -27,6 +27,7 @@ const EquipmentsPage = () => {
   const [os, setOs] = useState<any>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [fetchData, setFetchData] = useState<boolean>(false);
   const sessionCtx = useSessionContext();
   const sessionData = sessionCtx?.session;
   const api = useApi();
@@ -47,36 +48,78 @@ const EquipmentsPage = () => {
           "Error:",
           (error as any).response
             ? (error as any).response.data
-            : (error as any).message
+            : (error as any).message,
         );
         setError(
-          (error as any).message || "Impossible to get the equipments of user."
+          (error as any).message || "Impossible to get the equipments of user.",
         );
       } finally {
         setLoading(false);
+        setFetchData(false);
       }
     })();
   }, []);
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.loadingText}>Loading...</Text>
+      <View style={{ flex: 1 }}>
+        <ToolBarCustomer
+          title={"Mes équipements"}
+          bottomBar
+          showBack
+          onBackPress={() => router.push("/customer")}
+        />
+        <View style={styles.container}>
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>{error}</Text>
+      <View style={{ flex: 1 }}>
+        <ToolBarCustomer
+          title={"Mes équipements"}
+          bottomBar
+          showBack
+          onBackPress={() => router.push("/customer")}
+        />
+        <View style={styles.container}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
       </View>
     );
   }
   if (equipments.length === 0) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.loadingText}>Aucun équipement trouvé.</Text>
+      <View style={{ flex: 1 }}>
+        <ToolBarCustomer
+          title={"Mes équipements"}
+          bottomBar
+          showBack
+          onBackPress={() => router.push("/customer")}
+        />
+        <ScrollView style={styles.container}>
+          <Text style={styles.loadingText}>Aucun équipement trouvé.</Text>
+        </ScrollView>
+        <View pointerEvents="box-none" style={styles.fabContainer}>
+          <EquipmentModalForm
+            type="create"
+            brands={brands}
+            typeEquipment={typeEquipment}
+            os={os}
+            setEquipments={setEquipments}
+            onSuccess={() => setFetchData(!fetchData)}
+            button={
+              <FAB
+                icon="plus"
+                style={styles.fab}
+                label="Ajouter un équipement"
+              />
+            }
+          />
+        </View>
       </View>
     );
   }

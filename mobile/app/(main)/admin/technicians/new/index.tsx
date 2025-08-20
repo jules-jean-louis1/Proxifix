@@ -2,7 +2,7 @@ import { View, ScrollView } from "react-native";
 import React from "react";
 import { router } from "expo-router";
 import { AdminTechnicianForm } from "@/app/components/admin/technician/AdminTechnicianForm";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 import { ToolBarAdmin } from "@/app/components/admin/navigation/ToolBarAdmin";
 
 const AdminTechnicianNew = () => {

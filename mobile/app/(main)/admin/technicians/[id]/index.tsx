@@ -1,5 +1,5 @@
 import { useSessionContext } from "@/app/context/useSessionContext";
-import { useApi } from "@/app/utils/useApi";
+import { useApi } from "@/app/hooks/useApi";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { FC, useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
