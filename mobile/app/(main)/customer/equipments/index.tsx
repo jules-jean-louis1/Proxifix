@@ -27,6 +27,7 @@ const EquipmentsPage = () => {
   const [os, setOs] = useState<any>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [fetchData, setFetchData] = useState<boolean>(false);
   const sessionCtx = useSessionContext();
   const sessionData = sessionCtx?.session;
   const api = useApi();
@@ -47,13 +48,14 @@ const EquipmentsPage = () => {
           "Error:",
           (error as any).response
             ? (error as any).response.data
-            : (error as any).message
+            : (error as any).message,
         );
         setError(
-          (error as any).message || "Impossible to get the equipments of user."
+          (error as any).message || "Impossible to get the equipments of user.",
         );
       } finally {
         setLoading(false);
+        setFetchData(false);
       }
     })();
   }, []);
@@ -108,6 +110,7 @@ const EquipmentsPage = () => {
             typeEquipment={typeEquipment}
             os={os}
             setEquipments={setEquipments}
+            onSuccess={() => setFetchData(!fetchData)}
             button={
               <FAB
                 icon="plus"

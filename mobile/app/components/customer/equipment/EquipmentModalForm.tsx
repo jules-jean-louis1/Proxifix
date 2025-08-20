@@ -37,33 +37,36 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
 
   const onSubmit = async (data: any) => {
     const values = methods.getValues();
-    if (type === "update") {
-      try {
+
+    const strategies: Record<string, () => Promise<void>> = {
+      update: async () => {
         const response = await api.put(`/equipment/${equipment?.id}`, {
           ...data,
           user_id: sessionData?.id,
         });
         setEquipments?.((prev: any) =>
           prev.map((item: any) =>
-            item.id === equipment?.id ? response.data : item
-          )
+            item.id === equipment?.id ? response.data : item,
+          ),
         );
         setModalVisible(false);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    if (type === "create") {
-      try {
+        onSuccess();
+      },
+      create: async () => {
         const response = await api.post("/equipment/new", {
           ...data,
           user_id: sessionData?.id,
         });
         setEquipments?.((prev: any) => [...prev, response.data]);
         setModalVisible(false);
-      } catch (error) {
-        console.error(error);
-      }
+        onSuccess();
+      },
+    };
+
+    try {
+      await strategies[type]?.();
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -71,7 +74,7 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
     try {
       await api.delete(`/equipment/${equipment?.id}`);
       setEquipments?.((prev: any) =>
-        prev.filter((item: any) => item.id !== equipment?.id)
+        prev.filter((item: any) => item.id !== equipment?.id),
       );
       setModalVisible(false);
     } catch (error) {
@@ -83,13 +86,12 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
 
   return (
     <View>
-      {button && (
+      {button &&
         React.cloneElement(button, {
           onPress: () => {
             setModalVisible(true);
           },
-        })
-      )}
+        })}
       <Modal
         animationType="slide"
         visible={modalVisible}
@@ -151,7 +153,11 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
                   nameField="operating_system_id"
                   label="Système d'exploitation"
                   placeholder="Sélectionnez le système d'exploitation"
-                  defaultValue={equipment?.operating_system ? equipment.operating_system.id : ""}
+                  defaultValue={
+                    equipment?.operating_system
+                      ? equipment.operating_system.id
+                      : ""
+                  }
                   options={os!.map((os: any) => ({
                     label: os.name,
                     value: os.id,
