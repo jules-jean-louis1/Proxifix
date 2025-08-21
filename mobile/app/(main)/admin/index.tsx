@@ -132,27 +132,44 @@ export default function AdminHome() {
           <Text style={styles.subtitle}>
             Dashboard Admin - {sessionData?.company?.name}
           </Text>
-          <View style={styles.buttonContainer}>
-            <AppButton
-              type="primary"
-              children="Gérer les clients"
-              onPress={() => router.push("/admin/customers")}
-            />
-            <AppButton
-              type="primary"
-              children="Gérer les interventions"
-              onPress={() => router.push("/admin/interventions")}
-            />
-            <AppButton
-              type="primary"
-              children="Ajouter une intervention"
-              onPress={() => router.push("/admin/interventions/new")}
-            />
-            <AppButton
-              type="primary"
-              children="Ajouter un technicien"
-              onPress={() => router.push("/admin/technicians/new")}
-            />
+          <View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 4,
+              }}
+            >
+              <AppButton
+                type="primary"
+                children="Clients"
+                onPress={() => router.push("/admin/customers")}
+                style={{ flex: 1, marginRight: 2 }}
+                icon={"plus"}
+              />
+              <AppButton
+                type="primary"
+                children="Interventions"
+                onPress={() => router.push("/admin/interventions/new")}
+                style={{ flex: 1, marginLeft: 2 }}
+                icon={"plus"}
+              />
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 4,
+              }}
+            >
+              <AppButton
+                type="primary"
+                children="Ajouter un technicien"
+                onPress={() => router.push("/admin/technicians/new")}
+                style={{ flex: 1, marginLeft: 2 }}
+              />
+            </View>
           </View>
           <Text variant="titleMedium" style={styles.sectionTitle}>
             Interventions récentes ({interventions.length})

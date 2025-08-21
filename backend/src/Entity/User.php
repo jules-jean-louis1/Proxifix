@@ -6,8 +6,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,33 +21,33 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations: [
         new GetCollection(
-            name: 'app_user_get',
+            name: 'app_user_list_admin',
             uriTemplate: '/user',
-            controller: 'App\\Controller\\UserController::get',
+            controller: 'App\\Controller\\UserController::listUsers',
             normalizationContext: ['groups' => ['user:get_all']],
         ),
         new Get(
-            name: 'app_user_get_by_id',
+            name: 'app_user_show_admin',
             uriTemplate: '/user/{id}',
-            controller: 'App\\Controller\\UserController::getById',
+            controller: 'App\\Controller\\UserController::showUser',
             normalizationContext: ['groups' => ['user:get_by_id']]
         ),
         new Post(
-            name: 'app_user_new',
+            name: 'app_user_add_admin',
             uriTemplate: '/user',
-            controller: 'App\\Controller\\UserController::create',
+            controller: 'App\\Controller\\UserController::addUser',
             denormalizationContext: ['groups' => ['user:write']]
         ),
-        new Put(
-            name: 'app_user_update',
+        new Patch(
+            name: 'app_user_edit_admin',
             uriTemplate: '/user/{id}',
-            controller: 'App\\Controller\\UserController::update',
+            controller: 'App\\Controller\\UserController::editUser',
             denormalizationContext: ['groups' => ['user:write']]
         ),
         new Delete(
-            name: 'app_user_delete',
+            name: 'app_user_delete_admin',
             uriTemplate: '/user/{id}',
-            controller: 'App\\Controller\\UserController::delete'
+            controller: 'App\\Controller\\UserController::deleteUser'
         ),
     ],
     normalizationContext: ['groups' => ['user:get_all']],

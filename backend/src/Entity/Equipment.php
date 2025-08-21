@@ -19,31 +19,37 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new GetCollection(
             name: 'app_equipment_get',
             uriTemplate: '/equipment',
-            controller: 'App\\Controller\\EquipmentController::get',
+            controller: 'App\\Controller\\EquipmentController::getEquipments',
             normalizationContext: ['groups' => ['equipment:get_all']],
         ),
         new Get(
-            name: 'app_equipment_get_by_id',
+            name: 'app_equipment_get_one',
             uriTemplate: '/equipment/{id}',
-            controller: 'App\\Controller\\EquipmentController::getById',
+            controller: 'App\\Controller\\EquipmentController::getOneEquipment',
             normalizationContext: ['groups' => ['equipment:get_by_id']]
         ),
         new Post(
-            name: 'app_equipment_new',
+            name: 'app_equipment_create',
             uriTemplate: '/equipment',
             controller: 'App\\Controller\\EquipmentController::create',
             denormalizationContext: ['groups' => ['equipment:write']]
         ),
         new Put(
-            name: 'app_equipment_update',
+            name: 'app_equipment_edit',
             uriTemplate: '/equipment/{id}',
-            controller: 'App\\Controller\\EquipmentController::update',
+            controller: 'App\\Controller\\EquipmentController::edit',
             denormalizationContext: ['groups' => ['equipment:write']]
         ),
         new Delete(
             name: 'app_equipment_delete',
             uriTemplate: '/equipment/{id}',
             controller: 'App\\Controller\\EquipmentController::delete'
+        ),
+        new GetCollection(
+            name: 'app_equipment_customer_list',
+            uriTemplate: '/customer/{customerId}',
+            controller: 'App\\Controller\\EquipmentController::getEquipmentUser',
+            normalizationContext: ['groups' => ['equipment:get_all']]
         ),
     ],
     normalizationContext: ['groups' => ['equipment:get_all']],

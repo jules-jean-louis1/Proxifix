@@ -19,19 +19,19 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     operations: [
         new GetCollection(
-            name: 'app_task_get',
+            name: 'app_task_list',
             uriTemplate: '/task',
             controller: 'App\\Controller\\TaskController::get',
             normalizationContext: ['groups' => ['task:get_all']],
         ),
         new Get(
-            name: 'app_task_get_by_id',
+            name: 'app_task_show',
             uriTemplate: '/task/{id}',
-            controller: 'App\\Controller\\TaskController::getById',
+            controller: 'App\\Controller\\TaskController::show',
             normalizationContext: ['groups' => ['task:get_by_id']]
         ),
         new Post(
-            name: 'app_task_new',
+            name: 'app_task',
             uriTemplate: '/task',
             controller: 'App\\Controller\\TaskController::create',
             denormalizationContext: ['groups' => ['task:write']]

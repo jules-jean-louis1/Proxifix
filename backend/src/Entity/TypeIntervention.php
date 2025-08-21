@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
@@ -17,27 +16,21 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     operations: [
         new GetCollection(
-            name: 'app_type_intervention_get',
+            name: 'app_type_intervention',
             uriTemplate: '/type-intervention',
             controller: 'App\\Controller\\TypeInterventionController::get',
             normalizationContext: ['groups' => ['type_intervention:get_all']],
         ),
-        new Get(
-            name: 'app_type_intervention_get_by_id',
-            uriTemplate: '/type-intervention/{id}',
-            controller: 'App\\Controller\\TypeInterventionController::getById',
-            normalizationContext: ['groups' => ['type_intervention:get_by_id']]
-        ),
         new Post(
-            name: 'app_type_intervention_new',
+            name: 'app_type_intervention_create',
             uriTemplate: '/type-intervention',
             controller: 'App\\Controller\\TypeInterventionController::create',
             denormalizationContext: ['groups' => ['type_intervention:write']]
         ),
         new Put(
-            name: 'app_type_intervention_update',
+            name: 'app_type_intervention_edit',
             uriTemplate: '/type-intervention/{id}',
-            controller: 'App\\Controller\\TypeInterventionController::update',
+            controller: 'App\\Controller\\TypeInterventionController::edit',
             denormalizationContext: ['groups' => ['type_intervention:write']]
         ),
         new Delete(

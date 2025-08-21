@@ -21,19 +21,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations: [
         new GetCollection(
-            name: 'app_operating_system_get',
+            name: 'app_operating_systems_get',
             uriTemplate: '/operating-system',
-            controller: 'App\\Controller\\OperatingSystemController::get',
+            controller: 'App\\Controller\\OperatingSystemController::getOperatingSystems',
             normalizationContext: ['groups' => ['operating_system:get_all']],
         ),
         new Get(
-            name: 'app_operating_system_get_by_id',
+            name: 'app_operating_system_get',
             uriTemplate: '/operating-system/{id}',
-            controller: 'App\\Controller\\OperatingSystemController::getById',
+            controller: 'App\\Controller\\OperatingSystemController::getOne',
             normalizationContext: ['groups' => ['operating_system:get_by_id']]
         ),
         new Post(
-            name: 'app_operating_system_new',
+            name: 'app_operating_system_create',
             uriTemplate: '/operating-system',
             controller: 'App\\Controller\\OperatingSystemController::create',
             denormalizationContext: ['groups' => ['operating_system:write']]

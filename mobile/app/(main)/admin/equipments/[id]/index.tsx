@@ -36,8 +36,8 @@ const AdminEquipmentDetailsPage: FC = () => {
   const handleSubmit = async (data: any) => {
     try {
       const response = await api.patch(`/equipment/${data.id}`, data);
-      setEquipment(data); 
-      router.back(); 
+      setEquipment(data);
+      router.back();
     } catch (error) {
       console.error(error);
     }
@@ -65,6 +65,15 @@ const AdminEquipmentDetailsPage: FC = () => {
             mode="edit"
             initialData={equipment}
             onSubmit={handleSubmit}
+            onCancel={() => router.back()}
+            onDelete={(id) => {
+              try {
+                api.delete(`/equipment/${id}`);
+                router.back();
+              } catch (error) {
+                console.error(error);
+              }
+            }}
           />
         )}
       </ScrollView>

@@ -19,17 +19,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new GetCollection(
             name: 'app_company_get',
             uriTemplate: '/company',
-            controller: 'App\\Controller\\CompanyController::get',
+            controller: 'App\\Controller\\CompanyController::getCompanies',
             normalizationContext: ['groups' => ['company:get_all']],
         ),
         new Get(
-            name: 'app_company_get_by_id',
-            uriTemplate: '/company/{id}',
-            controller: 'App\\Controller\\CompanyController::getById',
+            name: 'app_company_details',
+            uriTemplate: '/api/company/{id}',
+            controller: 'App\\Controller\\CompanyController::getDetails',
             normalizationContext: ['groups' => ['company:get_by_id']]
         ),
         new Post(
-            name: 'app_company_new',
+            name: 'app_company_post',
             uriTemplate: '/company',
             controller: 'App\\Controller\\CompanyController::create',
             denormalizationContext: ['groups' => ['company:write']]
@@ -44,6 +44,30 @@ use Symfony\Component\Serializer\Annotation\Groups;
             name: 'app_company_delete',
             uriTemplate: '/company/{id}',
             controller: 'App\\Controller\\CompanyController::delete'
+        ),
+        new Post(
+            name: 'register_company',
+            uriTemplate: '/company-registration',
+            controller: 'App\\Controller\\CompanyController::registerCompany',
+            denormalizationContext: ['groups' => ['company:register']]
+        ),
+        new Post(
+            name: 'approve_company',
+            uriTemplate: '/api/company/{id}/approve',
+            controller: 'App\\Controller\\CompanyController::approveCompany',
+            denormalizationContext: ['groups' => ['company:approve']]
+        ),
+        new Post(
+            name: 'disapprove_company',
+            uriTemplate: '/api/company/{id}/disapprove',
+            controller: 'App\\Controller\\CompanyController::disapproveCompany',
+            denormalizationContext: ['groups' => ['company:disapprove']]
+        ),
+        new GetCollection(
+            name: 'app_company_specialization_get',
+            uriTemplate: '/company-specialization',
+            controller: 'App\\Controller\\CompanyController::getCompanySpecializations',
+            normalizationContext: ['groups' => ['company:specializations']]
         ),
     ],
     normalizationContext: ['groups' => ['company:get_all']],

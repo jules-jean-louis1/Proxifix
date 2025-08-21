@@ -21,8 +21,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api')]
 class InterventionController extends AbstractController
 {
-    #[Route('/intervention', name: 'app_new_intervention', methods: ['POST'])]
-    public function createInterventionOnly(
+    #[Route('/intervention', name: 'app_intervention_new', methods: ['POST'])]
+    public function create(
         Request $request,
         EntityManagerInterface $entityManager
     ): JsonResponse {
@@ -157,8 +157,8 @@ class InterventionController extends AbstractController
         }
     }
 
-    #[Route('/intervention/{id}', name: 'app_intervention_update', methods: ['PATCH'])]
-    public function edit(
+    #[Route('/intervention/{id}', name: 'app_intervention_patch', methods: ['PATCH'])]
+    public function patch(
         Request $request,
         EntityManagerInterface $entityManager,
         int $id
@@ -306,8 +306,8 @@ class InterventionController extends AbstractController
         );
     }
 
-    #[Route('/intervention', name: 'app_intervention_list', methods: ['GET'])]
-    public function getInterventions(Request $request, InterventionRepository $interventionRepository): JsonResponse
+    #[Route('/intervention', name: 'app_intervention_get', methods: ['GET'])]
+    public function get(Request $request, InterventionRepository $interventionRepository): JsonResponse
     {
         $reqId = $request->query->get('id');
         $reqPage = $request->query->get('page');
@@ -334,8 +334,8 @@ class InterventionController extends AbstractController
         return $this->json($interventions, 200, [], ['groups' => ['intervention:read', 'intervention:details', 'user:details']]);
     }
 
-    #[Route('/intervention/{id}', name: 'app_intervention_details', methods: ['GET'])]
-    public function getInterventionDetails(
+    #[Route('/intervention/{id}', name: 'app_intervention_get_by_id', methods: ['GET'])]
+    public function getById(
         int $id,
         EntityManagerInterface $entityManager
     ): JsonResponse {
@@ -529,5 +529,11 @@ class InterventionController extends AbstractController
         } catch (\Exception $e) {
             return $this->json(['error' => $e->getMessage()], 400);
         }
+    }
+
+    #[Route('/intervention/{id}', name: 'app_intervention_update', methods: ['PUT'])]
+    public function update(Request $request, EntityManagerInterface $entityManager, int $id): JsonResponse
+    {
+        return $this->patch($request, $entityManager, $id);
     }
 }

@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\InterventionRepository;
@@ -41,6 +42,46 @@ use Symfony\Component\Serializer\Annotation\Groups;
             uriTemplate: '/intervention/{id}',
             controller: 'App\\Controller\\InterventionController::update',
             denormalizationContext: ['groups' => ['intervention:write']]
+        ),
+        new Patch(
+            name: 'app_intervention_patch',
+            uriTemplate: '/intervention/{id}',
+            controller: 'App\\Controller\\InterventionController::patch',
+            denormalizationContext: ['groups' => ['intervention:write']]
+        ),
+        new Delete(
+            name: 'app_intervention_delete',
+            uriTemplate: '/intervention/{id}',
+            controller: 'App\\Controller\\InterventionController::delete'
+        ),
+        new Patch(
+            name: 'app_intervention_assign',
+            uriTemplate: '/intervention/{id}/assign',
+            controller: 'App\\Controller\\InterventionController::assignTechnician',
+            denormalizationContext: ['groups' => ['intervention:assign']]
+        ),
+        new GetCollection(
+            name: 'app_intervention_status',
+            uriTemplate: '/intervention/status',
+            controller: 'App\\Controller\\InterventionController::getInterventionStatus',
+            normalizationContext: ['groups' => ['intervention:status']]
+        ),
+        new Get(
+            name: 'app_intervention_tasks',
+            uriTemplate: '/intervention/{id}/task',
+            controller: 'App\\Controller\\InterventionController::getInterventionTasks',
+            normalizationContext: ['groups' => ['intervention:tasks']]
+        ),
+        new Post(
+            name: 'app_intervention_add_task',
+            uriTemplate: '/intervention/{id}/task',
+            controller: 'App\\Controller\\InterventionController::addTaskToIntervention',
+            denormalizationContext: ['groups' => ['intervention:add_task']]
+        ),
+        new Delete(
+            name: 'app_intervention_remove_task',
+            uriTemplate: '/intervention/{id}/task/{taskId}',
+            controller: 'App\\Controller\\InterventionController::removeTaskFromIntervention'
         ),
         new Delete(
             name: 'app_intervention_delete',

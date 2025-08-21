@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
@@ -17,27 +16,21 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     operations: [
         new GetCollection(
-            name: 'app_type_equipment_get',
+            name: 'app_type_equipment',
             uriTemplate: '/type-equipment',
-            controller: 'App\\Controller\\TypeEquipmentController::get',
+            controller: 'App\\Controller\\TypeEquipmentController::getList',
             normalizationContext: ['groups' => ['type_equipment:get_all']],
         ),
-        new Get(
-            name: 'app_type_equipment_get_by_id',
-            uriTemplate: '/type-equipment/{id}',
-            controller: 'App\\Controller\\TypeEquipmentController::getById',
-            normalizationContext: ['groups' => ['type_equipment:get_by_id']]
-        ),
         new Post(
-            name: 'app_type_equipment_new',
+            name: 'app_type_equipment_create',
             uriTemplate: '/type-equipment',
             controller: 'App\\Controller\\TypeEquipmentController::create',
             denormalizationContext: ['groups' => ['type_equipment:write']]
         ),
         new Put(
-            name: 'app_type_equipment_update',
+            name: 'app_type_equipment_edit',
             uriTemplate: '/type-equipment/{id}',
-            controller: 'App\\Controller\\TypeEquipmentController::update',
+            controller: 'App\\Controller\\TypeEquipmentController::edit',
             denormalizationContext: ['groups' => ['type_equipment:write']]
         ),
         new Delete(

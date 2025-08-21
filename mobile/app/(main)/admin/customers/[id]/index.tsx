@@ -28,15 +28,15 @@ const AdminCustomerDetailsPage: FC = () => {
     })();
   }, [id]);
 
-    const handleSubmit = async (data: any) => {
-        try {
-        const response = await api.patch(`/customer/${data.id}`, data);
-        setCustomer(data); 
-        router.back(); 
-        } catch (error) {
-        console.error(error);
-        }
-    };
+  const handleSubmit = async (data: any) => {
+    try {
+      const response = await api.patch(`/customer/${data.id}`, data);
+      setCustomer(data);
+      router.back();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -60,6 +60,15 @@ const AdminCustomerDetailsPage: FC = () => {
             mode="edit"
             initialData={customer}
             onSubmit={handleSubmit}
+            onCancel={() => router.back()}
+            onDelete={(id) => {
+              try {
+                api.delete(`/customer/${id}`);
+                router.back();
+              } catch (error) {
+                console.error(error);
+              }
+            }}
           />
         )}
       </ScrollView>
