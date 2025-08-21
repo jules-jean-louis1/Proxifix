@@ -1,5 +1,8 @@
 
 ###> symfony/framework-bundle ###
+# Keep .env for CI/CD but ignore local overrides
+/.env.dev
+/.env.test
 /.env.local
 /.env.local.php
 /.env.*.local
@@ -22,3 +25,12 @@
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+###> phpstan/phpstan ###
+# Keep phpstan.neon in version control
+###< phpstan/phpstan ###

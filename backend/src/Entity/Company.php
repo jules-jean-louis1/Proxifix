@@ -2,44 +2,129 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\CompanyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_company_get',
+            uriTemplate: '/company',
+            controller: 'App\\Controller\\CompanyController::getCompanies',
+            normalizationContext: ['groups' => ['company:get_all']],
+        ),
+        new Get(
+            name: 'app_company_details',
+            uriTemplate: '/api/company/{id}',
+            controller: 'App\\Controller\\CompanyController::getDetails',
+            normalizationContext: ['groups' => ['company:get_by_id']]
+        ),
+        new Post(
+            name: 'app_company_post',
+            uriTemplate: '/company',
+            controller: 'App\\Controller\\CompanyController::create',
+            denormalizationContext: ['groups' => ['company:write']]
+        ),
+        new Put(
+            name: 'app_company_update',
+            uriTemplate: '/company/{id}',
+            controller: 'App\\Controller\\CompanyController::update',
+            denormalizationContext: ['groups' => ['company:write']]
+        ),
+        new Delete(
+            name: 'app_company_delete',
+            uriTemplate: '/company/{id}',
+            controller: 'App\\Controller\\CompanyController::delete'
+        ),
+        new Post(
+            name: 'register_company',
+            uriTemplate: '/company-registration',
+            controller: 'App\\Controller\\CompanyController::registerCompany',
+            denormalizationContext: ['groups' => ['company:register']]
+        ),
+        new Post(
+            name: 'approve_company',
+            uriTemplate: '/api/company/{id}/approve',
+            controller: 'App\\Controller\\CompanyController::approveCompany',
+            denormalizationContext: ['groups' => ['company:approve']]
+        ),
+        new Post(
+            name: 'disapprove_company',
+            uriTemplate: '/api/company/{id}/disapprove',
+            controller: 'App\\Controller\\CompanyController::disapproveCompany',
+            denormalizationContext: ['groups' => ['company:disapprove']]
+        ),
+        new GetCollection(
+            name: 'app_company_specialization_get',
+            uriTemplate: '/company-specialization',
+            controller: 'App\\Controller\\CompanyController::getCompanySpecializations',
+            normalizationContext: ['groups' => ['company:specializations']]
+        ),
+    ],
+    normalizationContext: ['groups' => ['company:get_all']],
+    denormalizationContext: ['groups' => ['company:write']]
+)]
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company
 {
+    public const SARL = 'SARL';
+    public const SASU = 'SASU';
+    public const EI = 'EI';
+    public const EURL = 'EURL';
+    public const SA = 'SA';
+    public const SC = 'SC';
+    public const SNC = 'SNC';
+    public const MICRO_ENTERPRISE = 'Micro-entreprise';
+    public const SAS = 'SAS';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['company:read', 'user:details', 'intervention:details', 'company:get_list'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['company:read', 'user:details', 'intervention:details', 'company:get_list'])]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read', 'intervention:details', 'company:get_list'])]
     private ?string $about = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $type = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $address = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $zip_code = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?string $website = null;
 
     #[ORM\Column]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
+    #[Groups(['company:read', 'company:get_list'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     /**
@@ -54,12 +139,77 @@ class Company
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'company')]
     private Collection $users;
 
+    /**
+     * @var Collection<int, AppointmentRequest>
+     */
+    #[ORM\OneToMany(targetEntity: AppointmentRequest::class, mappedBy: 'company')]
+    private Collection $appointmentRequests;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['company:read', 'company:get_list'])]
+    private ?bool $is_approved = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read', 'company:get_list'])]
+    private ?string $open_days = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read', 'company:get_list'])]
+    private ?string $open_hours = null;
+
+    /**
+     * @var Collection<int, CompanySpecialization>
+     */
+    #[ORM\ManyToMany(targetEntity: CompanySpecialization::class, inversedBy: 'companies')]
+    #[Groups(['company:read', 'company:get_list'])]
+    private Collection $specialization;
+
+    /**
+     * @var Collection<int, TypeEquipment>
+     */
+    #[ORM\OneToMany(targetEntity: TypeEquipment::class, mappedBy: 'Company')]
+    #[Groups(['company:read', 'company:get_list'])]
+    private Collection $typeEquipment;
+
+    /**
+     * @var Collection<int, TypeIntervention>
+     */
+    #[ORM\OneToMany(targetEntity: TypeIntervention::class, mappedBy: 'Company')]
+    #[Groups(['company:read', 'company:get_list'])]
+    private Collection $typeInterventions;
+
+    /**
+     * @var Collection<int, Task>
+     */
+    #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'Company')]
+    #[Groups(['company:read', 'company:get_list'])]
+    private Collection $tasks;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read', 'company:get_list'])]
+    private ?string $logo = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read', 'company:get_list'])]
+    private ?string $phone = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read', 'company:get_list'])]
+    private ?string $mobile = null;
+
+    #[ORM\Column(options: ['default' => false])]
+    private ?bool $is_deleted = false;
+
     public function __construct()
     {
         $this->interventions = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->appointmentRequests = new ArrayCollection();
+        $this->specialization = new ArrayCollection();
+        $this->typeEquipment = new ArrayCollection();
+        $this->typeInterventions = new ArrayCollection();
+        $this->tasks = new ArrayCollection();
     }
-
 
     public function getId(): ?int
     {
@@ -192,7 +342,7 @@ class Company
 
     public function addIntervention(Intervention $intervention): static
     {
-        if (!$this->interventions->contains($intervention)) {
+        if (! $this->interventions->contains($intervention)) {
             $this->interventions->add($intervention);
             $intervention->setCompany($this);
         }
@@ -214,7 +364,7 @@ class Company
 
     public function addUser(User $user): static
     {
-        if (!$this->users->contains($user)) {
+        if (! $this->users->contains($user)) {
             $this->users->add($user);
             $user->setCompany($this);
         }
@@ -230,6 +380,239 @@ class Company
                 $user->setCompany(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AppointmentRequest>
+     */
+    public function getAppointmentRequests(): Collection
+    {
+        return $this->appointmentRequests;
+    }
+
+    public function addAppointmentRequest(AppointmentRequest $appointmentRequest): static
+    {
+        if (! $this->appointmentRequests->contains($appointmentRequest)) {
+            $this->appointmentRequests->add($appointmentRequest);
+            $appointmentRequest->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAppointmentRequest(AppointmentRequest $appointmentRequest): static
+    {
+        if ($this->appointmentRequests->removeElement($appointmentRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($appointmentRequest->getCompany() === $this) {
+                $appointmentRequest->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isApproved(): ?bool
+    {
+        return $this->is_approved;
+    }
+
+    public function setIsApproved(bool $is_approved): static
+    {
+        $this->is_approved = $is_approved;
+
+        return $this;
+    }
+
+    public function getIsApproved(): ?bool
+    {
+        return $this->is_approved;
+    }
+
+    public function getOpenDays(): ?string
+    {
+        return $this->open_days;
+    }
+
+    public function setOpenDays(?string $open_days): static
+    {
+        $this->open_days = $open_days;
+
+        return $this;
+    }
+
+    public function getOpenHours(): ?string
+    {
+        return $this->open_hours;
+    }
+
+    public function setOpenHours(?string $open_hours): static
+    {
+        $this->open_hours = $open_hours;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CompanySpecialization>
+     */
+    public function getSpecialization(): Collection
+    {
+        return $this->specialization;
+    }
+
+    public function addSpecialization(CompanySpecialization $specialization): static
+    {
+        if (! $this->specialization->contains($specialization)) {
+            $this->specialization->add($specialization);
+        }
+
+        return $this;
+    }
+
+    public function removeSpecialization(CompanySpecialization $specialization): static
+    {
+        $this->specialization->removeElement($specialization);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TypeEquipment>
+     */
+    public function getTypeEquipment(): Collection
+    {
+        return $this->typeEquipment;
+    }
+
+    public function addTypeEquipment(TypeEquipment $typeEquipment): static
+    {
+        if (! $this->typeEquipment->contains($typeEquipment)) {
+            $this->typeEquipment->add($typeEquipment);
+            $typeEquipment->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTypeEquipment(TypeEquipment $typeEquipment): static
+    {
+        if ($this->typeEquipment->removeElement($typeEquipment)) {
+            // set the owning side to null (unless already changed)
+            if ($typeEquipment->getCompany() === $this) {
+                $typeEquipment->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TypeIntervention>
+     */
+    public function getTypeInterventions(): Collection
+    {
+        return $this->typeInterventions;
+    }
+
+    public function addTypeIntervention(TypeIntervention $typeIntervention): static
+    {
+        if (! $this->typeInterventions->contains($typeIntervention)) {
+            $this->typeInterventions->add($typeIntervention);
+            $typeIntervention->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTypeIntervention(TypeIntervention $typeIntervention): static
+    {
+        if ($this->typeInterventions->removeElement($typeIntervention)) {
+            // set the owning side to null (unless already changed)
+            if ($typeIntervention->getCompany() === $this) {
+                $typeIntervention->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Task>
+     */
+    public function getTasks(): Collection
+    {
+        return $this->tasks;
+    }
+
+    public function addTask(Task $task): static
+    {
+        if (! $this->tasks->contains($task)) {
+            $this->tasks->add($task);
+            $task->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTask(Task $task): static
+    {
+        if ($this->tasks->removeElement($task)) {
+            // set the owning side to null (unless already changed)
+            if ($task->getCompany() === $this) {
+                $task->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(?string $logo): static
+    {
+        $this->logo = $logo;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): static
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getMobile(): ?string
+    {
+        return $this->mobile;
+    }
+
+    public function setMobile(?string $mobile): static
+    {
+        $this->mobile = $mobile;
+
+        return $this;
+    }
+
+    public function isDelete(): ?bool
+    {
+        return $this->is_deleted;
+    }
+
+    public function setIsDelete(bool $is_deleted): static
+    {
+        $this->is_deleted = $is_deleted;
 
         return $this;
     }

@@ -16,6 +16,192 @@ class InterventionRepository extends ServiceEntityRepository
         parent::__construct($registry, Intervention::class);
     }
 
+    /**
+     * Récupère les interventions pour un utilisateur donné.
+     *
+     * @return Intervention[]
+     */
+    public function findByUserId(int $userId): array
+    {
+        return $this->createQueryBuilder('i')
+            ->leftJoin('i.status', 's')
+            ->addSelect('s')
+            ->andWhere('i.customer = :userId')
+            ->orWhere('i.technician = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return array<Intervention>
+     */
+    public function findByCompanyId(int $companyId, int $page, int $limit, string $order, ?string $status): array
+    {
+        $offset = ($page - 1) * $limit;
+
+        $qb = $this->createQueryBuilder('i')
+            ->where('i.company = :companyId')
+            ->setParameter('companyId', $companyId)
+            ->orderBy('i.created_at', $order)
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        if ('all' !== $status) {
+            $qb->leftJoin('i.status', 's')
+                ->andWhere('s.name = :status')
+                ->setParameter('status', $status);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Récupère les interventions qui se chevauchent avec un créneau donné.
+     *
+     * @return Intervention[]
+     */
+    public function findOverlappingInterventions(
+        \DateTimeImmutable $startDate,
+        \DateTimeImmutable $endDate,
+        ?int $companyId = null
+    ): array {
+        $qb = $this->createQueryBuilder('i')
+            ->where('i.start_date < :end_date')
+            ->andWhere('i.end_date > :start_date')
+            ->setParameter('start_date', $startDate)
+            ->setParameter('end_date', $endDate);
+
+        if (null !== $companyId) {
+            $qb->andWhere('i.company = :company_id')
+               ->setParameter('company_id', $companyId);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Compte le nombre d'interventions pour une période donnée.
+     */
+    public function countInterventionsInPeriod(
+        \DateTime $startDate,
+        \DateTime $endDate,
+        ?int $companyId = null
+    ): int {
+        $qb = $this->createQueryBuilder('i')
+            ->select('COUNT(i.id)')
+            ->where('i.start_date >= :start_date')
+            ->andWhere('i.end_date <= :end_date')
+            ->setParameter('start_date', $startDate)
+            ->setParameter('end_date', $endDate);
+
+        if (null !== $companyId) {
+            $qb->andWhere('i.company = :company_id')
+               ->setParameter('company_id', $companyId);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function isSlotsAvailable(int $companyId, string|\DateTimeImmutable $start_date, string|\DateTimeImmutable|null $end_date = null): bool
+    {
+        $start_date = $start_date instanceof \DateTimeImmutable ? $start_date : new \DateTimeImmutable($start_date);
+        $end_date = $end_date instanceof \DateTimeImmutable ? $end_date : $start_date->add(new \DateInterval('PT1H')); // Par défaut, 1 heure
+
+        $qb = $this->createQueryBuilder('i')
+            ->select('COUNT(i.id)')
+            ->where('i.company = :companyId')
+            ->andWhere('i.start_date < :end_date')
+            ->andWhere('i.end_date > :start_date')
+            ->setParameter('companyId', $companyId)
+            ->setParameter('start_date', $start_date)
+            ->setParameter('end_date', $end_date);
+
+        $count = $qb->getQuery()->getSingleScalarResult();
+
+        return 0 == $count;
+    }
+
+    /**
+     * @return array<Intervention>
+     */
+    public function getInterventions(
+        ?int $id = null,
+        ?int $userId = null,
+        ?int $technicianId = null,
+        ?int $companyId = null,
+        ?string $status = null,
+        ?int $page = 1,
+        ?string $order = 'ASC',
+        ?int $typeInterventionId = null,
+        ?int $size = 10
+    ): array {
+        $offset = ($page - 1) * $size;
+        $query = $this->createQueryBuilder('i');
+
+        if (null !== $order) {
+            $query->orderBy('i.created_at', $order);
+        }
+        $query->setFirstResult($offset)
+            ->setMaxResults($size);
+
+        if (null !== $id) {
+            $query->andWhere('i.id = :id')
+                ->setParameter('id', intval($id));
+        }
+
+        if (null !== $userId) {
+            $query->andWhere('i.customer = :user_id')
+                ->setParameter('user_id', intval($userId));
+        }
+
+        if (null !== $technicianId) {
+            $query->andWhere('i.technician = :technician_id')
+                ->setParameter('technician_id', intval($technicianId));
+        }
+        if (null !== $companyId) {
+            $query->andWhere('i.company = :company_id')
+                ->setParameter('company_id', intval($companyId));
+        }
+
+        if (null !== $status) {
+            if (str_contains($status, ',')) {
+                $statusArray = explode(',', $status);
+                // Nettoyer les espaces autour des valeurs
+                $statusArray = array_map('trim', $statusArray);
+                $query->andWhere('i.status IN (:status)')
+                    ->setParameter('status', $statusArray);
+            } else {
+                $query->andWhere('i.status = :status')
+                    ->setParameter('status', trim($status));
+            }
+        }
+
+        if (null !== $typeInterventionId) {
+            $query->andWhere('i.typeIntervention = :type_intervention_id')
+                ->setParameter('type_intervention_id', intval($typeInterventionId));
+        }
+
+        return $query->getQuery()->getResult();
+    }
+
+    /**
+     * @return array<\App\Entity\Task>
+     */
+    public function getTasks(?int $interventionId = null): array
+    {
+        $query = $this->createQueryBuilder('i')
+            ->select('t')
+            ->leftJoin('i.taskInterventions', 'ti')
+            ->leftJoin('ti.task', 't');
+
+        if (null !== $interventionId) {
+            $query->andWhere('i.id = :intervention_id')
+                ->setParameter('intervention_id', intval($interventionId));
+        }
+
+        return $query->getQuery()->getResult();
+    }
     //    /**
     //     * @return Intervention[] Returns an array of Intervention objects
     //     */

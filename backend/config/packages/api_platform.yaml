@@ -1,10 +1,19 @@
 api_platform:
-    title: Hello API Platform
+    title: Proxifix API
     version: 1.0.0
     defaults:
         stateless: true
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
+    formats:
+        jsonld: ['application/ld+json']
+        json: ['application/json']
+        html: ['text/html']
+    docs_formats:
+        json: ['application/json']
+        jsonld: ['application/ld+json']
+        html: ['text/html']
+    enable_docs: true
     swagger:
         api_keys:
             JWT:

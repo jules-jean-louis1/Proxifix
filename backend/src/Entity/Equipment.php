@@ -2,34 +2,125 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\EquipmentRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_equipment_get',
+            uriTemplate: '/equipment',
+            controller: 'App\\Controller\\EquipmentController::getEquipments',
+            normalizationContext: ['groups' => ['equipment:get_all']],
+        ),
+        new Get(
+            name: 'app_equipment_get_one',
+            uriTemplate: '/equipment/{id}',
+            controller: 'App\\Controller\\EquipmentController::getOneEquipment',
+            normalizationContext: ['groups' => ['equipment:get_by_id']]
+        ),
+        new Post(
+            name: 'app_equipment_create',
+            uriTemplate: '/equipment',
+            controller: 'App\\Controller\\EquipmentController::create',
+            denormalizationContext: ['groups' => ['equipment:write']]
+        ),
+        new Put(
+            name: 'app_equipment_edit',
+            uriTemplate: '/equipment/{id}',
+            controller: 'App\\Controller\\EquipmentController::edit',
+            denormalizationContext: ['groups' => ['equipment:write']]
+        ),
+        new Delete(
+            name: 'app_equipment_delete',
+            uriTemplate: '/equipment/{id}',
+            controller: 'App\\Controller\\EquipmentController::delete'
+        ),
+        new GetCollection(
+            name: 'app_equipment_customer_list',
+            uriTemplate: '/customer/{customerId}',
+            controller: 'App\\Controller\\EquipmentController::getEquipmentUser',
+            normalizationContext: ['groups' => ['equipment:get_all']]
+        ),
+    ],
+    normalizationContext: ['groups' => ['equipment:get_all']],
+    denormalizationContext: ['groups' => ['equipment:write']]
+)]
 #[ORM\Entity(repositoryClass: EquipmentRepository::class)]
 class Equipment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['equipment:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['equipment:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(['equipment:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
+    #[Groups(['equipment:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
-    private ?Customer $customer = null;
+    private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
+    #[Groups(['equipment:details', 'user:details'])]
     private ?TypeEquipment $type_equipment = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipment')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[Groups(['equipment:details', 'user:details'])]
     private ?OperatingSystem $operating_system = null;
+
+    #[ORM\ManyToOne(inversedBy: 'equipment')]
+    #[Groups(['equipment:details', 'user:details'])]
+    private ?Brand $brand = null;
+
+    /**
+     * @var Collection<int, Intervention>
+     */
+    #[ORM\OneToMany(targetEntity: Intervention::class, mappedBy: 'equipment')]
+    #[Groups(['equipment:details', 'user:details'])]
+    private Collection $interventions;
+
+    /**
+     * @var Collection<int, AppointmentRequest>
+     */
+    #[ORM\OneToMany(mappedBy: 'equipment', targetEntity: AppointmentRequest::class)]
+    #[Groups(['equipment:details'])]
+    private Collection $appointmentRequests;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['equipment:read', 'equipment:details', 'intervention:details', 'user:details'])]
+    private ?string $reference = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['equipment:details'])]
+    private ?string $model = null;
+
+    public function __construct()
+    {
+        $this->interventions = new ArrayCollection();
+        $this->appointmentRequests = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -72,14 +163,14 @@ class Equipment
         return $this;
     }
 
-    public function getCustomer(): ?Customer
+    public function getUser(): ?User
     {
-        return $this->customer;
+        return $this->user;
     }
 
-    public function setCustomer(?Customer $customer): static
+    public function setUser(?User $user): static
     {
-        $this->customer = $customer;
+        $this->user = $user;
 
         return $this;
     }
@@ -104,6 +195,101 @@ class Equipment
     public function setOperatingSystem(?OperatingSystem $operating_system): static
     {
         $this->operating_system = $operating_system;
+
+        return $this;
+    }
+
+    public function setBrand(?Brand $brand): static
+    {
+        $this->brand = $brand;
+
+        return $this;
+    }
+
+    public function getBrand(): ?Brand
+    {
+        return $this->brand;
+    }
+
+    /**
+     * @return Collection<int, Intervention>
+     */
+    public function getInterventions(): Collection
+    {
+        return $this->interventions;
+    }
+
+    public function addIntervention(Intervention $intervention): static
+    {
+        if (! $this->interventions->contains($intervention)) {
+            $this->interventions->add($intervention);
+            $intervention->setEquipment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIntervention(Intervention $intervention): static
+    {
+        if ($this->interventions->removeElement($intervention)) {
+            if ($intervention->getEquipment() === $this) {
+                $intervention->setEquipment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AppointmentRequest>
+     */
+    public function getAppointmentRequests(): Collection
+    {
+        return $this->appointmentRequests;
+    }
+
+    public function addAppointmentRequest(AppointmentRequest $appointmentRequest): static
+    {
+        if (! $this->appointmentRequests->contains($appointmentRequest)) {
+            $this->appointmentRequests->add($appointmentRequest);
+            $appointmentRequest->setEquipment($this); // Met à jour le côté propriétaire
+        }
+
+        return $this;
+    }
+
+    public function removeAppointmentRequest(AppointmentRequest $appointmentRequest): static
+    {
+        if ($this->appointmentRequests->removeElement($appointmentRequest)) {
+            // Met à jour le côté propriétaire si nécessaire
+            if ($appointmentRequest->getEquipment() === $this) {
+                $appointmentRequest->setEquipment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getReference(): ?string
+    {
+        return $this->reference;
+    }
+
+    public function setReference(?string $reference): static
+    {
+        $this->reference = $reference;
+
+        return $this;
+    }
+
+    public function getModel(): ?string
+    {
+        return $this->model;
+    }
+
+    public function setModel(?string $model): static
+    {
+        $this->model = $model;
 
         return $this;
     }

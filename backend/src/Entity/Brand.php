@@ -3,21 +3,63 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\BrandRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BrandRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_brand_get',
+            uriTemplate: '/brand',
+            controller: 'App\\Controller\\BrandController::get',
+            normalizationContext: ['groups' => ['brand:get_all']],
+        ),
+        new Get(
+            name: 'app_brand_get_by_id',
+            uriTemplate: '/brand/{id}',
+            controller: 'App\\Controller\\BrandController::getById',
+            normalizationContext: ['groups' => ['brand:get_by_id']]
+        ),
+        new Post(
+            name: 'app_brand_new',
+            uriTemplate: '/brand',
+            controller: 'App\\Controller\\BrandController::create',
+            denormalizationContext: ['groups' => ['brand:write']]
+        ),
+        new Put(
+            name: 'app_brand_update',
+            uriTemplate: '/brand/{id}',
+            controller: 'App\\Controller\\BrandController::update',
+            denormalizationContext: ['groups' => ['brand:write']]
+        ),
+        new Delete(
+            name: 'app_brand_delete',
+            uriTemplate: '/brand/{id}',
+            controller: 'App\\Controller\\BrandController::delete'
+        ),
+    ],
+    normalizationContext: ['groups' => ['brand:get_all']],
+    denormalizationContext: ['groups' => ['brand:write']]
+)]
 class Brand
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['equipment:details', 'brand:get_all'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['equipment:details', 'brand:get_all'])]
     private ?string $name = null;
 
     /**
@@ -26,9 +68,23 @@ class Brand
     #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'brand')]
     private Collection $equipment;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['equipment:details', 'brand:get_all'])]
+    private ?string $logo = null;
+
+    #[ORM\Column]
+    #[Groups(['equipment:details', 'brand:get_all'])]
+    private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\Column]
+    #[Groups(['equipment:details', 'brand:get_all'])]
+    private ?\DateTimeImmutable $updated_at = null;
+
     public function __construct()
     {
         $this->equipment = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -58,7 +114,7 @@ class Brand
 
     public function addEquipment(Equipment $equipment): static
     {
-        if (!$this->equipment->contains($equipment)) {
+        if (! $this->equipment->contains($equipment)) {
             $this->equipment->add($equipment);
             $equipment->setBrand($this);
         }
@@ -74,6 +130,42 @@ class Brand
                 $equipment->setBrand(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(?string $logo): static
+    {
+        $this->logo = $logo;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    {
+        $this->updated_at = $updated_at;
 
         return $this;
     }

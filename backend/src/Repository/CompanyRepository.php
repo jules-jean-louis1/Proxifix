@@ -2,22 +2,70 @@
 
 namespace App\Repository;
 
-use App\Entity\Compagny;
+use App\Entity\Company;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Compagny>
+ * @extends ServiceEntityRepository<Company>
  */
 class CompanyRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Compagny::class);
+        parent::__construct($registry, Company::class);
     }
 
+    /**
+     * @return array<Company>
+     */
+    public function getCompanies(
+        ?int $id = null,
+        bool $pending = false,
+        ?int $specializationId = null,
+        int $page = 1,
+        int $size = 25,
+        ?string $name = null,
+        string $order = 'ASC',
+        bool $isDeleted = false
+    ): array {
+        $qb = $this->createQueryBuilder('c')
+            ->setFirstResult(($page - 1) * $size)
+            ->setMaxResults($size)
+            ->orderBy('c.id', $order);
+
+        if (null !== $id) {
+            $qb->andWhere('c.id = :id')
+                ->setParameter('id', $id);
+        }
+
+        if ($pending) {
+            $qb->andWhere('c.pending = true');
+        }
+
+        if (null !== $specializationId) {
+            $qb->join('c.specialization', 's')
+            ->andWhere('s.id = :specializationId')
+            ->setParameter('specializationId', $specializationId);
+        }
+
+        if (null !== $name) {
+            $qb->andWhere('c.name LIKE :name')
+                ->setParameter('name', '%'.$name.'%');
+        }
+
+        if ($isDeleted) {
+            $qb->andWhere('c.is_deleted = :is_deleted')
+                ->setParameter('is_deleted', $isDeleted);
+        } else {
+            $qb->andWhere('c.is_deleted = :is_deleted')
+            ->setParameter('is_deleted', $isDeleted);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
     //    /**
-    //     * @return Compagny[] Returns an array of Compagny objects
+    //     * @return Company[] Returns an array of Company objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +79,7 @@ class CompanyRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Compagny
+    //    public function findOneBySomeField($value): ?Company
     //    {
     //        return $this->createQueryBuilder('c')
     //            ->andWhere('c.exampleField = :val')

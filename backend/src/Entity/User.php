@@ -3,74 +3,180 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource()]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_user_list_admin',
+            uriTemplate: '/user',
+            controller: 'App\\Controller\\UserController::listUsers',
+            normalizationContext: ['groups' => ['user:get_all']],
+        ),
+        new Get(
+            name: 'app_user_show_admin',
+            uriTemplate: '/user/{id}',
+            controller: 'App\\Controller\\UserController::showUser',
+            normalizationContext: ['groups' => ['user:get_by_id']]
+        ),
+        new Post(
+            name: 'app_user_add_admin',
+            uriTemplate: '/user',
+            controller: 'App\\Controller\\UserController::addUser',
+            denormalizationContext: ['groups' => ['user:write']]
+        ),
+        new Patch(
+            name: 'app_user_edit_admin',
+            uriTemplate: '/user/{id}',
+            controller: 'App\\Controller\\UserController::editUser',
+            denormalizationContext: ['groups' => ['user:write']]
+        ),
+        new Delete(
+            name: 'app_user_delete_admin',
+            uriTemplate: '/user/{id}',
+            controller: 'App\\Controller\\UserController::deleteUser'
+        ),
+    ],
+    normalizationContext: ['groups' => ['user:get_all']],
+    denormalizationContext: ['groups' => ['user:write']]
+)]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
+    public const ROLE_TECHNICIAN = 'ROLE_TECHNICIAN';
+    public const ROLE_CUSTOMER = 'ROLE_CUSTOMER';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\Email]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?string $email = null;
 
     /**
-     * @var list<string> The user roles
+     * @var string The user role
      */
-    #[ORM\Column]
-    private array $roles = [];
+    #[ORM\Column(type: Types::STRING, length: 50)]
+    #[Assert\NotBlank]
+    #[
+        Assert\Choice(
+            choices: [
+                self::ROLE_SUPER_ADMIN,
+                self::ROLE_ADMIN,
+                self::ROLE_CUSTOMER,
+                self::ROLE_TECHNICIAN,
+            ],
+            message: 'Choose a valid role.'
+        )
+    ]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
+    private string $role = self::ROLE_CUSTOMER;
 
     /**
      * @var string The hashed password
      */
+    // #[Assert\Regex(
+    //     pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/',
+    //     message: 'Password must be at least 6 characters long and contain at least one digit, one upper case letter and one lower case letter'
+    // )]
     #[ORM\Column]
+    #[Assert\Length(min: 6, max: 255)]
     private ?string $password = null;
 
-    /**
-     * @var string|null
-     */
-    #[Groups("user:write")]
-    private ?string $plainPassword = null;
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 255)]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?string $first_name = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(min: 2, max: 255)]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?string $last_name = null;
 
     #[ORM\Column]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'users')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[Groups(['user:customer:read', 'user:details'])]
     private ?Company $company = null;
+
+    /**
+     * @var Collection<int, Equipment>
+     */
+    #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'user', cascade: ['remove'])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
+    private Collection $equipment;
+
+    /**
+     * @var Collection<int, AppointmentRequest>
+     */
+    #[ORM\OneToMany(targetEntity: AppointmentRequest::class, mappedBy: 'user', orphanRemoval: true)]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
+    private Collection $appointmentRequests;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
+    private ?string $zipcode = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(min: 2, max: 255)]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
+    private ?string $city = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
+    private ?string $phone = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
+    private ?string $address = null;
+
+    public function __construct()
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
+        $this->equipment = new ArrayCollection();
+        $this->appointmentRequests = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function __construct()
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
     {
-        $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
     }
 
-    #[ORM\PreUpdate]
-    public function onPreUpdate()
-    {
-        $this->updated_at = new \DateTimeImmutable();
-    }
     public function getEmail(): ?string
     {
         return $this->email;
@@ -94,27 +200,49 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @see UserInterface
+     * @return list<string>
      *
+     * @see UserInterface
+     */
+    /**
      * @return list<string>
      */
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
+        return [$this->role];
     }
 
     /**
-     * @param list<string> $roles
+     * Set the user role.
+     */
+    public function setRole(string $role): static
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    /**
+     * Get the user role.
+     */
+    public function getRole(): string
+    {
+        return $this->role;
+    }
+
+    /**
+     * @param list<string> $roles (for backward compatibility)
      */
     public function setRoles(array $roles): static
     {
-        $this->roles = $roles;
+        $this->role = $roles[0] ?? self::ROLE_CUSTOMER;
 
         return $this;
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
     }
 
     /**
@@ -197,6 +325,116 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Equipment>
+     */
+    public function getEquipment(): Collection
+    {
+        return $this->equipment;
+    }
+
+    public function addEquipment(Equipment $equipment): static
+    {
+        if (! $this->equipment->contains($equipment)) {
+            $this->equipment->add($equipment);
+            $equipment->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEquipment(Equipment $equipment): static
+    {
+        if ($this->equipment->removeElement($equipment)) {
+            // set the owning side to null (unless already changed)
+            if ($equipment->getUser() === $this) {
+                $equipment->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AppointmentRequest>
+     */
+    public function getAppointmentRequests(): Collection
+    {
+        return $this->appointmentRequests;
+    }
+
+    public function addAppointmentRequest(
+        AppointmentRequest $appointmentRequest
+    ): static {
+        if (! $this->appointmentRequests->contains($appointmentRequest)) {
+            $this->appointmentRequests->add($appointmentRequest);
+            $appointmentRequest->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAppointmentRequest(
+        AppointmentRequest $appointmentRequest
+    ): static {
+        if ($this->appointmentRequests->removeElement($appointmentRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($appointmentRequest->getUser() === $this) {
+                $appointmentRequest->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getZipcode(): ?string
+    {
+        return $this->zipcode;
+    }
+
+    public function setZipcode(?string $zipcode): static
+    {
+        $this->zipcode = $zipcode;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): static
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): static
+    {
+        $this->address = $address;
 
         return $this;
     }

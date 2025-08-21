@@ -3,21 +3,68 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\OperatingSystemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OperatingSystemRepository::class)]
-#[ApiResource]
+#[UniqueEntity('name')]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_operating_systems_get',
+            uriTemplate: '/operating-system',
+            controller: 'App\\Controller\\OperatingSystemController::getOperatingSystems',
+            normalizationContext: ['groups' => ['operating_system:get_all']],
+        ),
+        new Get(
+            name: 'app_operating_system_get',
+            uriTemplate: '/operating-system/{id}',
+            controller: 'App\\Controller\\OperatingSystemController::getOne',
+            normalizationContext: ['groups' => ['operating_system:get_by_id']]
+        ),
+        new Post(
+            name: 'app_operating_system_create',
+            uriTemplate: '/operating-system',
+            controller: 'App\\Controller\\OperatingSystemController::create',
+            denormalizationContext: ['groups' => ['operating_system:write']]
+        ),
+        new Put(
+            name: 'app_operating_system_update',
+            uriTemplate: '/operating-system/{id}',
+            controller: 'App\\Controller\\OperatingSystemController::update',
+            denormalizationContext: ['groups' => ['operating_system:write']]
+        ),
+        new Delete(
+            name: 'app_operating_system_delete',
+            uriTemplate: '/operating-system/{id}',
+            controller: 'App\\Controller\\OperatingSystemController::delete'
+        ),
+    ],
+    normalizationContext: ['groups' => ['operating_system:get_all']],
+    denormalizationContext: ['groups' => ['operating_system:write']]
+)]
 class OperatingSystem
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['operatingSystem.get_one', 'equipment:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(min: 3, max: 255)]
+    #[Assert\Regex(pattern: '/^[a-zA-Z0-9_]+$/', message: 'The name can only contain letters, numbers and underscores')]
+    #[Groups(['operatingSystem.create', 'equipment:details', 'operatingSystem.get_one'])]
     private ?string $name = null;
 
     /**
@@ -26,11 +73,20 @@ class OperatingSystem
     #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'operating_system')]
     private Collection $equipment;
 
+    #[ORM\Column]
+    #[Groups(['operatingSystem.create', 'equipment:details', 'operatingSystem.get_one'])]
+    private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\Column]
+    #[Groups(['operatingSystem.create', 'equipment:details', 'operatingSystem.get_one'])]
+    private ?\DateTimeImmutable $updated_at = null;
+
     public function __construct()
     {
         $this->equipment = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
-
 
     public function getId(): ?int
     {
@@ -59,7 +115,7 @@ class OperatingSystem
 
     public function addEquipment(Equipment $equipment): static
     {
-        if (!$this->equipment->contains($equipment)) {
+        if (! $this->equipment->contains($equipment)) {
             $this->equipment->add($equipment);
             $equipment->setOperatingSystem($this);
         }
@@ -75,6 +131,30 @@ class OperatingSystem
                 $equipment->setOperatingSystem(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    {
+        $this->updated_at = $updated_at;
 
         return $this;
     }

@@ -5,5 +5,10 @@ controllers:
     type: attribute
 
 auth:
-    path: //api/login
+    path: /api/auth
+
+jwt_refresh:
+    path: /api/auth/refresh
+    controller: gesdinet.jwtrefreshtoken.refresh_token_controller::refresh
     methods: ['POST']
+

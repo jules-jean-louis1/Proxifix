@@ -1,34 +1,74 @@
 security:
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+
+    role_hierarchy:
+        ROLE_CUSTOMER: ['ROLE_CUSTOMER']
+        ROLE_TECHNICIAN: ['ROLE_TECHNICIAN']
+        ROLE_ADMIN: ['ROLE_ADMIN', 'ROLE_TECHNICIAN']
+        ROLE_SUPER_ADMIN: ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_TECHNICIAN']
+
     providers:
-        users:
+        user:
             entity:
                 class: App\Entity\User
                 property: email
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
+
+        auth:
+            pattern: ^/api/auth/login
             stateless: true
-            provider: users
             json_login:
-                check_path: auth # The name in routes.yaml is enough for mapping
+                check_path: /api/auth/login
                 username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            provider: user
+
+        public:
+            pattern: ^/api/auth/(customer|admin)/register
+            stateless: true
+            security: false
+
+        api:
+            pattern: ^/api
+            stateless: true
+            lazy: true
+            entry_point: jwt
             jwt: ~
+            refresh_jwt:
+                check_path: jwt_refresh
 
     access_control:
-        - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
-        - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs
-        - { path: ^/api/login, roles: PUBLIC_ACCESS }
-        - { path: ^/api/register, roles: PUBLIC_ACCESS }
-        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+        # Routes publiques (pas d'authentification requise)
+        - { path: ^/api/auth/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/api$, roles: PUBLIC_ACCESS } # Permet d'accéder à l'interface Swagger UI
+        - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Permet d'accéder à la documentation (JSON)
+        - { path: ^/api/auth/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/(customer|admin)/register, roles: PUBLIC_ACCESS }
+        
+        # Routes spécifiques avec des rôles particuliers (plus spécifiques en premier)
+        - { path: ^/api/admin/interventions, roles: ROLE_TECHNICIAN }
+        - { path: ^/api/admin/appointment, roles: ROLE_TECHNICIAN }
+        - { path: ^/api/task, roles: ROLE_ADMIN }
+        - { path: ^/api/task/intervention, roles: ROLE_ADMIN }
+        - { path: ^/api/user, roles: ROLE_TECHNICIAN }
+        - { path: ^/api/customer/appointment, roles: IS_AUTHENTICATED_FULLY }
+        
+        # Routes générales nécessitant une authentification
+        - { path: ^/api/customer, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/equipment, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/intervention, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/operating-system, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/company, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/appointment, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/brand, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/type-intervention, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     doctrine:
@@ -36,12 +76,8 @@ when@test:
             dbname_suffix: ''
     security:
         password_hashers:
-            # By default, password hashers are resource intensive and take time. This is
-            # important to generate secure password hashes. In tests however, secure hashes
-            # are not important, waste resources and increase test times. The following
-            # reduces the work factor to the lowest possible values.
             Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
                 algorithm: auto
-                cost: 4 # Lowest possible value for bcrypt
-                time_cost: 3 # Lowest possible value for argon
-                memory_cost: 10 # Lowest possible value for argon
+                cost: 4
+                time_cost: 3
+                memory_cost: 10

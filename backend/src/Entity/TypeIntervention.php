@@ -2,25 +2,92 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\TypeInterventionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_type_intervention',
+            uriTemplate: '/type-intervention',
+            controller: 'App\\Controller\\TypeInterventionController::get',
+            normalizationContext: ['groups' => ['type_intervention:get_all']],
+        ),
+        new Post(
+            name: 'app_type_intervention_create',
+            uriTemplate: '/type-intervention',
+            controller: 'App\\Controller\\TypeInterventionController::create',
+            denormalizationContext: ['groups' => ['type_intervention:write']]
+        ),
+        new Put(
+            name: 'app_type_intervention_edit',
+            uriTemplate: '/type-intervention/{id}',
+            controller: 'App\\Controller\\TypeInterventionController::edit',
+            denormalizationContext: ['groups' => ['type_intervention:write']]
+        ),
+        new Delete(
+            name: 'app_type_intervention_delete',
+            uriTemplate: '/type-intervention/{id}',
+            controller: 'App\\Controller\\TypeInterventionController::delete'
+        ),
+    ],
+    normalizationContext: ['groups' => ['type_intervention:get_all']],
+    denormalizationContext: ['groups' => ['type_intervention:write']]
+)]
 #[ORM\Entity(repositoryClass: TypeInterventionRepository::class)]
 class TypeIntervention
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['equipment:details', 'intervention:details', 'user:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['equipment:details', 'intervention:details', 'user:details'])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(['equipment:details', 'intervention:details', 'user:details'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
+    #[Groups(['equipment:details', 'intervention:details', 'user:details'])]
     private ?\DateTimeImmutable $updated_at = null;
+
+    /**
+     * @var Collection<int, Intervention>
+     */
+    #[ORM\OneToMany(mappedBy: 'typeIntervention', targetEntity: Intervention::class)]
+    private Collection $interventions;
+
+    /**
+     * @var Collection<int, AppointmentRequest>
+     */
+    #[ORM\OneToMany(mappedBy: 'typeIntervention', targetEntity: AppointmentRequest::class)]
+    private Collection $appointmentRequests;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\ManyToOne(inversedBy: 'typeInterventions')]
+    private ?Company $Company = null;
+
+    public function __construct()
+    {
+        $this->appointmentRequests = new ArrayCollection();
+        $this->interventions = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -59,6 +126,89 @@ class TypeIntervention
     public function setUpdatedAt(\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Intervention>
+     */
+    public function getInterventions(): Collection
+    {
+        return $this->interventions;
+    }
+
+    public function addIntervention(Intervention $intervention): static
+    {
+        if (! $this->interventions->contains($intervention)) {
+            $this->interventions->add($intervention);
+            $intervention->setTypeIntervention($this); // Met à jour le côté propriétaire
+        }
+
+        return $this;
+    }
+
+    public function removeIntervention(Intervention $intervention): static
+    {
+        if ($this->interventions->removeElement($intervention)) {
+            // Met à jour le côté propriétaire si nécessaire
+            if ($intervention->getTypeIntervention() === $this) {
+                $intervention->setTypeIntervention(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AppointmentRequest>
+     */
+    public function getAppointmentRequests(): Collection
+    {
+        return $this->appointmentRequests;
+    }
+
+    public function addAppointmentRequest(AppointmentRequest $appointmentRequest): static
+    {
+        if (! $this->appointmentRequests->contains($appointmentRequest)) {
+            $this->appointmentRequests->add($appointmentRequest);
+            $appointmentRequest->setTypeIntervention($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAppointmentRequest(AppointmentRequest $appointmentRequest): static
+    {
+        if ($this->appointmentRequests->removeElement($appointmentRequest)) {
+            if ($appointmentRequest->getTypeIntervention() === $this) {
+                $appointmentRequest->setTypeIntervention(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->Company;
+    }
+
+    public function setCompany(?Company $Company): static
+    {
+        $this->Company = $Company;
 
         return $this;
     }

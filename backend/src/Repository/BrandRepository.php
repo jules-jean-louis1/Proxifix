@@ -16,6 +16,32 @@ class BrandRepository extends ServiceEntityRepository
         parent::__construct($registry, Brand::class);
     }
 
+    /**
+     * @return array<Brand>
+     */
+    public function getBrands(?int $id, int $page, int $size, ?string $name, string $order): array
+    {
+        $offset = ($page - 1) * $size;
+        $query = $this->createQueryBuilder('b');
+
+        if (null !== $id) {
+            $query->andWhere('b.id = :id')
+                ->setParameter('id', $id);
+        }
+
+        if (null !== $name && '' !== $name) {
+            $query->andWhere('LOWER(b.name) LIKE :name')
+                ->setParameter('name', '%'.strtolower($name).'%');
+        }
+
+        $query->orderBy('b.name', $order);
+
+        $query->setFirstResult($offset)
+            ->setMaxResults($size);
+
+        return $query->getQuery()->getResult();
+    }
+
     //    /**
     //     * @return Brand[] Returns an array of Brand objects
     //     */
@@ -40,4 +66,10 @@ class BrandRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function checkBrandName(string $name): bool
+    {
+        $brand = $this->findOneBy(['name' => $name]);
+
+        return null !== $brand;
+    }
 }

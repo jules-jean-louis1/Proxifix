@@ -1,0 +1,153 @@
+<?php
+
+declare(strict_types=1);
+
+namespace DoctrineMigrations;
+
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
+
+/**
+ * Auto-generated Migration: Please modify to your needs!
+ */
+final class Version20250714220434 extends AbstractMigration
+{
+    public function getDescription(): string
+    {
+        return '';
+    }
+
+    public function up(Schema $schema): void
+    {
+        // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('ALTER TABLE company RENAME COLUMN is_delete TO is_deleted');
+        $this->addSql('ALTER TABLE equipment ADD model VARCHAR(255) DEFAULT NULL');
+        $this->addSql('ALTER TABLE intervention DROP CONSTRAINT fk_d11814aba76ed395');
+        $this->addSql('DROP INDEX idx_d11814aba76ed395');
+        $this->addSql('ALTER TABLE intervention ADD technician_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE intervention RENAME COLUMN user_id TO customer_id');
+        $this->addSql('ALTER TABLE intervention ADD CONSTRAINT FK_D11814AB9395C3F3 FOREIGN KEY (customer_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE intervention ADD CONSTRAINT FK_D11814ABE6C5D496 FOREIGN KEY (technician_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('CREATE INDEX IDX_D11814AB9395C3F3 ON intervention (customer_id)');
+        $this->addSql('CREATE INDEX IDX_D11814ABE6C5D496 ON intervention (technician_id)');
+        $this->addSql('ALTER TABLE task_intervention RENAME COLUMN update_at TO updated_at');
+        $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer);');
+        $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer, time, time, text) CASCADE;');
+        $this->addSql("CREATE OR REPLACE FUNCTION get_free_slots(
+                                p_date DATE,
+                                p_company_id INTEGER DEFAULT NULL,
+                                p_interval_minutes INTEGER DEFAULT 30,
+                                p_start_time TIME DEFAULT '09:00:00',
+                                p_end_time TIME DEFAULT '18:00:00',
+                                p_role_search TEXT DEFAULT NULL
+                            )
+                            RETURNS TABLE(start_time TIME WITHOUT TIME ZONE, end_time TIME WITHOUT TIME ZONE)
+                            LANGUAGE plpgsql
+                            AS
+                            \$\$
+                            DECLARE
+                                current_start TIME;
+                                current_end TIME;
+                                intervention_count INTEGER;
+                                technician_count INTEGER;
+                            BEGIN
+                                IF p_interval_minutes < 5 THEN
+                                    RAISE EXCEPTION 'L''intervalle doit être d''au moins 5 minutes';
+                                END IF;
+
+                                -- Compter le nombre de techniciens dans l'entreprise
+                                IF p_role_search IS NOT NULL THEN
+                                    SELECT COUNT(u.id) INTO technician_count
+                                    FROM \"user\" u
+                                    WHERE u.company_id = p_company_id
+                                    AND u.roles::jsonb @> to_jsonb(ARRAY[p_role_search]);
+                                ELSE
+                                    SELECT COUNT(u.id) INTO technician_count
+                                    FROM \"user\" u
+                                    WHERE u.company_id = p_company_id;
+                                END IF;
+
+                                current_start := p_start_time;
+
+                                WHILE current_start < p_end_time LOOP
+                                    current_end := current_start + make_interval(mins := p_interval_minutes);
+
+                                    -- Compter le nombre d'interventions sur ce créneau
+                                    SELECT COUNT(i.id) INTO intervention_count
+                                    FROM intervention i
+                                    WHERE DATE(i.start_date) = p_date
+                                    AND (i.start_date::time, i.end_date::time) OVERLAPS (current_start, current_end)
+                                    AND (p_company_id IS NULL OR i.company_id = p_company_id);
+
+                                    -- Si le nombre d'interventions est inférieur au nombre de techniciens
+                                    IF intervention_count < technician_count THEN
+                                        start_time := current_start;
+                                        end_time := current_end;
+                                        RETURN NEXT;
+                                    END IF;
+
+                                    current_start := current_end;
+                                END LOOP;
+                            END;
+                            \$\$;");
+    }
+
+    public function down(Schema $schema): void
+    {
+        // this down() migration is auto-generated, please modify it to your needs
+        $this->addSql('ALTER TABLE equipment DROP model');
+        $this->addSql('ALTER TABLE company RENAME COLUMN is_deleted TO is_delete');
+        $this->addSql('ALTER TABLE intervention DROP CONSTRAINT FK_D11814AB9395C3F3');
+        $this->addSql('ALTER TABLE intervention DROP CONSTRAINT FK_D11814ABE6C5D496');
+        $this->addSql('DROP INDEX IDX_D11814AB9395C3F3');
+        $this->addSql('DROP INDEX IDX_D11814ABE6C5D496');
+        $this->addSql('ALTER TABLE intervention ADD user_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE intervention DROP customer_id');
+        $this->addSql('ALTER TABLE intervention DROP technician_id');
+        $this->addSql('ALTER TABLE intervention ADD CONSTRAINT fk_d11814aba76ed395 FOREIGN KEY (user_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('CREATE INDEX idx_d11814aba76ed395 ON intervention (user_id)');
+        $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer);');
+        $this->addSql('ALTER TABLE task_intervention RENAME COLUMN updated_at TO update_at');
+        $this->addSql('DROP FUNCTION IF EXISTS get_free_slots(date, integer, integer, time, time, text) CASCADE;');
+        $this->addSql("CREATE OR REPLACE FUNCTION get_free_slots(
+                                p_date DATE,
+                                p_company_id INTEGER DEFAULT NULL,
+                                p_interval_minutes INTEGER DEFAULT 30
+                            )
+                            RETURNS TABLE(start_time TIME WITHOUT TIME ZONE, end_time TIME WITHOUT TIME ZONE)
+                            LANGUAGE plpgsql
+                            AS
+                            $$
+                            DECLARE
+                                slot_start TIME := '09:00:00';
+                                slot_end TIME := '18:00:00';
+                                current_start TIME;
+                                current_end TIME;
+                            BEGIN
+                                IF p_interval_minutes < 5 THEN
+                                    RAISE EXCEPTION 'L''intervalle doit être d''au moins 5 minutes';
+                                END IF;
+
+                                current_start := slot_start;
+
+                                WHILE current_start < slot_end LOOP
+                                    current_end := current_start + make_interval(mins := p_interval_minutes);
+
+                                    IF NOT EXISTS (
+                                        SELECT 1
+                                        FROM intervention i
+                                        WHERE DATE(i.start_date) = p_date
+                                        AND (i.start_date::time, i.end_date::time) OVERLAPS (current_start, current_end)
+                                        AND (p_company_id IS NULL OR i.company_id = p_company_id)
+                                    ) THEN
+                                        start_time := current_start;
+                                        end_time := current_end;
+                                        RETURN NEXT;
+                                    END IF;
+
+                                    current_start := current_end;
+                                END LOOP;
+                            END;
+                            $$;");
+    }
+}
