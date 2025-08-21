@@ -3,7 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\EquipmentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,14 +15,39 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
-    normalizationContext: ['groups' => ['equipment:read']],
-    denormalizationContext: ['groups' => ['equipment:write']],
     operations: [
-        new Get(
-            uriTemplate: '/api/equipment/{id}',
-            normalizationContext: ['groups' => ['equipment:read', 'equipment:details']]
+        new GetCollection(
+            name: 'app_equipment_get',
+            uriTemplate: '/equipment',
+            controller: 'App\\Controller\\EquipmentController::get',
+            normalizationContext: ['groups' => ['equipment:get_all']],
         ),
-    ]
+        new Get(
+            name: 'app_equipment_get_by_id',
+            uriTemplate: '/equipment/{id}',
+            controller: 'App\\Controller\\EquipmentController::getById',
+            normalizationContext: ['groups' => ['equipment:get_by_id']]
+        ),
+        new Post(
+            name: 'app_equipment_new',
+            uriTemplate: '/equipment',
+            controller: 'App\\Controller\\EquipmentController::create',
+            denormalizationContext: ['groups' => ['equipment:write']]
+        ),
+        new Put(
+            name: 'app_equipment_update',
+            uriTemplate: '/equipment/{id}',
+            controller: 'App\\Controller\\EquipmentController::update',
+            denormalizationContext: ['groups' => ['equipment:write']]
+        ),
+        new Delete(
+            name: 'app_equipment_delete',
+            uriTemplate: '/equipment/{id}',
+            controller: 'App\\Controller\\EquipmentController::delete'
+        ),
+    ],
+    normalizationContext: ['groups' => ['equipment:get_all']],
+    denormalizationContext: ['groups' => ['equipment:write']]
 )]
 #[ORM\Entity(repositoryClass: EquipmentRepository::class)]
 class Equipment

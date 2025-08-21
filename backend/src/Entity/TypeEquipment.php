@@ -3,13 +3,52 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\TypeEquipmentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_type_equipment_get',
+            uriTemplate: '/type-equipment',
+            controller: 'App\\Controller\\TypeEquipmentController::get',
+            normalizationContext: ['groups' => ['type_equipment:get_all']],
+        ),
+        new Get(
+            name: 'app_type_equipment_get_by_id',
+            uriTemplate: '/type-equipment/{id}',
+            controller: 'App\\Controller\\TypeEquipmentController::getById',
+            normalizationContext: ['groups' => ['type_equipment:get_by_id']]
+        ),
+        new Post(
+            name: 'app_type_equipment_new',
+            uriTemplate: '/type-equipment',
+            controller: 'App\\Controller\\TypeEquipmentController::create',
+            denormalizationContext: ['groups' => ['type_equipment:write']]
+        ),
+        new Put(
+            name: 'app_type_equipment_update',
+            uriTemplate: '/type-equipment/{id}',
+            controller: 'App\\Controller\\TypeEquipmentController::update',
+            denormalizationContext: ['groups' => ['type_equipment:write']]
+        ),
+        new Delete(
+            name: 'app_type_equipment_delete',
+            uriTemplate: '/type-equipment/{id}',
+            controller: 'App\\Controller\\TypeEquipmentController::delete'
+        ),
+    ],
+    normalizationContext: ['groups' => ['type_equipment:get_all']],
+    denormalizationContext: ['groups' => ['type_equipment:write']]
+)]
 #[ORM\Entity(repositoryClass: TypeEquipmentRepository::class)]
 class TypeEquipment
 {

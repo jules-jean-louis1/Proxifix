@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\CompanySpecializationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,7 +16,36 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CompanySpecializationRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_company_specialization_get',
+            uriTemplate: '/company-specialization',
+            normalizationContext: ['groups' => ['company_specialization:get_all']],
+        ),
+        new Get(
+            name: 'app_company_specialization_get_by_id',
+            uriTemplate: '/company-specialization/{id}',
+            normalizationContext: ['groups' => ['company_specialization:get_by_id']]
+        ),
+        new Post(
+            name: 'app_company_specialization_new',
+            uriTemplate: '/company-specialization',
+            denormalizationContext: ['groups' => ['company_specialization:write']]
+        ),
+        new Put(
+            name: 'app_company_specialization_update',
+            uriTemplate: '/company-specialization/{id}',
+            denormalizationContext: ['groups' => ['company_specialization:write']]
+        ),
+        new Delete(
+            name: 'app_company_specialization_delete',
+            uriTemplate: '/company-specialization/{id}'
+        ),
+    ],
+    normalizationContext: ['groups' => ['company_specialization:get_all']],
+    denormalizationContext: ['groups' => ['company_specialization:write']]
+)]
 #[UniqueEntity('slug')]
 class CompanySpecialization
 {

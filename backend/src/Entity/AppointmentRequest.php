@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\AppointmentRequestRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,7 +15,36 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AppointmentRequestRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_appointment_request_get',
+            uriTemplate: '/appointment-request',
+            normalizationContext: ['groups' => ['appointment_request:get_all']],
+        ),
+        new Get(
+            name: 'app_appointment_request_get_by_id',
+            uriTemplate: '/appointment-request/{id}',
+            normalizationContext: ['groups' => ['appointment_request:get_by_id']]
+        ),
+        new Post(
+            name: 'app_appointment_request_new',
+            uriTemplate: '/appointment-request',
+            denormalizationContext: ['groups' => ['appointment_request:write']]
+        ),
+        new Put(
+            name: 'app_appointment_request_update',
+            uriTemplate: '/appointment-request/{id}',
+            denormalizationContext: ['groups' => ['appointment_request:write']]
+        ),
+        new Delete(
+            name: 'app_appointment_request_delete',
+            uriTemplate: '/appointment-request/{id}'
+        ),
+    ],
+    normalizationContext: ['groups' => ['appointment_request:get_all']],
+    denormalizationContext: ['groups' => ['appointment_request:write']]
+)]
 class AppointmentRequest
 {
     public const PENDING = 'pending';

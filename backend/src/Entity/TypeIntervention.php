@@ -3,13 +3,52 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\TypeInterventionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_type_intervention_get',
+            uriTemplate: '/type-intervention',
+            controller: 'App\\Controller\\TypeInterventionController::get',
+            normalizationContext: ['groups' => ['type_intervention:get_all']],
+        ),
+        new Get(
+            name: 'app_type_intervention_get_by_id',
+            uriTemplate: '/type-intervention/{id}',
+            controller: 'App\\Controller\\TypeInterventionController::getById',
+            normalizationContext: ['groups' => ['type_intervention:get_by_id']]
+        ),
+        new Post(
+            name: 'app_type_intervention_new',
+            uriTemplate: '/type-intervention',
+            controller: 'App\\Controller\\TypeInterventionController::create',
+            denormalizationContext: ['groups' => ['type_intervention:write']]
+        ),
+        new Put(
+            name: 'app_type_intervention_update',
+            uriTemplate: '/type-intervention/{id}',
+            controller: 'App\\Controller\\TypeInterventionController::update',
+            denormalizationContext: ['groups' => ['type_intervention:write']]
+        ),
+        new Delete(
+            name: 'app_type_intervention_delete',
+            uriTemplate: '/type-intervention/{id}',
+            controller: 'App\\Controller\\TypeInterventionController::delete'
+        ),
+    ],
+    normalizationContext: ['groups' => ['type_intervention:get_all']],
+    denormalizationContext: ['groups' => ['type_intervention:write']]
+)]
 #[ORM\Entity(repositoryClass: TypeInterventionRepository::class)]
 class TypeIntervention
 {

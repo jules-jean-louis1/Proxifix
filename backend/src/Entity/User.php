@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,7 +18,41 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_user_get',
+            uriTemplate: '/user',
+            controller: 'App\\Controller\\UserController::get',
+            normalizationContext: ['groups' => ['user:get_all']],
+        ),
+        new Get(
+            name: 'app_user_get_by_id',
+            uriTemplate: '/user/{id}',
+            controller: 'App\\Controller\\UserController::getById',
+            normalizationContext: ['groups' => ['user:get_by_id']]
+        ),
+        new Post(
+            name: 'app_user_new',
+            uriTemplate: '/user',
+            controller: 'App\\Controller\\UserController::create',
+            denormalizationContext: ['groups' => ['user:write']]
+        ),
+        new Put(
+            name: 'app_user_update',
+            uriTemplate: '/user/{id}',
+            controller: 'App\\Controller\\UserController::update',
+            denormalizationContext: ['groups' => ['user:write']]
+        ),
+        new Delete(
+            name: 'app_user_delete',
+            uriTemplate: '/user/{id}',
+            controller: 'App\\Controller\\UserController::delete'
+        ),
+    ],
+    normalizationContext: ['groups' => ['user:get_all']],
+    denormalizationContext: ['groups' => ['user:write']]
+)]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
