@@ -82,6 +82,37 @@ export default function AdminHome() {
           <Text variant="titleLarge" style={styles.title}>
             Bonjour {sessionData?.first_name} {sessionData?.last_name}
           </Text>
+          <View>
+            <View
+              style={{
+                flexDirection: "column",
+                justifyContent: "space-between",
+                marginBottom: 4,
+              }}
+            >
+              <AppButton
+                type="primary"
+                children="Clients"
+                onPress={() => router.push("/admin/customers")}
+                style={{ flex: 1, marginRight: 2 }}
+                icon={"plus"}
+              />
+              <AppButton
+                type="primary"
+                children="Interventions"
+                onPress={() => router.push("/admin/interventions/new")}
+                style={{ flex: 1, marginLeft: 2 }}
+                icon={"plus"}
+              />
+              <AppButton
+                type="primary"
+                children="Ajouter un equipement"
+                onPress={() => router.push("/admin/equipments/new")}
+                style={{ flex: 1, marginLeft: 2 }}
+                icon={"plus"}
+              />
+            </View>
+          </View>
           <Text style={styles.subtitle}>
             Vos interventions assignées ({interventions.length})
           </Text>
@@ -98,13 +129,6 @@ export default function AdminHome() {
           ) : (
             <Text style={styles.noDataText}>Aucune intervention assignée</Text>
           )}
-
-          <AppButton
-            type="primary"
-            children="Voir toutes mes interventions"
-            onPress={() => router.push("/admin/interventions")}
-            style={styles.button}
-          />
         </ScrollView>
       </View>
     );

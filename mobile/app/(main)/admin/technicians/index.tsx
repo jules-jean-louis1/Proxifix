@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { useApi } from "@/app/hooks/useApi";
 import { FC, useEffect, useState, useCallback } from "react";
 import { useSessionContext } from "@/app/context/useSessionContext";
@@ -47,11 +47,17 @@ const AdminTechniciansPage: FC = () => {
 
   const searchValue = methods.watch("search");
 
-  // Remplacer le useEffect par surveillance de searchValue
+  // Recharger la liste quand on revient sur cette page
+  useFocusEffect(
+    useCallback(() => {
+      loadTechnicians(searchValue);
+    }, [loadTechnicians, searchValue])
+  );
+
+  // Surveillance du champ de recherche avec debounce
   useEffect(() => {
     if (searchValue === "") {
-      loadTechnicians();
-      return;
+      return; // useFocusEffect s'occupe du chargement initial
     }
 
     const timeoutId = setTimeout(() => {

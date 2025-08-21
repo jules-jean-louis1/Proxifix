@@ -164,10 +164,17 @@ class InterventionRepository extends ServiceEntityRepository
                 ->setParameter('company_id', intval($companyId));
         }
 
-        if (null !== $status && 'all' !== $status) {
-            $query->leftJoin('i.status', 's')
-                ->andWhere('s.name = :status')
-                ->setParameter('status', $status);
+        if (null !== $status) {
+            if (str_contains($status, ',')) {
+                $statusArray = explode(',', $status);
+                // Nettoyer les espaces autour des valeurs
+                $statusArray = array_map('trim', $statusArray);
+                $query->andWhere('i.status IN (:status)')
+                    ->setParameter('status', $statusArray);
+            } else {
+                $query->andWhere('i.status = :status')
+                    ->setParameter('status', trim($status));
+            }
         }
 
         if (null !== $typeInterventionId) {
