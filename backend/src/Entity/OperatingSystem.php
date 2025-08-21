@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\OperatingSystemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,7 +18,41 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OperatingSystemRepository::class)]
 #[UniqueEntity('name')]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_operating_systems_get',
+            uriTemplate: '/operating-system',
+            controller: 'App\\Controller\\OperatingSystemController::getOperatingSystems',
+            normalizationContext: ['groups' => ['operating_system:get_all']],
+        ),
+        new Get(
+            name: 'app_operating_system_get',
+            uriTemplate: '/operating-system/{id}',
+            controller: 'App\\Controller\\OperatingSystemController::getOne',
+            normalizationContext: ['groups' => ['operating_system:get_by_id']]
+        ),
+        new Post(
+            name: 'app_operating_system_create',
+            uriTemplate: '/operating-system',
+            controller: 'App\\Controller\\OperatingSystemController::create',
+            denormalizationContext: ['groups' => ['operating_system:write']]
+        ),
+        new Put(
+            name: 'app_operating_system_update',
+            uriTemplate: '/operating-system/{id}',
+            controller: 'App\\Controller\\OperatingSystemController::update',
+            denormalizationContext: ['groups' => ['operating_system:write']]
+        ),
+        new Delete(
+            name: 'app_operating_system_delete',
+            uriTemplate: '/operating-system/{id}',
+            controller: 'App\\Controller\\OperatingSystemController::delete'
+        ),
+    ],
+    normalizationContext: ['groups' => ['operating_system:get_all']],
+    denormalizationContext: ['groups' => ['operating_system:write']]
+)]
 class OperatingSystem
 {
     #[ORM\Id]

@@ -26,6 +26,7 @@ interface AdminCustomerFormProps {
   initialData?: Customer;
   onSubmit: (data: Customer) => void;
   onCancel?: () => void;
+  onDelete?: (id: number) => void;
 }
 
 export const AdminCustomerForm: React.FC<AdminCustomerFormProps> = ({
@@ -33,6 +34,7 @@ export const AdminCustomerForm: React.FC<AdminCustomerFormProps> = ({
   initialData,
   onSubmit,
   onCancel,
+  onDelete,
 }) => {
   const methods = useForm<Customer>({
     defaultValues: initialData || {
@@ -112,6 +114,17 @@ export const AdminCustomerForm: React.FC<AdminCustomerFormProps> = ({
             type="primary"
             onPress={methods.handleSubmit(onSubmit)}
           />
+          {mode === "edit" && (
+            <AppButton
+              children="Supprimer"
+              type="tertiary"
+              onPress={() => {
+                if (initialData) {
+                  onDelete?.(initialData.id);
+                }
+              }}
+            />
+          )}
           {onCancel && (
             <AppButton children="Annuler" onPress={onCancel} type="secondary" />
           )}

@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\BrandRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,7 +15,41 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BrandRepository::class)]
-#[ApiResource(operations: [])]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_brand_get',
+            uriTemplate: '/brand',
+            controller: 'App\\Controller\\BrandController::get',
+            normalizationContext: ['groups' => ['brand:get_all']],
+        ),
+        new Get(
+            name: 'app_brand_get_by_id',
+            uriTemplate: '/brand/{id}',
+            controller: 'App\\Controller\\BrandController::getById',
+            normalizationContext: ['groups' => ['brand:get_by_id']]
+        ),
+        new Post(
+            name: 'app_brand_new',
+            uriTemplate: '/brand',
+            controller: 'App\\Controller\\BrandController::create',
+            denormalizationContext: ['groups' => ['brand:write']]
+        ),
+        new Put(
+            name: 'app_brand_update',
+            uriTemplate: '/brand/{id}',
+            controller: 'App\\Controller\\BrandController::update',
+            denormalizationContext: ['groups' => ['brand:write']]
+        ),
+        new Delete(
+            name: 'app_brand_delete',
+            uriTemplate: '/brand/{id}',
+            controller: 'App\\Controller\\BrandController::delete'
+        ),
+    ],
+    normalizationContext: ['groups' => ['brand:get_all']],
+    denormalizationContext: ['groups' => ['brand:write']]
+)]
 class Brand
 {
     #[ORM\Id]

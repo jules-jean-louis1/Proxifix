@@ -3,13 +3,76 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\CompanyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_company_get',
+            uriTemplate: '/company',
+            controller: 'App\\Controller\\CompanyController::getCompanies',
+            normalizationContext: ['groups' => ['company:get_all']],
+        ),
+        new Get(
+            name: 'app_company_details',
+            uriTemplate: '/api/company/{id}',
+            controller: 'App\\Controller\\CompanyController::getDetails',
+            normalizationContext: ['groups' => ['company:get_by_id']]
+        ),
+        new Post(
+            name: 'app_company_post',
+            uriTemplate: '/company',
+            controller: 'App\\Controller\\CompanyController::create',
+            denormalizationContext: ['groups' => ['company:write']]
+        ),
+        new Put(
+            name: 'app_company_update',
+            uriTemplate: '/company/{id}',
+            controller: 'App\\Controller\\CompanyController::update',
+            denormalizationContext: ['groups' => ['company:write']]
+        ),
+        new Delete(
+            name: 'app_company_delete',
+            uriTemplate: '/company/{id}',
+            controller: 'App\\Controller\\CompanyController::delete'
+        ),
+        new Post(
+            name: 'register_company',
+            uriTemplate: '/company-registration',
+            controller: 'App\\Controller\\CompanyController::registerCompany',
+            denormalizationContext: ['groups' => ['company:register']]
+        ),
+        new Post(
+            name: 'approve_company',
+            uriTemplate: '/api/company/{id}/approve',
+            controller: 'App\\Controller\\CompanyController::approveCompany',
+            denormalizationContext: ['groups' => ['company:approve']]
+        ),
+        new Post(
+            name: 'disapprove_company',
+            uriTemplate: '/api/company/{id}/disapprove',
+            controller: 'App\\Controller\\CompanyController::disapproveCompany',
+            denormalizationContext: ['groups' => ['company:disapprove']]
+        ),
+        new GetCollection(
+            name: 'app_company_specialization_get',
+            uriTemplate: '/company-specialization',
+            controller: 'App\\Controller\\CompanyController::getCompanySpecializations',
+            normalizationContext: ['groups' => ['company:specializations']]
+        ),
+    ],
+    normalizationContext: ['groups' => ['company:get_all']],
+    denormalizationContext: ['groups' => ['company:write']]
+)]
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company
 {

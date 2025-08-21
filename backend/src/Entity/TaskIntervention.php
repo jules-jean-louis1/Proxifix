@@ -3,11 +3,50 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\TaskInterventionRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            name: 'app_task_intervention_get',
+            uriTemplate: '/task-intervention',
+            controller: 'App\\Controller\\TaskInterventionController::get',
+            normalizationContext: ['groups' => ['task_intervention:get_all']],
+        ),
+        new Get(
+            name: 'app_task_intervention_get_by_id',
+            uriTemplate: '/task-intervention/{id}',
+            controller: 'App\\Controller\\TaskInterventionController::getById',
+            normalizationContext: ['groups' => ['task_intervention:get_by_id']]
+        ),
+        new Post(
+            name: 'app_task_intervention_new',
+            uriTemplate: '/task-intervention',
+            controller: 'App\\Controller\\TaskInterventionController::create',
+            denormalizationContext: ['groups' => ['task_intervention:write']]
+        ),
+        new Put(
+            name: 'app_task_intervention_update',
+            uriTemplate: '/task-intervention/{id}',
+            controller: 'App\\Controller\\TaskInterventionController::update',
+            denormalizationContext: ['groups' => ['task_intervention:write']]
+        ),
+        new Delete(
+            name: 'app_task_intervention_delete',
+            uriTemplate: '/task-intervention/{id}',
+            controller: 'App\\Controller\\TaskInterventionController::delete'
+        ),
+    ],
+    normalizationContext: ['groups' => ['task_intervention:get_all']],
+    denormalizationContext: ['groups' => ['task_intervention:write']]
+)]
 #[ORM\Entity(repositoryClass: TaskInterventionRepository::class)]
 class TaskIntervention
 {

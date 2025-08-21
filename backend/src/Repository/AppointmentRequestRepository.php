@@ -61,18 +61,26 @@ class AppointmentRequestRepository extends ServiceEntityRepository
         $query->setFirstResult($offset)
             ->setMaxResults($size);
 
+        // Prioriser $id sur $appointementId pour éviter les conflits
         if (null !== $id) {
             $query->andWhere('a.id = :id')
                 ->setParameter('id', $id);
-        }
-
-        if (null !== $appointementId) {
+        } elseif (null !== $appointementId) {
             $query->andWhere('a.id = :appointment_id')
                 ->setParameter('appointment_id', $appointementId);
         }
+
         if (null !== $status) {
-            $query->andWhere('a.status = :status')
-                ->setParameter('status', $status);
+            if (str_contains($status, ',')) {
+                $statusArray = explode(',', $status);
+                // Nettoyer les espaces autour des valeurs
+                $statusArray = array_map('trim', $statusArray);
+                $query->andWhere('a.status IN (:status)')
+                    ->setParameter('status', $statusArray);
+            } else {
+                $query->andWhere('a.status = :status')
+                    ->setParameter('status', trim($status));
+            }
         }
         if (null !== $date) {
             $query->andWhere('a.date = :date')

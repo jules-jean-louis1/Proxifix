@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useApi } from "@/app/hooks/useApi";
 import { FC, useEffect, useState, useCallback } from "react";
 import { useSessionContext } from "@/app/context/useSessionContext";
@@ -60,6 +60,12 @@ const AdminCustomersPage: FC = () => {
 
     return () => clearTimeout(timeoutId);
   }, [searchValue, loadCustomers]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadCustomers(searchValue);
+    }, [loadCustomers, searchValue])
+  );
 
   return (
     <View style={styles.containerWrapper}>

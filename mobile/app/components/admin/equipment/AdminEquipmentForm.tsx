@@ -43,6 +43,7 @@ interface AdminEquipmentFormProps {
   initialData?: Equipment;
   onSubmit: (data: Equipment) => void;
   onCancel?: () => void;
+  onDelete?: (id: number) => void;
 }
 
 export const AdminEquipmentForm: React.FC<AdminEquipmentFormProps> = ({
@@ -50,6 +51,7 @@ export const AdminEquipmentForm: React.FC<AdminEquipmentFormProps> = ({
   initialData,
   onSubmit,
   onCancel,
+  onDelete,
 }) => {
   const api = useApi();
   const [brands, setBrands] = useState<{ label: string; value: number }[]>([]);
@@ -171,6 +173,17 @@ export const AdminEquipmentForm: React.FC<AdminEquipmentFormProps> = ({
             type="primary"
             onPress={methods.handleSubmit(handleFormSubmit)}
           />
+          {mode === "edit" && (
+            <AppButton
+              children="Supprimer"
+              type="tertiary"
+              onPress={() => {
+                if (initialData) {
+                  onDelete?.(initialData.id);
+                }
+              }}
+            />
+          )}
           {onCancel && (
             <AppButton children="Annuler" onPress={onCancel} type="secondary" />
           )}

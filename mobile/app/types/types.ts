@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/appointment_requests": {
+    "/api/appointment-request": {
         parameters: {
             query?: never;
             header?: never;
@@ -15,20 +15,20 @@ export interface paths {
          * Retrieves the collection of AppointmentRequest resources.
          * @description Retrieves the collection of AppointmentRequest resources.
          */
-        get: operations["api_appointment_requests_get_collection"];
+        get: operations["app_appointment_request_get"];
         put?: never;
         /**
          * Creates a AppointmentRequest resource.
          * @description Creates a AppointmentRequest resource.
          */
-        post: operations["api_appointment_requests_post"];
+        post: operations["app_appointment_request_new"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/appointment_requests/{id}": {
+    "/api/appointment-request/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -39,24 +39,24 @@ export interface paths {
          * Retrieves a AppointmentRequest resource.
          * @description Retrieves a AppointmentRequest resource.
          */
-        get: operations["api_appointment_requests_id_get"];
-        put?: never;
+        get: operations["app_appointment_request_get_by_id"];
+        /**
+         * Replaces the AppointmentRequest resource.
+         * @description Replaces the AppointmentRequest resource.
+         */
+        put: operations["app_appointment_request_update"];
         post?: never;
         /**
          * Removes the AppointmentRequest resource.
          * @description Removes the AppointmentRequest resource.
          */
-        delete: operations["api_appointment_requests_id_delete"];
+        delete: operations["app_appointment_request_delete"];
         options?: never;
         head?: never;
-        /**
-         * Updates the AppointmentRequest resource.
-         * @description Updates the AppointmentRequest resource.
-         */
-        patch: operations["api_appointment_requests_id_patch"];
+        patch?: never;
         trace?: never;
     };
-    "/api/brands": {
+    "/api/brand": {
         parameters: {
             query?: never;
             header?: never;
@@ -67,20 +67,20 @@ export interface paths {
          * Retrieves the collection of Brand resources.
          * @description Retrieves the collection of Brand resources.
          */
-        get: operations["api_brands_get_collection"];
+        get: operations["app_brand_get"];
         put?: never;
         /**
          * Creates a Brand resource.
          * @description Creates a Brand resource.
          */
-        post: operations["api_brands_post"];
+        post: operations["app_brand_new"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/brands/{id}": {
+    "/api/brand/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -91,48 +91,24 @@ export interface paths {
          * Retrieves a Brand resource.
          * @description Retrieves a Brand resource.
          */
-        get: operations["api_brands_id_get"];
-        put?: never;
+        get: operations["app_brand_get_by_id"];
+        /**
+         * Replaces the Brand resource.
+         * @description Replaces the Brand resource.
+         */
+        put: operations["app_brand_update"];
         post?: never;
         /**
          * Removes the Brand resource.
          * @description Removes the Brand resource.
          */
-        delete: operations["api_brands_id_delete"];
-        options?: never;
-        head?: never;
-        /**
-         * Updates the Brand resource.
-         * @description Updates the Brand resource.
-         */
-        patch: operations["api_brands_id_patch"];
-        trace?: never;
-    };
-    "/api/companies": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Retrieves the collection of Company resources.
-         * @description Retrieves the collection of Company resources.
-         */
-        get: operations["api_companies_get_collection"];
-        put?: never;
-        /**
-         * Creates a Company resource.
-         * @description Creates a Company resource.
-         */
-        post: operations["api_companies_post"];
-        delete?: never;
+        delete: operations["app_brand_delete"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/companies/{id}": {
+    "/api/api/company/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -143,24 +119,220 @@ export interface paths {
          * Retrieves a Company resource.
          * @description Retrieves a Company resource.
          */
-        get: operations["api_companies_id_get"];
+        get: operations["app_company_details"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/company": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves the collection of Company resources.
+         * @description Retrieves the collection of Company resources.
+         */
+        get: operations["app_company_get"];
+        put?: never;
+        /**
+         * Creates a Company resource.
+         * @description Creates a Company resource.
+         */
+        post: operations["app_company_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/company-registration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Creates a Company resource.
+         * @description Creates a Company resource.
+         */
+        post: operations["register_company"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/company/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replaces the Company resource.
+         * @description Replaces the Company resource.
+         */
+        put: operations["app_company_update"];
         post?: never;
         /**
          * Removes the Company resource.
          * @description Removes the Company resource.
          */
-        delete: operations["api_companies_id_delete"];
+        delete: operations["app_company_delete"];
         options?: never;
         head?: never;
-        /**
-         * Updates the Company resource.
-         * @description Updates the Company resource.
-         */
-        patch: operations["api_companies_id_patch"];
+        patch?: never;
         trace?: never;
     };
-    "/api/api/equipment/{id}": {
+    "/apiapi/company/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Creates a Company resource.
+         * @description Creates a Company resource.
+         */
+        post: operations["approve_company"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apiapi/company/{id}/disapprove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Creates a Company resource.
+         * @description Creates a Company resource.
+         */
+        post: operations["disapprove_company"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/company-specialization": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves the collection of CompanySpecialization resources.
+         * @description Retrieves the collection of CompanySpecialization resources.
+         */
+        get: operations["app_company_specialization_get"];
+        put?: never;
+        /**
+         * Creates a CompanySpecialization resource.
+         * @description Creates a CompanySpecialization resource.
+         */
+        post: operations["app_company_specialization_new"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/company-specialization/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves a CompanySpecialization resource.
+         * @description Retrieves a CompanySpecialization resource.
+         */
+        get: operations["app_company_specialization_get_by_id"];
+        /**
+         * Replaces the CompanySpecialization resource.
+         * @description Replaces the CompanySpecialization resource.
+         */
+        put: operations["app_company_specialization_update"];
+        post?: never;
+        /**
+         * Removes the CompanySpecialization resource.
+         * @description Removes the CompanySpecialization resource.
+         */
+        delete: operations["app_company_specialization_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/customer/{customerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves the collection of Equipment resources.
+         * @description Retrieves the collection of Equipment resources.
+         */
+        get: operations["app_equipment_customer_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/equipment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves the collection of Equipment resources.
+         * @description Retrieves the collection of Equipment resources.
+         */
+        get: operations["app_equipment_get"];
+        put?: never;
+        /**
+         * Creates a Equipment resource.
+         * @description Creates a Equipment resource.
+         */
+        post: operations["app_equipment_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/equipment/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -171,16 +343,24 @@ export interface paths {
          * Retrieves a Equipment resource.
          * @description Retrieves a Equipment resource.
          */
-        get: operations["api_apiequipment_id_get"];
-        put?: never;
+        get: operations["app_equipment_get_one"];
+        /**
+         * Replaces the Equipment resource.
+         * @description Replaces the Equipment resource.
+         */
+        put: operations["app_equipment_edit"];
         post?: never;
-        delete?: never;
+        /**
+         * Removes the Equipment resource.
+         * @description Removes the Equipment resource.
+         */
+        delete: operations["app_equipment_delete"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/interventions": {
+    "/api/intervention": {
         parameters: {
             query?: never;
             header?: never;
@@ -191,20 +371,40 @@ export interface paths {
          * Retrieves the collection of Intervention resources.
          * @description Retrieves the collection of Intervention resources.
          */
-        get: operations["api_interventions_get_collection"];
+        get: operations["app_intervention_get"];
         put?: never;
         /**
          * Creates a Intervention resource.
          * @description Creates a Intervention resource.
          */
-        post: operations["api_interventions_post"];
+        post: operations["app_intervention_new"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/interventions/{id}": {
+    "/api/intervention/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves the collection of Intervention resources.
+         * @description Retrieves the collection of Intervention resources.
+         */
+        get: operations["app_intervention_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/intervention/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -215,21 +415,89 @@ export interface paths {
          * Retrieves a Intervention resource.
          * @description Retrieves a Intervention resource.
          */
-        get: operations["api_interventions_id_get"];
-        put?: never;
+        get: operations["app_intervention_get_by_id"];
+        /**
+         * Replaces the Intervention resource.
+         * @description Replaces the Intervention resource.
+         */
+        put: operations["app_intervention_update"];
         post?: never;
         /**
          * Removes the Intervention resource.
          * @description Removes the Intervention resource.
          */
-        delete: operations["api_interventions_id_delete"];
+        delete: operations["app_intervention_delete"];
         options?: never;
         head?: never;
         /**
          * Updates the Intervention resource.
          * @description Updates the Intervention resource.
          */
-        patch: operations["api_interventions_id_patch"];
+        patch: operations["app_intervention_patch"];
+        trace?: never;
+    };
+    "/api/intervention/{id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Updates the Intervention resource.
+         * @description Updates the Intervention resource.
+         */
+        patch: operations["app_intervention_assign"];
+        trace?: never;
+    };
+    "/api/intervention/{id}/task": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves a Intervention resource.
+         * @description Retrieves a Intervention resource.
+         */
+        get: operations["app_intervention_tasks"];
+        put?: never;
+        /**
+         * Creates a Intervention resource.
+         * @description Creates a Intervention resource.
+         */
+        post: operations["app_intervention_add_task"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/intervention/{id}/task/{taskId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Removes the Intervention resource.
+         * @description Removes the Intervention resource.
+         */
+        delete: operations["app_intervention_remove_task"];
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/auth/login": {
@@ -252,7 +520,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/operating_systems": {
+    "/api/operating-system": {
         parameters: {
             query?: never;
             header?: never;
@@ -263,20 +531,20 @@ export interface paths {
          * Retrieves the collection of OperatingSystem resources.
          * @description Retrieves the collection of OperatingSystem resources.
          */
-        get: operations["api_operating_systems_get_collection"];
+        get: operations["app_operating_systems_get"];
         put?: never;
         /**
          * Creates a OperatingSystem resource.
          * @description Creates a OperatingSystem resource.
          */
-        post: operations["api_operating_systems_post"];
+        post: operations["app_operating_system_create"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/operating_systems/{id}": {
+    "/api/operating-system/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -287,76 +555,24 @@ export interface paths {
          * Retrieves a OperatingSystem resource.
          * @description Retrieves a OperatingSystem resource.
          */
-        get: operations["api_operating_systems_id_get"];
-        put?: never;
+        get: operations["app_operating_system_get"];
+        /**
+         * Replaces the OperatingSystem resource.
+         * @description Replaces the OperatingSystem resource.
+         */
+        put: operations["app_operating_system_update"];
         post?: never;
         /**
          * Removes the OperatingSystem resource.
          * @description Removes the OperatingSystem resource.
          */
-        delete: operations["api_operating_systems_id_delete"];
-        options?: never;
-        head?: never;
-        /**
-         * Updates the OperatingSystem resource.
-         * @description Updates the OperatingSystem resource.
-         */
-        patch: operations["api_operating_systems_id_patch"];
-        trace?: never;
-    };
-    "/api/statuses": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Retrieves the collection of Status resources.
-         * @description Retrieves the collection of Status resources.
-         */
-        get: operations["api_statuses_get_collection"];
-        put?: never;
-        /**
-         * Creates a Status resource.
-         * @description Creates a Status resource.
-         */
-        post: operations["api_statuses_post"];
-        delete?: never;
+        delete: operations["app_operating_system_delete"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/statuses/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Retrieves a Status resource.
-         * @description Retrieves a Status resource.
-         */
-        get: operations["api_statuses_id_get"];
-        put?: never;
-        post?: never;
-        /**
-         * Removes the Status resource.
-         * @description Removes the Status resource.
-         */
-        delete: operations["api_statuses_id_delete"];
-        options?: never;
-        head?: never;
-        /**
-         * Updates the Status resource.
-         * @description Updates the Status resource.
-         */
-        patch: operations["api_statuses_id_patch"];
-        trace?: never;
-    };
-    "/api/tasks": {
+    "/api/task": {
         parameters: {
             query?: never;
             header?: never;
@@ -367,20 +583,20 @@ export interface paths {
          * Retrieves the collection of Task resources.
          * @description Retrieves the collection of Task resources.
          */
-        get: operations["api_tasks_get_collection"];
+        get: operations["app_task_list"];
         put?: never;
         /**
          * Creates a Task resource.
          * @description Creates a Task resource.
          */
-        post: operations["api_tasks_post"];
+        post: operations["app_task"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/tasks/{id}": {
+    "/api/task/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -391,48 +607,44 @@ export interface paths {
          * Retrieves a Task resource.
          * @description Retrieves a Task resource.
          */
-        get: operations["api_tasks_id_get"];
-        put?: never;
+        get: operations["app_task_show"];
+        /**
+         * Replaces the Task resource.
+         * @description Replaces the Task resource.
+         */
+        put: operations["app_task_update"];
         post?: never;
         /**
          * Removes the Task resource.
          * @description Removes the Task resource.
          */
-        delete: operations["api_tasks_id_delete"];
+        delete: operations["app_task_delete"];
         options?: never;
         head?: never;
-        /**
-         * Updates the Task resource.
-         * @description Updates the Task resource.
-         */
-        patch: operations["api_tasks_id_patch"];
+        patch?: never;
         trace?: never;
     };
-    "/api/task_interventions": {
+    "/api/task-intervention": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /**
-         * Retrieves the collection of TaskIntervention resources.
-         * @description Retrieves the collection of TaskIntervention resources.
-         */
-        get: operations["api_task_interventions_get_collection"];
+        get?: never;
         put?: never;
         /**
          * Creates a TaskIntervention resource.
          * @description Creates a TaskIntervention resource.
          */
-        post: operations["api_task_interventions_post"];
+        post: operations["app_task_intervention_new"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/task_interventions/{id}": {
+    "/api/task-intervention/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -443,24 +655,24 @@ export interface paths {
          * Retrieves a TaskIntervention resource.
          * @description Retrieves a TaskIntervention resource.
          */
-        get: operations["api_task_interventions_id_get"];
-        put?: never;
+        get: operations["app_task_intervention_get_by_id"];
+        /**
+         * Replaces the TaskIntervention resource.
+         * @description Replaces the TaskIntervention resource.
+         */
+        put: operations["app_task_intervention_update"];
         post?: never;
         /**
          * Removes the TaskIntervention resource.
          * @description Removes the TaskIntervention resource.
          */
-        delete: operations["api_task_interventions_id_delete"];
+        delete: operations["app_task_intervention_delete"];
         options?: never;
         head?: never;
-        /**
-         * Updates the TaskIntervention resource.
-         * @description Updates the TaskIntervention resource.
-         */
-        patch: operations["api_task_interventions_id_patch"];
+        patch?: never;
         trace?: never;
     };
-    "/api/type_equipments": {
+    "/api/type-equipment": {
         parameters: {
             query?: never;
             header?: never;
@@ -471,48 +683,44 @@ export interface paths {
          * Retrieves the collection of TypeEquipment resources.
          * @description Retrieves the collection of TypeEquipment resources.
          */
-        get: operations["api_type_equipments_get_collection"];
+        get: operations["app_type_equipment"];
         put?: never;
         /**
          * Creates a TypeEquipment resource.
          * @description Creates a TypeEquipment resource.
          */
-        post: operations["api_type_equipments_post"];
+        post: operations["app_type_equipment_create"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/type_equipments/{id}": {
+    "/api/type-equipment/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
+        get?: never;
         /**
-         * Retrieves a TypeEquipment resource.
-         * @description Retrieves a TypeEquipment resource.
+         * Replaces the TypeEquipment resource.
+         * @description Replaces the TypeEquipment resource.
          */
-        get: operations["api_type_equipments_id_get"];
-        put?: never;
+        put: operations["app_type_equipment_edit"];
         post?: never;
         /**
          * Removes the TypeEquipment resource.
          * @description Removes the TypeEquipment resource.
          */
-        delete: operations["api_type_equipments_id_delete"];
+        delete: operations["app_type_equipment_delete"];
         options?: never;
         head?: never;
-        /**
-         * Updates the TypeEquipment resource.
-         * @description Updates the TypeEquipment resource.
-         */
-        patch: operations["api_type_equipments_id_patch"];
+        patch?: never;
         trace?: never;
     };
-    "/api/type_interventions": {
+    "/api/type-intervention": {
         parameters: {
             query?: never;
             header?: never;
@@ -523,48 +731,44 @@ export interface paths {
          * Retrieves the collection of TypeIntervention resources.
          * @description Retrieves the collection of TypeIntervention resources.
          */
-        get: operations["api_type_interventions_get_collection"];
+        get: operations["app_type_intervention"];
         put?: never;
         /**
          * Creates a TypeIntervention resource.
          * @description Creates a TypeIntervention resource.
          */
-        post: operations["api_type_interventions_post"];
+        post: operations["app_type_intervention_create"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/type_interventions/{id}": {
+    "/api/type-intervention/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
+        get?: never;
         /**
-         * Retrieves a TypeIntervention resource.
-         * @description Retrieves a TypeIntervention resource.
+         * Replaces the TypeIntervention resource.
+         * @description Replaces the TypeIntervention resource.
          */
-        get: operations["api_type_interventions_id_get"];
-        put?: never;
+        put: operations["app_type_intervention_edit"];
         post?: never;
         /**
          * Removes the TypeIntervention resource.
          * @description Removes the TypeIntervention resource.
          */
-        delete: operations["api_type_interventions_id_delete"];
+        delete: operations["app_type_intervention_delete"];
         options?: never;
         head?: never;
-        /**
-         * Updates the TypeIntervention resource.
-         * @description Updates the TypeIntervention resource.
-         */
-        patch: operations["api_type_interventions_id_patch"];
+        patch?: never;
         trace?: never;
     };
-    "/api/users": {
+    "/api/user": {
         parameters: {
             query?: never;
             header?: never;
@@ -575,20 +779,20 @@ export interface paths {
          * Retrieves the collection of User resources.
          * @description Retrieves the collection of User resources.
          */
-        get: operations["api_users_get_collection"];
+        get: operations["app_user_list_admin"];
         put?: never;
         /**
          * Creates a User resource.
          * @description Creates a User resource.
          */
-        post: operations["api_users_post"];
+        post: operations["app_user_add_admin"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/users/{id}": {
+    "/api/user/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -599,295 +803,371 @@ export interface paths {
          * Retrieves a User resource.
          * @description Retrieves a User resource.
          */
-        get: operations["api_users_id_get"];
+        get: operations["app_user_show_admin"];
         put?: never;
         post?: never;
         /**
          * Removes the User resource.
          * @description Removes the User resource.
          */
-        delete: operations["api_users_id_delete"];
+        delete: operations["app_user_delete_admin"];
         options?: never;
         head?: never;
         /**
          * Updates the User resource.
          * @description Updates the User resource.
          */
-        patch: operations["api_users_id_patch"];
+        patch: operations["app_user_edit_admin"];
         trace?: never;
     };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        AppointmentRequest: {
-            readonly id?: number;
-            /** Format: date-time */
-            date?: string | null;
-            title?: string;
-            description?: string | null;
-            status?: string;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            approved_by?: string | null;
-            /** Format: date-time */
-            created_at?: string | null;
-            /** Format: date-time */
-            updated_at?: string | null;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            user?: string;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            company?: string | null;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            equipment?: string | null;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            typeIntervention?: string | null;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            intervention?: string | null;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            approvedBy?: string | null;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
+        "AppointmentRequest-appointment_request.get_all": Record<string, never>;
+        "AppointmentRequest-appointment_request.get_by_id": Record<string, never>;
+        "AppointmentRequest-appointment_request.write": Record<string, never>;
+        "AppointmentRequest.jsonld-appointment_request.get_all": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
         };
-        Brand: {
+        "AppointmentRequest.jsonld-appointment_request.get_by_id": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "AppointmentRequest.jsonld-appointment_request.write": Record<string, never>;
+        "Brand-brand.get_all": {
             readonly id?: number;
             name?: string;
-            equipment?: string[];
             logo?: string | null;
-        };
-        "Brand-equipment.read_equipment.details": {
-            readonly id?: number;
-            name?: string;
-        };
-        Company: {
-            readonly id?: number;
-            name?: string;
-            about?: string | null;
-            type?: string | null;
-            address?: string;
-            city?: string;
-            zip_code?: string;
-            website?: string | null;
             /** Format: date-time */
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-            interventions?: string[];
-            users?: string[];
-            appointmentRequests?: string[];
-            zipCode?: string;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
         };
-        "Equipment-equipment.read_equipment.details": {
+        "Brand-brand.get_by_id": Record<string, never>;
+        "Brand-brand.write": Record<string, never>;
+        "Brand.jsonld-brand.get_all": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
             readonly id?: number;
             name?: string;
+            logo?: string | null;
             /** Format: date-time */
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-            type_equipment?: components["schemas"]["TypeEquipment-equipment.read_equipment.details"] | null;
-            operating_system?: components["schemas"]["OperatingSystem-equipment.read_equipment.details"] | null;
-            brand?: components["schemas"]["Brand-equipment.read_equipment.details"] | null;
-            interventions?: components["schemas"]["Intervention-equipment.read_equipment.details"][];
-            appointmentRequests?: string[];
         };
-        Intervention: {
-            readonly id?: number;
-            title?: string;
-            description?: string | null;
-            message_report?: string | null;
-            /** Format: date-time */
-            start_date?: string | null;
-            /** Format: date-time */
-            end_date?: string | null;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            typeIntervention?: string;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            company?: string | null;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            status?: string | null;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            user?: string | null;
-            taskInterventions?: string[];
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            appointmentRequest?: string | null;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            equipment?: string | null;
-            messageReport?: string | null;
-            /** Format: date-time */
-            startDate?: string | null;
-            /** Format: date-time */
-            endDate?: string | null;
-            readonly duration?: number | null;
-            readonly durationInHours?: number | null;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
+        "Brand.jsonld-brand.get_by_id": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
         };
-        "Intervention-equipment.read_equipment.details": {
-            readonly id?: number;
-            title?: string;
-            description?: string | null;
-            message_report?: string | null;
-            /** Format: date-time */
-            start_date?: string | null;
-            /** Format: date-time */
-            end_date?: string | null;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            typeIntervention?: components["schemas"]["TypeIntervention-equipment.read_equipment.details"];
-            status?: components["schemas"]["Status-equipment.read_equipment.details"] | null;
+        "Brand.jsonld-brand.write": Record<string, never>;
+        "Company-company.approve": Record<string, never>;
+        "Company-company.disapprove": Record<string, never>;
+        "Company-company.get_all": Record<string, never>;
+        "Company-company.get_by_id": Record<string, never>;
+        "Company-company.register": Record<string, never>;
+        "Company-company.specializations": Record<string, never>;
+        "Company-company.write": Record<string, never>;
+        "Company.jsonld-company.approve": Record<string, never>;
+        "Company.jsonld-company.disapprove": Record<string, never>;
+        "Company.jsonld-company.get_all": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
         };
-        OperatingSystem: {
+        "Company.jsonld-company.get_by_id": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "Company.jsonld-company.register": Record<string, never>;
+        "Company.jsonld-company.specializations": {
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "Company.jsonld-company.write": Record<string, never>;
+        "CompanySpecialization-company_specialization.get_all": Record<string, never>;
+        "CompanySpecialization-company_specialization.get_by_id": Record<string, never>;
+        "CompanySpecialization-company_specialization.write": Record<string, never>;
+        "CompanySpecialization.jsonld-company_specialization.get_all": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "CompanySpecialization.jsonld-company_specialization.get_by_id": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "CompanySpecialization.jsonld-company_specialization.write": Record<string, never>;
+        "Equipment-equipment.get_all": Record<string, never>;
+        "Equipment-equipment.get_by_id": Record<string, never>;
+        "Equipment-equipment.write": Record<string, never>;
+        "Equipment.jsonld-equipment.get_all": {
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+        };
+        "Equipment.jsonld-equipment.get_by_id": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "Equipment.jsonld-equipment.write": Record<string, never>;
+        "Intervention-intervention.add_task": Record<string, never>;
+        "Intervention-intervention.assign": Record<string, never>;
+        "Intervention-intervention.get_all": Record<string, never>;
+        "Intervention-intervention.get_by_id": Record<string, never>;
+        "Intervention-intervention.status": Record<string, never>;
+        "Intervention-intervention.tasks": Record<string, never>;
+        "Intervention-intervention.write": Record<string, never>;
+        "Intervention.jsonld-intervention.add_task": Record<string, never>;
+        "Intervention.jsonld-intervention.get_all": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "Intervention.jsonld-intervention.get_by_id": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "Intervention.jsonld-intervention.status": {
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "Intervention.jsonld-intervention.tasks": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "Intervention.jsonld-intervention.write": Record<string, never>;
+        "OperatingSystem-operating_system.get_all": Record<string, never>;
+        "OperatingSystem-operating_system.get_by_id": Record<string, never>;
+        "OperatingSystem-operating_system.write": Record<string, never>;
+        "OperatingSystem.jsonld-operating_system.get_all": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "OperatingSystem.jsonld-operating_system.get_by_id": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "OperatingSystem.jsonld-operating_system.write": Record<string, never>;
+        "Task-task.get_all": Record<string, never>;
+        "Task-task.get_by_id": Record<string, never>;
+        "Task-task.write": {
             readonly id?: number;
             name?: string;
-            equipment?: string[];
-        };
-        "OperatingSystem-equipment.read_equipment.details": {
-            readonly id?: number;
-            name?: string;
-        };
-        Status: {
-            readonly id?: number;
-            name?: string;
-        };
-        "Status-equipment.read_equipment.details": {
-            readonly id?: number;
-            name?: string;
-        };
-        Task: {
-            readonly id?: number;
-            name?: string;
-            price?: number;
+            price?: string;
             description?: string;
-            taskInterventions?: string[];
         };
-        TaskIntervention: {
-            readonly id?: number;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            task?: string;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            intervention?: string;
+        "Task.jsonld-task.get_all": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
         };
-        TypeEquipment: {
-            readonly id?: number;
-            name?: string;
-            equipment?: string[];
+        "Task.jsonld-task.get_by_id": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
         };
-        "TypeEquipment-equipment.read_equipment.details": {
-            readonly id?: number;
-            name?: string;
-        };
-        TypeIntervention: {
-            readonly id?: number;
-            name?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            interventions?: string[];
-            appointmentRequests?: string[];
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-        };
-        "TypeIntervention-equipment.read_equipment.details": {
+        "Task.jsonld-task.write": {
             readonly id?: number;
             name?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
+            price?: string;
+            description?: string;
         };
-        User: {
-            readonly id?: number;
-            email?: string;
-            role: string;
-            /** @description The hashed password */
-            password?: string;
-            first_name: string;
-            last_name?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /**
-             * Format: iri-reference
-             * @example https://example.com/
-             */
-            company?: string | null;
-            equipment?: string[];
-            appointmentRequests?: string[];
-            zipcode?: string | null;
-            city?: string | null;
-            phone?: string | null;
-            address?: string | null;
-            /** @description A visual identifier that represents this user. */
-            readonly userIdentifier?: string;
-            firstName?: string;
-            lastName?: string;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
+        "TaskIntervention-task_intervention.get_all": Record<string, never>;
+        "TaskIntervention-task_intervention.get_by_id": Record<string, never>;
+        "TaskIntervention-task_intervention.write": Record<string, never>;
+        "TaskIntervention.jsonld-task_intervention.get_all": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
         };
+        "TaskIntervention.jsonld-task_intervention.get_by_id": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "TaskIntervention.jsonld-task_intervention.write": Record<string, never>;
+        "TypeEquipment-type_equipment.get_all": Record<string, never>;
+        "TypeEquipment-type_equipment.write": Record<string, never>;
+        "TypeEquipment.jsonld-type_equipment.get_all": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "TypeEquipment.jsonld-type_equipment.write": Record<string, never>;
+        "TypeIntervention-type_intervention.get_all": Record<string, never>;
+        "TypeIntervention-type_intervention.write": Record<string, never>;
+        "TypeIntervention.jsonld-type_intervention.get_all": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "TypeIntervention.jsonld-type_intervention.write": Record<string, never>;
+        "User-user.get_all": Record<string, never>;
+        "User-user.get_by_id": Record<string, never>;
+        "User-user.write": Record<string, never>;
+        "User.jsonld-user.get_all": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "User.jsonld-user.get_by_id": {
+            readonly "@context"?: string | ({
+                "@vocab": string;
+                /** @enum {string} */
+                hydra: "http://www.w3.org/ns/hydra/core#";
+            } & {
+                [key: string]: unknown;
+            });
+            readonly "@id"?: string;
+            readonly "@type"?: string;
+        };
+        "User.jsonld-user.write": Record<string, never>;
     };
     responses: never;
     parameters: never;
@@ -897,7 +1177,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    api_appointment_requests_get_collection: {
+    app_appointment_request_get: {
         parameters: {
             query?: {
                 /** @description The collection page number */
@@ -915,12 +1195,49 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AppointmentRequest"][];
+                    "application/ld+json": {
+                        member: components["schemas"]["AppointmentRequest.jsonld-appointment_request.get_all"][];
+                        totalItems?: number;
+                        /** @example {
+                         *       "@id": "string",
+                         *       "type": "string",
+                         *       "first": "string",
+                         *       "last": "string",
+                         *       "previous": "string",
+                         *       "next": "string"
+                         *     } */
+                        view?: {
+                            /** Format: iri-reference */
+                            "@id"?: string;
+                            "@type"?: string;
+                            /** Format: iri-reference */
+                            first?: string;
+                            /** Format: iri-reference */
+                            last?: string;
+                            /** Format: iri-reference */
+                            previous?: string;
+                            /** Format: iri-reference */
+                            next?: string;
+                        };
+                        search?: {
+                            "@type"?: string;
+                            template?: string;
+                            variableRepresentation?: string;
+                            mapping?: {
+                                "@type"?: string;
+                                variable?: string;
+                                property?: string | null;
+                                required?: boolean;
+                            }[];
+                        };
+                    };
+                    "application/json": components["schemas"]["AppointmentRequest-appointment_request.get_all"][];
+                    "text/html": components["schemas"]["AppointmentRequest-appointment_request.get_all"][];
                 };
             };
         };
     };
-    api_appointment_requests_post: {
+    app_appointment_request_new: {
         parameters: {
             query?: never;
             header?: never;
@@ -930,7 +1247,9 @@ export interface operations {
         /** @description The new AppointmentRequest resource */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["AppointmentRequest"];
+                "application/ld+json": components["schemas"]["AppointmentRequest.jsonld-appointment_request.write"];
+                "application/json": components["schemas"]["AppointmentRequest-appointment_request.write"];
+                "text/html": components["schemas"]["AppointmentRequest-appointment_request.write"];
             };
         };
         responses: {
@@ -940,7 +1259,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AppointmentRequest"];
+                    "application/ld+json": components["schemas"]["AppointmentRequest.jsonld-appointment_request.get_all"];
+                    "application/json": components["schemas"]["AppointmentRequest-appointment_request.get_all"];
+                    "text/html": components["schemas"]["AppointmentRequest-appointment_request.get_all"];
                 };
             };
             /** @description Invalid input */
@@ -959,7 +1280,7 @@ export interface operations {
             };
         };
     };
-    api_appointment_requests_id_get: {
+    app_appointment_request_get_by_id: {
         parameters: {
             query?: never;
             header?: never;
@@ -977,7 +1298,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AppointmentRequest"];
+                    "application/ld+json": components["schemas"]["AppointmentRequest.jsonld-appointment_request.get_by_id"];
+                    "application/json": components["schemas"]["AppointmentRequest-appointment_request.get_by_id"];
+                    "text/html": components["schemas"]["AppointmentRequest-appointment_request.get_by_id"];
                 };
             };
             /** @description Resource not found */
@@ -989,7 +1312,60 @@ export interface operations {
             };
         };
     };
-    api_appointment_requests_id_delete: {
+    app_appointment_request_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description AppointmentRequest identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description The updated AppointmentRequest resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["AppointmentRequest.jsonld-appointment_request.write"];
+                "application/json": components["schemas"]["AppointmentRequest-appointment_request.write"];
+                "text/html": components["schemas"]["AppointmentRequest-appointment_request.write"];
+            };
+        };
+        responses: {
+            /** @description AppointmentRequest resource updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["AppointmentRequest.jsonld-appointment_request.get_all"];
+                    "application/json": components["schemas"]["AppointmentRequest-appointment_request.get_all"];
+                    "text/html": components["schemas"]["AppointmentRequest-appointment_request.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_appointment_request_delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -1017,56 +1393,7 @@ export interface operations {
             };
         };
     };
-    api_appointment_requests_id_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description AppointmentRequest identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        /** @description The updated AppointmentRequest resource */
-        requestBody: {
-            content: {
-                "application/merge-patch+json": components["schemas"]["AppointmentRequest"];
-            };
-        };
-        responses: {
-            /** @description AppointmentRequest resource updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AppointmentRequest"];
-                };
-            };
-            /** @description Invalid input */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Resource not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unprocessable entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    api_brands_get_collection: {
+    app_brand_get: {
         parameters: {
             query?: {
                 /** @description The collection page number */
@@ -1084,12 +1411,49 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Brand"][];
+                    "application/ld+json": {
+                        member: components["schemas"]["Brand.jsonld-brand.get_all"][];
+                        totalItems?: number;
+                        /** @example {
+                         *       "@id": "string",
+                         *       "type": "string",
+                         *       "first": "string",
+                         *       "last": "string",
+                         *       "previous": "string",
+                         *       "next": "string"
+                         *     } */
+                        view?: {
+                            /** Format: iri-reference */
+                            "@id"?: string;
+                            "@type"?: string;
+                            /** Format: iri-reference */
+                            first?: string;
+                            /** Format: iri-reference */
+                            last?: string;
+                            /** Format: iri-reference */
+                            previous?: string;
+                            /** Format: iri-reference */
+                            next?: string;
+                        };
+                        search?: {
+                            "@type"?: string;
+                            template?: string;
+                            variableRepresentation?: string;
+                            mapping?: {
+                                "@type"?: string;
+                                variable?: string;
+                                property?: string | null;
+                                required?: boolean;
+                            }[];
+                        };
+                    };
+                    "application/json": components["schemas"]["Brand-brand.get_all"][];
+                    "text/html": components["schemas"]["Brand-brand.get_all"][];
                 };
             };
         };
     };
-    api_brands_post: {
+    app_brand_new: {
         parameters: {
             query?: never;
             header?: never;
@@ -1099,7 +1463,9 @@ export interface operations {
         /** @description The new Brand resource */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Brand"];
+                "application/ld+json": components["schemas"]["Brand.jsonld-brand.write"];
+                "application/json": components["schemas"]["Brand-brand.write"];
+                "text/html": components["schemas"]["Brand-brand.write"];
             };
         };
         responses: {
@@ -1109,7 +1475,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Brand"];
+                    "application/ld+json": components["schemas"]["Brand.jsonld-brand.get_all"];
+                    "application/json": components["schemas"]["Brand-brand.get_all"];
+                    "text/html": components["schemas"]["Brand-brand.get_all"];
                 };
             };
             /** @description Invalid input */
@@ -1128,7 +1496,7 @@ export interface operations {
             };
         };
     };
-    api_brands_id_get: {
+    app_brand_get_by_id: {
         parameters: {
             query?: never;
             header?: never;
@@ -1146,7 +1514,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Brand"];
+                    "application/ld+json": components["schemas"]["Brand.jsonld-brand.get_by_id"];
+                    "application/json": components["schemas"]["Brand-brand.get_by_id"];
+                    "text/html": components["schemas"]["Brand-brand.get_by_id"];
                 };
             };
             /** @description Resource not found */
@@ -1158,7 +1528,60 @@ export interface operations {
             };
         };
     };
-    api_brands_id_delete: {
+    app_brand_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Brand identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description The updated Brand resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["Brand.jsonld-brand.write"];
+                "application/json": components["schemas"]["Brand-brand.write"];
+                "text/html": components["schemas"]["Brand-brand.write"];
+            };
+        };
+        responses: {
+            /** @description Brand resource updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Brand.jsonld-brand.get_all"];
+                    "application/json": components["schemas"]["Brand-brand.get_all"];
+                    "text/html": components["schemas"]["Brand-brand.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_brand_delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -1186,118 +1609,7 @@ export interface operations {
             };
         };
     };
-    api_brands_id_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Brand identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        /** @description The updated Brand resource */
-        requestBody: {
-            content: {
-                "application/merge-patch+json": components["schemas"]["Brand"];
-            };
-        };
-        responses: {
-            /** @description Brand resource updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Brand"];
-                };
-            };
-            /** @description Invalid input */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Resource not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unprocessable entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    api_companies_get_collection: {
-        parameters: {
-            query?: {
-                /** @description The collection page number */
-                page?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Company collection */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Company"][];
-                };
-            };
-        };
-    };
-    api_companies_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The new Company resource */
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Company"];
-            };
-        };
-        responses: {
-            /** @description Company resource created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Company"];
-                };
-            };
-            /** @description Invalid input */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unprocessable entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    api_companies_id_get: {
+    app_company_details: {
         parameters: {
             query?: never;
             header?: never;
@@ -1315,7 +1627,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Company"];
+                    "application/ld+json": components["schemas"]["Company.jsonld-company.get_by_id"];
+                    "application/json": components["schemas"]["Company-company.get_by_id"];
+                    "text/html": components["schemas"]["Company-company.get_by_id"];
                 };
             };
             /** @description Resource not found */
@@ -1327,7 +1641,206 @@ export interface operations {
             };
         };
     };
-    api_companies_id_delete: {
+    app_company_get: {
+        parameters: {
+            query?: {
+                /** @description The collection page number */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Company collection */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": {
+                        member: components["schemas"]["Company.jsonld-company.get_all"][];
+                        totalItems?: number;
+                        /** @example {
+                         *       "@id": "string",
+                         *       "type": "string",
+                         *       "first": "string",
+                         *       "last": "string",
+                         *       "previous": "string",
+                         *       "next": "string"
+                         *     } */
+                        view?: {
+                            /** Format: iri-reference */
+                            "@id"?: string;
+                            "@type"?: string;
+                            /** Format: iri-reference */
+                            first?: string;
+                            /** Format: iri-reference */
+                            last?: string;
+                            /** Format: iri-reference */
+                            previous?: string;
+                            /** Format: iri-reference */
+                            next?: string;
+                        };
+                        search?: {
+                            "@type"?: string;
+                            template?: string;
+                            variableRepresentation?: string;
+                            mapping?: {
+                                "@type"?: string;
+                                variable?: string;
+                                property?: string | null;
+                                required?: boolean;
+                            }[];
+                        };
+                    };
+                    "application/json": components["schemas"]["Company-company.get_all"][];
+                    "text/html": components["schemas"]["Company-company.get_all"][];
+                };
+            };
+        };
+    };
+    app_company_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The new Company resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["Company.jsonld-company.write"];
+                "application/json": components["schemas"]["Company-company.write"];
+                "text/html": components["schemas"]["Company-company.write"];
+            };
+        };
+        responses: {
+            /** @description Company resource created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Company.jsonld-company.get_all"];
+                    "application/json": components["schemas"]["Company-company.get_all"];
+                    "text/html": components["schemas"]["Company-company.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    register_company: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The new Company resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["Company.jsonld-company.register"];
+                "application/json": components["schemas"]["Company-company.register"];
+                "text/html": components["schemas"]["Company-company.register"];
+            };
+        };
+        responses: {
+            /** @description Company resource created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Company.jsonld-company.get_all"];
+                    "application/json": components["schemas"]["Company-company.get_all"];
+                    "text/html": components["schemas"]["Company-company.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_company_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Company identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description The updated Company resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["Company.jsonld-company.write"];
+                "application/json": components["schemas"]["Company-company.write"];
+                "text/html": components["schemas"]["Company-company.write"];
+            };
+        };
+        responses: {
+            /** @description Company resource updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Company.jsonld-company.get_all"];
+                    "application/json": components["schemas"]["Company-company.get_all"];
+                    "text/html": components["schemas"]["Company-company.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_company_delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -1355,7 +1868,7 @@ export interface operations {
             };
         };
     };
-    api_companies_id_patch: {
+    approve_company: {
         parameters: {
             query?: never;
             header?: never;
@@ -1365,20 +1878,251 @@ export interface operations {
             };
             cookie?: never;
         };
-        /** @description The updated Company resource */
+        /** @description The new Company resource */
         requestBody: {
             content: {
-                "application/merge-patch+json": components["schemas"]["Company"];
+                "application/ld+json": components["schemas"]["Company.jsonld-company.approve"];
+                "application/json": components["schemas"]["Company-company.approve"];
+                "text/html": components["schemas"]["Company-company.approve"];
             };
         };
         responses: {
-            /** @description Company resource updated */
+            /** @description Company resource created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Company.jsonld-company.get_all"];
+                    "application/json": components["schemas"]["Company-company.get_all"];
+                    "text/html": components["schemas"]["Company-company.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    disapprove_company: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Company identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description The new Company resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["Company.jsonld-company.disapprove"];
+                "application/json": components["schemas"]["Company-company.disapprove"];
+                "text/html": components["schemas"]["Company-company.disapprove"];
+            };
+        };
+        responses: {
+            /** @description Company resource created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Company.jsonld-company.get_all"];
+                    "application/json": components["schemas"]["Company-company.get_all"];
+                    "text/html": components["schemas"]["Company-company.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_company_specialization_get: {
+        parameters: {
+            query?: {
+                /** @description The collection page number */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description CompanySpecialization collection */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Company"];
+                    "application/ld+json": {
+                        member: components["schemas"]["CompanySpecialization.jsonld-company_specialization.get_all"][];
+                        totalItems?: number;
+                        /** @example {
+                         *       "@id": "string",
+                         *       "type": "string",
+                         *       "first": "string",
+                         *       "last": "string",
+                         *       "previous": "string",
+                         *       "next": "string"
+                         *     } */
+                        view?: {
+                            /** Format: iri-reference */
+                            "@id"?: string;
+                            "@type"?: string;
+                            /** Format: iri-reference */
+                            first?: string;
+                            /** Format: iri-reference */
+                            last?: string;
+                            /** Format: iri-reference */
+                            previous?: string;
+                            /** Format: iri-reference */
+                            next?: string;
+                        };
+                        search?: {
+                            "@type"?: string;
+                            template?: string;
+                            variableRepresentation?: string;
+                            mapping?: {
+                                "@type"?: string;
+                                variable?: string;
+                                property?: string | null;
+                                required?: boolean;
+                            }[];
+                        };
+                    };
+                    "application/json": components["schemas"]["CompanySpecialization-company_specialization.get_all"][];
+                    "text/html": components["schemas"]["CompanySpecialization-company_specialization.get_all"][];
+                };
+            };
+        };
+    };
+    app_company_specialization_new: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The new CompanySpecialization resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["CompanySpecialization.jsonld-company_specialization.write"];
+                "application/json": components["schemas"]["CompanySpecialization-company_specialization.write"];
+                "text/html": components["schemas"]["CompanySpecialization-company_specialization.write"];
+            };
+        };
+        responses: {
+            /** @description CompanySpecialization resource created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["CompanySpecialization.jsonld-company_specialization.get_all"];
+                    "application/json": components["schemas"]["CompanySpecialization-company_specialization.get_all"];
+                    "text/html": components["schemas"]["CompanySpecialization-company_specialization.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_company_specialization_get_by_id: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description CompanySpecialization identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description CompanySpecialization resource */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["CompanySpecialization.jsonld-company_specialization.get_by_id"];
+                    "application/json": components["schemas"]["CompanySpecialization-company_specialization.get_by_id"];
+                    "text/html": components["schemas"]["CompanySpecialization-company_specialization.get_by_id"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_company_specialization_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description CompanySpecialization identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description The updated CompanySpecialization resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["CompanySpecialization.jsonld-company_specialization.write"];
+                "application/json": components["schemas"]["CompanySpecialization-company_specialization.write"];
+                "text/html": components["schemas"]["CompanySpecialization-company_specialization.write"];
+            };
+        };
+        responses: {
+            /** @description CompanySpecialization resource updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["CompanySpecialization.jsonld-company_specialization.get_all"];
+                    "application/json": components["schemas"]["CompanySpecialization-company_specialization.get_all"];
+                    "text/html": components["schemas"]["CompanySpecialization-company_specialization.get_all"];
                 };
             };
             /** @description Invalid input */
@@ -1404,7 +2148,201 @@ export interface operations {
             };
         };
     };
-    api_apiequipment_id_get: {
+    app_company_specialization_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description CompanySpecialization identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description CompanySpecialization resource deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_equipment_customer_list: {
+        parameters: {
+            query?: {
+                /** @description The collection page number */
+                page?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Equipment identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Equipment collection */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": {
+                        member: components["schemas"]["Equipment.jsonld-equipment.get_all"][];
+                        totalItems?: number;
+                        /** @example {
+                         *       "@id": "string",
+                         *       "type": "string",
+                         *       "first": "string",
+                         *       "last": "string",
+                         *       "previous": "string",
+                         *       "next": "string"
+                         *     } */
+                        view?: {
+                            /** Format: iri-reference */
+                            "@id"?: string;
+                            "@type"?: string;
+                            /** Format: iri-reference */
+                            first?: string;
+                            /** Format: iri-reference */
+                            last?: string;
+                            /** Format: iri-reference */
+                            previous?: string;
+                            /** Format: iri-reference */
+                            next?: string;
+                        };
+                        search?: {
+                            "@type"?: string;
+                            template?: string;
+                            variableRepresentation?: string;
+                            mapping?: {
+                                "@type"?: string;
+                                variable?: string;
+                                property?: string | null;
+                                required?: boolean;
+                            }[];
+                        };
+                    };
+                    "application/json": components["schemas"]["Equipment-equipment.get_all"][];
+                    "text/html": components["schemas"]["Equipment-equipment.get_all"][];
+                };
+            };
+        };
+    };
+    app_equipment_get: {
+        parameters: {
+            query?: {
+                /** @description The collection page number */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Equipment collection */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": {
+                        member: components["schemas"]["Equipment.jsonld-equipment.get_all"][];
+                        totalItems?: number;
+                        /** @example {
+                         *       "@id": "string",
+                         *       "type": "string",
+                         *       "first": "string",
+                         *       "last": "string",
+                         *       "previous": "string",
+                         *       "next": "string"
+                         *     } */
+                        view?: {
+                            /** Format: iri-reference */
+                            "@id"?: string;
+                            "@type"?: string;
+                            /** Format: iri-reference */
+                            first?: string;
+                            /** Format: iri-reference */
+                            last?: string;
+                            /** Format: iri-reference */
+                            previous?: string;
+                            /** Format: iri-reference */
+                            next?: string;
+                        };
+                        search?: {
+                            "@type"?: string;
+                            template?: string;
+                            variableRepresentation?: string;
+                            mapping?: {
+                                "@type"?: string;
+                                variable?: string;
+                                property?: string | null;
+                                required?: boolean;
+                            }[];
+                        };
+                    };
+                    "application/json": components["schemas"]["Equipment-equipment.get_all"][];
+                    "text/html": components["schemas"]["Equipment-equipment.get_all"][];
+                };
+            };
+        };
+    };
+    app_equipment_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The new Equipment resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["Equipment.jsonld-equipment.write"];
+                "application/json": components["schemas"]["Equipment-equipment.write"];
+                "text/html": components["schemas"]["Equipment-equipment.write"];
+            };
+        };
+        responses: {
+            /** @description Equipment resource created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Equipment.jsonld-equipment.get_all"];
+                    "application/json": components["schemas"]["Equipment-equipment.get_all"];
+                    "text/html": components["schemas"]["Equipment-equipment.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_equipment_get_one: {
         parameters: {
             query?: never;
             header?: never;
@@ -1422,7 +2360,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Equipment-equipment.read_equipment.details"];
+                    "application/ld+json": components["schemas"]["Equipment.jsonld-equipment.get_by_id"];
+                    "application/json": components["schemas"]["Equipment-equipment.get_by_id"];
+                    "text/html": components["schemas"]["Equipment-equipment.get_by_id"];
                 };
             };
             /** @description Resource not found */
@@ -1434,7 +2374,88 @@ export interface operations {
             };
         };
     };
-    api_interventions_get_collection: {
+    app_equipment_edit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Equipment identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description The updated Equipment resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["Equipment.jsonld-equipment.write"];
+                "application/json": components["schemas"]["Equipment-equipment.write"];
+                "text/html": components["schemas"]["Equipment-equipment.write"];
+            };
+        };
+        responses: {
+            /** @description Equipment resource updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Equipment.jsonld-equipment.get_all"];
+                    "application/json": components["schemas"]["Equipment-equipment.get_all"];
+                    "text/html": components["schemas"]["Equipment-equipment.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_equipment_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Equipment identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Equipment resource deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_intervention_get: {
         parameters: {
             query?: {
                 /** @description The collection page number */
@@ -1452,12 +2473,49 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Intervention"][];
+                    "application/ld+json": {
+                        member: components["schemas"]["Intervention.jsonld-intervention.get_all"][];
+                        totalItems?: number;
+                        /** @example {
+                         *       "@id": "string",
+                         *       "type": "string",
+                         *       "first": "string",
+                         *       "last": "string",
+                         *       "previous": "string",
+                         *       "next": "string"
+                         *     } */
+                        view?: {
+                            /** Format: iri-reference */
+                            "@id"?: string;
+                            "@type"?: string;
+                            /** Format: iri-reference */
+                            first?: string;
+                            /** Format: iri-reference */
+                            last?: string;
+                            /** Format: iri-reference */
+                            previous?: string;
+                            /** Format: iri-reference */
+                            next?: string;
+                        };
+                        search?: {
+                            "@type"?: string;
+                            template?: string;
+                            variableRepresentation?: string;
+                            mapping?: {
+                                "@type"?: string;
+                                variable?: string;
+                                property?: string | null;
+                                required?: boolean;
+                            }[];
+                        };
+                    };
+                    "application/json": components["schemas"]["Intervention-intervention.get_all"][];
+                    "text/html": components["schemas"]["Intervention-intervention.get_all"][];
                 };
             };
         };
     };
-    api_interventions_post: {
+    app_intervention_new: {
         parameters: {
             query?: never;
             header?: never;
@@ -1467,7 +2525,9 @@ export interface operations {
         /** @description The new Intervention resource */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Intervention"];
+                "application/ld+json": components["schemas"]["Intervention.jsonld-intervention.write"];
+                "application/json": components["schemas"]["Intervention-intervention.write"];
+                "text/html": components["schemas"]["Intervention-intervention.write"];
             };
         };
         responses: {
@@ -1477,7 +2537,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Intervention"];
+                    "application/ld+json": components["schemas"]["Intervention.jsonld-intervention.get_all"];
+                    "application/json": components["schemas"]["Intervention-intervention.get_all"];
+                    "text/html": components["schemas"]["Intervention-intervention.get_all"];
                 };
             };
             /** @description Invalid input */
@@ -1496,7 +2558,67 @@ export interface operations {
             };
         };
     };
-    api_interventions_id_get: {
+    app_intervention_status: {
+        parameters: {
+            query?: {
+                /** @description The collection page number */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Intervention collection */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": {
+                        member: components["schemas"]["Intervention.jsonld-intervention.status"][];
+                        totalItems?: number;
+                        /** @example {
+                         *       "@id": "string",
+                         *       "type": "string",
+                         *       "first": "string",
+                         *       "last": "string",
+                         *       "previous": "string",
+                         *       "next": "string"
+                         *     } */
+                        view?: {
+                            /** Format: iri-reference */
+                            "@id"?: string;
+                            "@type"?: string;
+                            /** Format: iri-reference */
+                            first?: string;
+                            /** Format: iri-reference */
+                            last?: string;
+                            /** Format: iri-reference */
+                            previous?: string;
+                            /** Format: iri-reference */
+                            next?: string;
+                        };
+                        search?: {
+                            "@type"?: string;
+                            template?: string;
+                            variableRepresentation?: string;
+                            mapping?: {
+                                "@type"?: string;
+                                variable?: string;
+                                property?: string | null;
+                                required?: boolean;
+                            }[];
+                        };
+                    };
+                    "application/json": components["schemas"]["Intervention-intervention.status"][];
+                    "text/html": components["schemas"]["Intervention-intervention.status"][];
+                };
+            };
+        };
+    };
+    app_intervention_get_by_id: {
         parameters: {
             query?: never;
             header?: never;
@@ -1514,7 +2636,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Intervention"];
+                    "application/ld+json": components["schemas"]["Intervention.jsonld-intervention.get_by_id"];
+                    "application/json": components["schemas"]["Intervention-intervention.get_by_id"];
+                    "text/html": components["schemas"]["Intervention-intervention.get_by_id"];
                 };
             };
             /** @description Resource not found */
@@ -1526,7 +2650,60 @@ export interface operations {
             };
         };
     };
-    api_interventions_id_delete: {
+    app_intervention_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Intervention identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description The updated Intervention resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["Intervention.jsonld-intervention.write"];
+                "application/json": components["schemas"]["Intervention-intervention.write"];
+                "text/html": components["schemas"]["Intervention-intervention.write"];
+            };
+        };
+        responses: {
+            /** @description Intervention resource updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Intervention.jsonld-intervention.get_all"];
+                    "application/json": components["schemas"]["Intervention-intervention.get_all"];
+                    "text/html": components["schemas"]["Intervention-intervention.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_intervention_delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -1554,7 +2731,7 @@ export interface operations {
             };
         };
     };
-    api_interventions_id_patch: {
+    app_intervention_patch: {
         parameters: {
             query?: never;
             header?: never;
@@ -1567,7 +2744,7 @@ export interface operations {
         /** @description The updated Intervention resource */
         requestBody: {
             content: {
-                "application/merge-patch+json": components["schemas"]["Intervention"];
+                "application/merge-patch+json": components["schemas"]["Intervention-intervention.write"];
             };
         };
         responses: {
@@ -1577,7 +2754,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Intervention"];
+                    "application/ld+json": components["schemas"]["Intervention.jsonld-intervention.get_all"];
+                    "application/json": components["schemas"]["Intervention-intervention.get_all"];
+                    "text/html": components["schemas"]["Intervention-intervention.get_all"];
                 };
             };
             /** @description Invalid input */
@@ -1596,6 +2775,165 @@ export interface operations {
             };
             /** @description Unprocessable entity */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_intervention_assign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Intervention identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description The updated Intervention resource */
+        requestBody: {
+            content: {
+                "application/merge-patch+json": components["schemas"]["Intervention-intervention.assign"];
+            };
+        };
+        responses: {
+            /** @description Intervention resource updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Intervention.jsonld-intervention.get_all"];
+                    "application/json": components["schemas"]["Intervention-intervention.get_all"];
+                    "text/html": components["schemas"]["Intervention-intervention.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_intervention_tasks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Intervention identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Intervention resource */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Intervention.jsonld-intervention.tasks"];
+                    "application/json": components["schemas"]["Intervention-intervention.tasks"];
+                    "text/html": components["schemas"]["Intervention-intervention.tasks"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_intervention_add_task: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Intervention identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description The new Intervention resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["Intervention.jsonld-intervention.add_task"];
+                "application/json": components["schemas"]["Intervention-intervention.add_task"];
+                "text/html": components["schemas"]["Intervention-intervention.add_task"];
+            };
+        };
+        responses: {
+            /** @description Intervention resource created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Intervention.jsonld-intervention.get_all"];
+                    "application/json": components["schemas"]["Intervention-intervention.get_all"];
+                    "text/html": components["schemas"]["Intervention-intervention.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_intervention_remove_task: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Intervention identifier */
+                id: string;
+                /** @description Intervention identifier */
+                taskId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Intervention resource deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Resource not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1633,7 +2971,7 @@ export interface operations {
             };
         };
     };
-    api_operating_systems_get_collection: {
+    app_operating_systems_get: {
         parameters: {
             query?: {
                 /** @description The collection page number */
@@ -1651,12 +2989,49 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["OperatingSystem"][];
+                    "application/ld+json": {
+                        member: components["schemas"]["OperatingSystem.jsonld-operating_system.get_all"][];
+                        totalItems?: number;
+                        /** @example {
+                         *       "@id": "string",
+                         *       "type": "string",
+                         *       "first": "string",
+                         *       "last": "string",
+                         *       "previous": "string",
+                         *       "next": "string"
+                         *     } */
+                        view?: {
+                            /** Format: iri-reference */
+                            "@id"?: string;
+                            "@type"?: string;
+                            /** Format: iri-reference */
+                            first?: string;
+                            /** Format: iri-reference */
+                            last?: string;
+                            /** Format: iri-reference */
+                            previous?: string;
+                            /** Format: iri-reference */
+                            next?: string;
+                        };
+                        search?: {
+                            "@type"?: string;
+                            template?: string;
+                            variableRepresentation?: string;
+                            mapping?: {
+                                "@type"?: string;
+                                variable?: string;
+                                property?: string | null;
+                                required?: boolean;
+                            }[];
+                        };
+                    };
+                    "application/json": components["schemas"]["OperatingSystem-operating_system.get_all"][];
+                    "text/html": components["schemas"]["OperatingSystem-operating_system.get_all"][];
                 };
             };
         };
     };
-    api_operating_systems_post: {
+    app_operating_system_create: {
         parameters: {
             query?: never;
             header?: never;
@@ -1666,7 +3041,9 @@ export interface operations {
         /** @description The new OperatingSystem resource */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["OperatingSystem"];
+                "application/ld+json": components["schemas"]["OperatingSystem.jsonld-operating_system.write"];
+                "application/json": components["schemas"]["OperatingSystem-operating_system.write"];
+                "text/html": components["schemas"]["OperatingSystem-operating_system.write"];
             };
         };
         responses: {
@@ -1676,7 +3053,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["OperatingSystem"];
+                    "application/ld+json": components["schemas"]["OperatingSystem.jsonld-operating_system.get_all"];
+                    "application/json": components["schemas"]["OperatingSystem-operating_system.get_all"];
+                    "text/html": components["schemas"]["OperatingSystem-operating_system.get_all"];
                 };
             };
             /** @description Invalid input */
@@ -1695,7 +3074,7 @@ export interface operations {
             };
         };
     };
-    api_operating_systems_id_get: {
+    app_operating_system_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1713,7 +3092,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["OperatingSystem"];
+                    "application/ld+json": components["schemas"]["OperatingSystem.jsonld-operating_system.get_by_id"];
+                    "application/json": components["schemas"]["OperatingSystem-operating_system.get_by_id"];
+                    "text/html": components["schemas"]["OperatingSystem-operating_system.get_by_id"];
                 };
             };
             /** @description Resource not found */
@@ -1725,7 +3106,60 @@ export interface operations {
             };
         };
     };
-    api_operating_systems_id_delete: {
+    app_operating_system_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description OperatingSystem identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description The updated OperatingSystem resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["OperatingSystem.jsonld-operating_system.write"];
+                "application/json": components["schemas"]["OperatingSystem-operating_system.write"];
+                "text/html": components["schemas"]["OperatingSystem-operating_system.write"];
+            };
+        };
+        responses: {
+            /** @description OperatingSystem resource updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["OperatingSystem.jsonld-operating_system.get_all"];
+                    "application/json": components["schemas"]["OperatingSystem-operating_system.get_all"];
+                    "text/html": components["schemas"]["OperatingSystem-operating_system.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_operating_system_delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -1753,225 +3187,7 @@ export interface operations {
             };
         };
     };
-    api_operating_systems_id_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description OperatingSystem identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        /** @description The updated OperatingSystem resource */
-        requestBody: {
-            content: {
-                "application/merge-patch+json": components["schemas"]["OperatingSystem"];
-            };
-        };
-        responses: {
-            /** @description OperatingSystem resource updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OperatingSystem"];
-                };
-            };
-            /** @description Invalid input */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Resource not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unprocessable entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    api_statuses_get_collection: {
-        parameters: {
-            query?: {
-                /** @description The collection page number */
-                page?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Status collection */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Status"][];
-                };
-            };
-        };
-    };
-    api_statuses_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The new Status resource */
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Status"];
-            };
-        };
-        responses: {
-            /** @description Status resource created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Status"];
-                };
-            };
-            /** @description Invalid input */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unprocessable entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    api_statuses_id_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Status identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Status resource */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Status"];
-                };
-            };
-            /** @description Resource not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    api_statuses_id_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Status identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Status resource deleted */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Resource not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    api_statuses_id_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Status identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        /** @description The updated Status resource */
-        requestBody: {
-            content: {
-                "application/merge-patch+json": components["schemas"]["Status"];
-            };
-        };
-        responses: {
-            /** @description Status resource updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Status"];
-                };
-            };
-            /** @description Invalid input */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Resource not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unprocessable entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    api_tasks_get_collection: {
+    app_task_list: {
         parameters: {
             query?: {
                 /** @description The collection page number */
@@ -1989,12 +3205,49 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Task"][];
+                    "application/ld+json": {
+                        member: components["schemas"]["Task.jsonld-task.get_all"][];
+                        totalItems?: number;
+                        /** @example {
+                         *       "@id": "string",
+                         *       "type": "string",
+                         *       "first": "string",
+                         *       "last": "string",
+                         *       "previous": "string",
+                         *       "next": "string"
+                         *     } */
+                        view?: {
+                            /** Format: iri-reference */
+                            "@id"?: string;
+                            "@type"?: string;
+                            /** Format: iri-reference */
+                            first?: string;
+                            /** Format: iri-reference */
+                            last?: string;
+                            /** Format: iri-reference */
+                            previous?: string;
+                            /** Format: iri-reference */
+                            next?: string;
+                        };
+                        search?: {
+                            "@type"?: string;
+                            template?: string;
+                            variableRepresentation?: string;
+                            mapping?: {
+                                "@type"?: string;
+                                variable?: string;
+                                property?: string | null;
+                                required?: boolean;
+                            }[];
+                        };
+                    };
+                    "application/json": components["schemas"]["Task-task.get_all"][];
+                    "text/html": components["schemas"]["Task-task.get_all"][];
                 };
             };
         };
     };
-    api_tasks_post: {
+    app_task: {
         parameters: {
             query?: never;
             header?: never;
@@ -2004,7 +3257,9 @@ export interface operations {
         /** @description The new Task resource */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Task"];
+                "application/ld+json": components["schemas"]["Task.jsonld-task.write"];
+                "application/json": components["schemas"]["Task-task.write"];
+                "text/html": components["schemas"]["Task-task.write"];
             };
         };
         responses: {
@@ -2014,7 +3269,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Task"];
+                    "application/ld+json": components["schemas"]["Task.jsonld-task.get_all"];
+                    "application/json": components["schemas"]["Task-task.get_all"];
+                    "text/html": components["schemas"]["Task-task.get_all"];
                 };
             };
             /** @description Invalid input */
@@ -2033,7 +3290,7 @@ export interface operations {
             };
         };
     };
-    api_tasks_id_get: {
+    app_task_show: {
         parameters: {
             query?: never;
             header?: never;
@@ -2051,7 +3308,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Task"];
+                    "application/ld+json": components["schemas"]["Task.jsonld-task.get_by_id"];
+                    "application/json": components["schemas"]["Task-task.get_by_id"];
+                    "text/html": components["schemas"]["Task-task.get_by_id"];
                 };
             };
             /** @description Resource not found */
@@ -2063,7 +3322,60 @@ export interface operations {
             };
         };
     };
-    api_tasks_id_delete: {
+    app_task_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Task identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description The updated Task resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["Task.jsonld-task.write"];
+                "application/json": components["schemas"]["Task-task.write"];
+                "text/html": components["schemas"]["Task-task.write"];
+            };
+        };
+        responses: {
+            /** @description Task resource updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Task.jsonld-task.get_all"];
+                    "application/json": components["schemas"]["Task-task.get_all"];
+                    "text/html": components["schemas"]["Task-task.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_task_delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -2091,79 +3403,7 @@ export interface operations {
             };
         };
     };
-    api_tasks_id_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Task identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        /** @description The updated Task resource */
-        requestBody: {
-            content: {
-                "application/merge-patch+json": components["schemas"]["Task"];
-            };
-        };
-        responses: {
-            /** @description Task resource updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Task"];
-                };
-            };
-            /** @description Invalid input */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Resource not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unprocessable entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    api_task_interventions_get_collection: {
-        parameters: {
-            query?: {
-                /** @description The collection page number */
-                page?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description TaskIntervention collection */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TaskIntervention"][];
-                };
-            };
-        };
-    };
-    api_task_interventions_post: {
+    app_task_intervention_new: {
         parameters: {
             query?: never;
             header?: never;
@@ -2173,7 +3413,9 @@ export interface operations {
         /** @description The new TaskIntervention resource */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["TaskIntervention"];
+                "application/ld+json": components["schemas"]["TaskIntervention.jsonld-task_intervention.write"];
+                "application/json": components["schemas"]["TaskIntervention-task_intervention.write"];
+                "text/html": components["schemas"]["TaskIntervention-task_intervention.write"];
             };
         };
         responses: {
@@ -2183,7 +3425,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TaskIntervention"];
+                    "application/ld+json": components["schemas"]["TaskIntervention.jsonld-task_intervention.get_all"];
+                    "application/json": components["schemas"]["TaskIntervention-task_intervention.get_all"];
+                    "text/html": components["schemas"]["TaskIntervention-task_intervention.get_all"];
                 };
             };
             /** @description Invalid input */
@@ -2202,7 +3446,7 @@ export interface operations {
             };
         };
     };
-    api_task_interventions_id_get: {
+    app_task_intervention_get_by_id: {
         parameters: {
             query?: never;
             header?: never;
@@ -2220,7 +3464,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TaskIntervention"];
+                    "application/ld+json": components["schemas"]["TaskIntervention.jsonld-task_intervention.get_by_id"];
+                    "application/json": components["schemas"]["TaskIntervention-task_intervention.get_by_id"];
+                    "text/html": components["schemas"]["TaskIntervention-task_intervention.get_by_id"];
                 };
             };
             /** @description Resource not found */
@@ -2232,7 +3478,60 @@ export interface operations {
             };
         };
     };
-    api_task_interventions_id_delete: {
+    app_task_intervention_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description TaskIntervention identifier */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description The updated TaskIntervention resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["TaskIntervention.jsonld-task_intervention.write"];
+                "application/json": components["schemas"]["TaskIntervention-task_intervention.write"];
+                "text/html": components["schemas"]["TaskIntervention-task_intervention.write"];
+            };
+        };
+        responses: {
+            /** @description TaskIntervention resource updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["TaskIntervention.jsonld-task_intervention.get_all"];
+                    "application/json": components["schemas"]["TaskIntervention-task_intervention.get_all"];
+                    "text/html": components["schemas"]["TaskIntervention-task_intervention.get_all"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    app_task_intervention_delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -2260,56 +3559,7 @@ export interface operations {
             };
         };
     };
-    api_task_interventions_id_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description TaskIntervention identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        /** @description The updated TaskIntervention resource */
-        requestBody: {
-            content: {
-                "application/merge-patch+json": components["schemas"]["TaskIntervention"];
-            };
-        };
-        responses: {
-            /** @description TaskIntervention resource updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TaskIntervention"];
-                };
-            };
-            /** @description Invalid input */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Resource not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unprocessable entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    api_type_equipments_get_collection: {
+    app_type_equipment: {
         parameters: {
             query?: {
                 /** @description The collection page number */
@@ -2327,12 +3577,49 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TypeEquipment"][];
+                    "application/ld+json": {
+                        member: components["schemas"]["TypeEquipment.jsonld-type_equipment.get_all"][];
+                        totalItems?: number;
+                        /** @example {
+                         *       "@id": "string",
+                         *       "type": "string",
+                         *       "first": "string",
+                         *       "last": "string",
+                         *       "previous": "string",
+                         *       "next": "string"
+                         *     } */
+                        view?: {
+                            /** Format: iri-reference */
+                            "@id"?: string;
+                            "@type"?: string;
+                            /** Format: iri-reference */
+                            first?: string;
+                            /** Format: iri-reference */
+                            last?: string;
+                            /** Format: iri-reference */
+                            previous?: string;
+                            /** Format: iri-reference */
+                            next?: string;
+                        };
+                        search?: {
+                            "@type"?: string;
+                            template?: string;
+                            variableRepresentation?: string;
+                            mapping?: {
+                                "@type"?: string;
+                                variable?: string;
+                                property?: string | null;
+                                required?: boolean;
+                            }[];
+                        };
+                    };
+                    "application/json": components["schemas"]["TypeEquipment-type_equipment.get_all"][];
+                    "text/html": components["schemas"]["TypeEquipment-type_equipment.get_all"][];
                 };
             };
         };
     };
-    api_type_equipments_post: {
+    app_type_equipment_create: {
         parameters: {
             query?: never;
             header?: never;
@@ -2342,7 +3629,9 @@ export interface operations {
         /** @description The new TypeEquipment resource */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["TypeEquipment"];
+                "application/ld+json": components["schemas"]["TypeEquipment.jsonld-type_equipment.write"];
+                "application/json": components["schemas"]["TypeEquipment-type_equipment.write"];
+                "text/html": components["schemas"]["TypeEquipment-type_equipment.write"];
             };
         };
         responses: {
@@ -2352,7 +3641,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TypeEquipment"];
+                    "application/ld+json": components["schemas"]["TypeEquipment.jsonld-type_equipment.get_all"];
+                    "application/json": components["schemas"]["TypeEquipment-type_equipment.get_all"];
+                    "text/html": components["schemas"]["TypeEquipment-type_equipment.get_all"];
                 };
             };
             /** @description Invalid input */
@@ -2371,7 +3662,7 @@ export interface operations {
             };
         };
     };
-    api_type_equipments_id_get: {
+    app_type_equipment_edit: {
         parameters: {
             query?: never;
             header?: never;
@@ -2381,16 +3672,32 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        /** @description The updated TypeEquipment resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["TypeEquipment.jsonld-type_equipment.write"];
+                "application/json": components["schemas"]["TypeEquipment-type_equipment.write"];
+                "text/html": components["schemas"]["TypeEquipment-type_equipment.write"];
+            };
+        };
         responses: {
-            /** @description TypeEquipment resource */
+            /** @description TypeEquipment resource updated */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TypeEquipment"];
+                    "application/ld+json": components["schemas"]["TypeEquipment.jsonld-type_equipment.get_all"];
+                    "application/json": components["schemas"]["TypeEquipment-type_equipment.get_all"];
+                    "text/html": components["schemas"]["TypeEquipment-type_equipment.get_all"];
                 };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Resource not found */
             404: {
@@ -2399,9 +3706,16 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
-    api_type_equipments_id_delete: {
+    app_type_equipment_delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -2429,56 +3743,7 @@ export interface operations {
             };
         };
     };
-    api_type_equipments_id_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description TypeEquipment identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        /** @description The updated TypeEquipment resource */
-        requestBody: {
-            content: {
-                "application/merge-patch+json": components["schemas"]["TypeEquipment"];
-            };
-        };
-        responses: {
-            /** @description TypeEquipment resource updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TypeEquipment"];
-                };
-            };
-            /** @description Invalid input */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Resource not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unprocessable entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    api_type_interventions_get_collection: {
+    app_type_intervention: {
         parameters: {
             query?: {
                 /** @description The collection page number */
@@ -2496,12 +3761,49 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TypeIntervention"][];
+                    "application/ld+json": {
+                        member: components["schemas"]["TypeIntervention.jsonld-type_intervention.get_all"][];
+                        totalItems?: number;
+                        /** @example {
+                         *       "@id": "string",
+                         *       "type": "string",
+                         *       "first": "string",
+                         *       "last": "string",
+                         *       "previous": "string",
+                         *       "next": "string"
+                         *     } */
+                        view?: {
+                            /** Format: iri-reference */
+                            "@id"?: string;
+                            "@type"?: string;
+                            /** Format: iri-reference */
+                            first?: string;
+                            /** Format: iri-reference */
+                            last?: string;
+                            /** Format: iri-reference */
+                            previous?: string;
+                            /** Format: iri-reference */
+                            next?: string;
+                        };
+                        search?: {
+                            "@type"?: string;
+                            template?: string;
+                            variableRepresentation?: string;
+                            mapping?: {
+                                "@type"?: string;
+                                variable?: string;
+                                property?: string | null;
+                                required?: boolean;
+                            }[];
+                        };
+                    };
+                    "application/json": components["schemas"]["TypeIntervention-type_intervention.get_all"][];
+                    "text/html": components["schemas"]["TypeIntervention-type_intervention.get_all"][];
                 };
             };
         };
     };
-    api_type_interventions_post: {
+    app_type_intervention_create: {
         parameters: {
             query?: never;
             header?: never;
@@ -2511,7 +3813,9 @@ export interface operations {
         /** @description The new TypeIntervention resource */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["TypeIntervention"];
+                "application/ld+json": components["schemas"]["TypeIntervention.jsonld-type_intervention.write"];
+                "application/json": components["schemas"]["TypeIntervention-type_intervention.write"];
+                "text/html": components["schemas"]["TypeIntervention-type_intervention.write"];
             };
         };
         responses: {
@@ -2521,7 +3825,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TypeIntervention"];
+                    "application/ld+json": components["schemas"]["TypeIntervention.jsonld-type_intervention.get_all"];
+                    "application/json": components["schemas"]["TypeIntervention-type_intervention.get_all"];
+                    "text/html": components["schemas"]["TypeIntervention-type_intervention.get_all"];
                 };
             };
             /** @description Invalid input */
@@ -2540,7 +3846,7 @@ export interface operations {
             };
         };
     };
-    api_type_interventions_id_get: {
+    app_type_intervention_edit: {
         parameters: {
             query?: never;
             header?: never;
@@ -2550,16 +3856,32 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        /** @description The updated TypeIntervention resource */
+        requestBody: {
+            content: {
+                "application/ld+json": components["schemas"]["TypeIntervention.jsonld-type_intervention.write"];
+                "application/json": components["schemas"]["TypeIntervention-type_intervention.write"];
+                "text/html": components["schemas"]["TypeIntervention-type_intervention.write"];
+            };
+        };
         responses: {
-            /** @description TypeIntervention resource */
+            /** @description TypeIntervention resource updated */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TypeIntervention"];
+                    "application/ld+json": components["schemas"]["TypeIntervention.jsonld-type_intervention.get_all"];
+                    "application/json": components["schemas"]["TypeIntervention-type_intervention.get_all"];
+                    "text/html": components["schemas"]["TypeIntervention-type_intervention.get_all"];
                 };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Resource not found */
             404: {
@@ -2568,9 +3890,16 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Unprocessable entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
-    api_type_interventions_id_delete: {
+    app_type_intervention_delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -2598,56 +3927,7 @@ export interface operations {
             };
         };
     };
-    api_type_interventions_id_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description TypeIntervention identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        /** @description The updated TypeIntervention resource */
-        requestBody: {
-            content: {
-                "application/merge-patch+json": components["schemas"]["TypeIntervention"];
-            };
-        };
-        responses: {
-            /** @description TypeIntervention resource updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TypeIntervention"];
-                };
-            };
-            /** @description Invalid input */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Resource not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unprocessable entity */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    api_users_get_collection: {
+    app_user_list_admin: {
         parameters: {
             query?: {
                 /** @description The collection page number */
@@ -2665,12 +3945,49 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["User"][];
+                    "application/ld+json": {
+                        member: components["schemas"]["User.jsonld-user.get_all"][];
+                        totalItems?: number;
+                        /** @example {
+                         *       "@id": "string",
+                         *       "type": "string",
+                         *       "first": "string",
+                         *       "last": "string",
+                         *       "previous": "string",
+                         *       "next": "string"
+                         *     } */
+                        view?: {
+                            /** Format: iri-reference */
+                            "@id"?: string;
+                            "@type"?: string;
+                            /** Format: iri-reference */
+                            first?: string;
+                            /** Format: iri-reference */
+                            last?: string;
+                            /** Format: iri-reference */
+                            previous?: string;
+                            /** Format: iri-reference */
+                            next?: string;
+                        };
+                        search?: {
+                            "@type"?: string;
+                            template?: string;
+                            variableRepresentation?: string;
+                            mapping?: {
+                                "@type"?: string;
+                                variable?: string;
+                                property?: string | null;
+                                required?: boolean;
+                            }[];
+                        };
+                    };
+                    "application/json": components["schemas"]["User-user.get_all"][];
+                    "text/html": components["schemas"]["User-user.get_all"][];
                 };
             };
         };
     };
-    api_users_post: {
+    app_user_add_admin: {
         parameters: {
             query?: never;
             header?: never;
@@ -2680,7 +3997,9 @@ export interface operations {
         /** @description The new User resource */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["User"];
+                "application/ld+json": components["schemas"]["User.jsonld-user.write"];
+                "application/json": components["schemas"]["User-user.write"];
+                "text/html": components["schemas"]["User-user.write"];
             };
         };
         responses: {
@@ -2690,7 +4009,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["User"];
+                    "application/ld+json": components["schemas"]["User.jsonld-user.get_all"];
+                    "application/json": components["schemas"]["User-user.get_all"];
+                    "text/html": components["schemas"]["User-user.get_all"];
                 };
             };
             /** @description Invalid input */
@@ -2709,7 +4030,7 @@ export interface operations {
             };
         };
     };
-    api_users_id_get: {
+    app_user_show_admin: {
         parameters: {
             query?: never;
             header?: never;
@@ -2727,7 +4048,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["User"];
+                    "application/ld+json": components["schemas"]["User.jsonld-user.get_by_id"];
+                    "application/json": components["schemas"]["User-user.get_by_id"];
+                    "text/html": components["schemas"]["User-user.get_by_id"];
                 };
             };
             /** @description Resource not found */
@@ -2739,7 +4062,7 @@ export interface operations {
             };
         };
     };
-    api_users_id_delete: {
+    app_user_delete_admin: {
         parameters: {
             query?: never;
             header?: never;
@@ -2767,7 +4090,7 @@ export interface operations {
             };
         };
     };
-    api_users_id_patch: {
+    app_user_edit_admin: {
         parameters: {
             query?: never;
             header?: never;
@@ -2780,7 +4103,7 @@ export interface operations {
         /** @description The updated User resource */
         requestBody: {
             content: {
-                "application/merge-patch+json": components["schemas"]["User"];
+                "application/merge-patch+json": components["schemas"]["User-user.write"];
             };
         };
         responses: {
@@ -2790,7 +4113,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["User"];
+                    "application/ld+json": components["schemas"]["User.jsonld-user.get_all"];
+                    "application/json": components["schemas"]["User-user.get_all"];
+                    "text/html": components["schemas"]["User-user.get_all"];
                 };
             };
             /** @description Invalid input */

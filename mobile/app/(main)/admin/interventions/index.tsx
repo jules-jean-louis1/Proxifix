@@ -1,10 +1,11 @@
 import { AdminInterventionCard } from "@/app/components/admin/intervention/AdminInterventionCard";
-import { ToolBarAdmin } from "@/app/components/admin/navigation/ToolBarAdmin";
+import { AdminAppointmentCard } from "@/app/components/admin/appointment/AdminAppointmentCard";
 import { useSessionContext } from "@/app/context/useSessionContext";
 import { useApi } from "@/app/hooks/useApi";
+import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import { ScrollView, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { StyleSheet } from "react-native";
 import { FAB } from "react-native-paper";
 
@@ -14,6 +15,11 @@ const AdminInterventionsPage = () => {
   const sessionCtx = useSessionContext();
   const sessionData = sessionCtx?.session;
   const [interventions, setInterventions] = React.useState<any[]>([]);
+  const [appointments, setAppointments] = React.useState<any[]>([]);
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const [mode, setMode] = React.useState<"interventions" | "appointments">(
+    "interventions"
+  );
 
   useEffect(() => {
     (async () => {
@@ -31,7 +37,11 @@ const AdminInterventionsPage = () => {
         }
 
         const response = await api.get(endpoint);
+        const responseAppointments = await api.get(
+          `/appointment?company_id=${sessionData.company.id}&status=pending,scheduled`
+        );
         setInterventions(response.data);
+        setAppointments(responseAppointments.data);
       } catch (error) {
         console.error("Erreur lors du chargement des interventions:", error);
       }
@@ -39,26 +49,64 @@ const AdminInterventionsPage = () => {
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
-      <ToolBarAdmin title="Interventions" bottomBar />
+    <View style={{ flex: 1, padding: 16 }}>
+      <Pressable
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: 16,
+        }}
+        onPress={() =>
+          setMode((prev) =>
+            prev === "interventions" ? "appointments" : "interventions"
+          )
+        }
+      >
+        <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+          {mode === "appointments" ? "Rendez-vous" : "Interventions"}
+        </Text>
+        <Feather
+          name={"chevron-down"}
+          size={24}
+          color="black"
+          style={{ marginLeft: 8 }}
+        />
+      </Pressable>
       <ScrollView style={styles.container}>
-        {interventions.map((intervention) => (
-          <AdminInterventionCard
-            key={intervention.id}
-            intervention={intervention}
-            showTechnician={sessionCtx?.isAdmin()}
-            showActions={sessionCtx?.isAdmin()} // Afficher les actions pour les admins
-            onPress={() =>
-              router.push(`/admin/interventions/${intervention.id}`)
-            }
-            onEditPress={() =>
-              router.push(`/admin/interventions/${intervention.id}`)
-            }
-            onAddTaskPress={() =>
-              router.push(`/admin/interventions/${intervention.id}?step=tasks`)
-            }
-          />
-        ))}
+        {mode === "appointments"
+          ? appointments.map((appointment) => (
+              <AdminAppointmentCard
+                key={appointment.id}
+                appointment={appointment}
+                showActions={sessionCtx?.isAdmin()}
+                onPress={() => {
+                  router.push(`/admin/appointments/${appointment.id}`);
+                }}
+                onEditPress={() => {
+                  // Navigation vers l'édition du rendez-vous
+                  console.log("Navigate to appointment edit:", appointment.id);
+                }}
+              />
+            ))
+          : interventions.map((intervention) => (
+              <AdminInterventionCard
+                key={intervention.id}
+                intervention={intervention}
+                showTechnician={sessionCtx?.isAdmin()}
+                showActions={sessionCtx?.isAdmin()} // Afficher les actions pour les admins
+                onPress={() =>
+                  router.push(`/admin/interventions/${intervention.id}`)
+                }
+                onEditPress={() =>
+                  router.push(`/admin/interventions/${intervention.id}`)
+                }
+                onAddTaskPress={() =>
+                  router.push(
+                    `/admin/interventions/${intervention.id}?step=tasks`
+                  )
+                }
+              />
+            ))}
       </ScrollView>
       <FAB
         icon="plus"
@@ -75,7 +123,6 @@ export default AdminInterventionsPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
   },
   fab: {
     margin: 16,
