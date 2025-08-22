@@ -1,6 +1,6 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Controller, useFormContext } from "react-hook-form";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { Controller, useFormContext } from 'react-hook-form';
 import DropdownSelect from 'react-native-input-select';
 
 interface AppSelectInputProps {
@@ -18,7 +18,7 @@ export const AppSelectInput: React.FC<AppSelectInputProps> = ({
   placeholder,
   options,
   rules,
-  defaultValue = "",
+  defaultValue = '',
 }) => {
   const { control } = useFormContext();
 
@@ -33,7 +33,7 @@ export const AppSelectInput: React.FC<AppSelectInputProps> = ({
           <>
             <DropdownSelect
               label={label}
-              placeholder={placeholder || "Sélectionnez une option"}
+              placeholder={placeholder || 'Sélectionnez une option'}
               options={options}
               selectedValue={value || defaultValue}
               onValueChange={onChange}
@@ -50,6 +50,11 @@ export const AppSelectInput: React.FC<AppSelectInputProps> = ({
 
 const styles = StyleSheet.create({
   container: { marginBottom: 16 },
-  label: { fontSize: 14, marginBottom: 4, color: "#364A63", fontWeight: "bold" },
-  errorText: { marginTop: 4, fontSize: 12, color: "#B00020" },
+  label: {
+    fontSize: 14,
+    marginBottom: 4,
+    color: '#364A63',
+    fontWeight: 'bold',
+  },
+  errorText: { marginTop: 4, fontSize: 12, color: '#B00020' },
 });

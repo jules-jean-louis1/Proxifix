@@ -1,8 +1,8 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useApi } from "@/app/hooks/useApi";
-import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useApi } from '@/app/hooks/useApi';
+import { ToolBarCustomer } from '@/app/components/customer/navigation/ToolBarCustomer';
 
 export default function InterventionDetailPage() {
   const { id } = useLocalSearchParams();
@@ -17,7 +17,7 @@ export default function InterventionDetailPage() {
         setIntervention(response.data);
       } catch (error) {
         console.error(
-          "Error:",
+          'Error:',
           (error as any).response
             ? (error as any).response.data
             : (error as any).message
@@ -35,7 +35,7 @@ export default function InterventionDetailPage() {
       <ToolBarCustomer
         title="Détail de l'intervention"
         showBack={true}
-        onBackPress={() => router.replace("/customer/interventions")}
+        onBackPress={() => router.replace('/customer/interventions')}
         bottomBar
       />
       <ScrollView contentContainerStyle={styles.container}>
@@ -70,8 +70,8 @@ export default function InterventionDetailPage() {
 
 const styles = StyleSheet.create({
   container: { padding: 20 },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 16 },
-  label: { fontWeight: "bold", marginTop: 12 },
+  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 16 },
+  label: { fontWeight: 'bold', marginTop: 12 },
   value: { marginLeft: 8, marginTop: 2 },
-  loading: { marginTop: 40, textAlign: "center" },
+  loading: { marginTop: 40, textAlign: 'center' },
 });

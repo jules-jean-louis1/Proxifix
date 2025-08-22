@@ -1,6 +1,6 @@
-import React, { FC } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import React, { FC } from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
 interface Intervention {
   id: number;
@@ -38,33 +38,43 @@ export const AdminInterventionCard: FC<AdminInterventionCardProps> = ({
 }) => {
   // Formatter la date
   const formatDate = (dateString?: string) => {
-    if (!dateString) return "Date non définie";
+    if (!dateString) return 'Date non définie';
     return new Date(dateString).toLocaleDateString('fr-FR', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
+      year: 'numeric',
     });
   };
 
   // Couleur du statut
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'assigned': return '#FFA500';
-      case 'in_progress': return '#007AFF';
-      case 'completed': return '#28A745';
-      case 'cancelled': return '#DC3545';
-      default: return '#6C757D';
+      case 'assigned':
+        return '#FFA500';
+      case 'in_progress':
+        return '#007AFF';
+      case 'completed':
+        return '#28A745';
+      case 'cancelled':
+        return '#DC3545';
+      default:
+        return '#6C757D';
     }
   };
 
   // Texte du statut en français
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'assigned': return 'Assignée';
-      case 'in_progress': return 'En cours';
-      case 'completed': return 'Terminée';
-      case 'cancelled': return 'Annulée';
-      default: return status;
+      case 'assigned':
+        return 'Assignée';
+      case 'in_progress':
+        return 'En cours';
+      case 'completed':
+        return 'Terminée';
+      case 'cancelled':
+        return 'Annulée';
+      default:
+        return status;
     }
   };
 
@@ -74,7 +84,12 @@ export const AdminInterventionCard: FC<AdminInterventionCardProps> = ({
         <Text style={styles.title} numberOfLines={2}>
           {intervention.title}
         </Text>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(intervention.status) }]}>
+        <View
+          style={[
+            styles.statusBadge,
+            { backgroundColor: getStatusColor(intervention.status) },
+          ]}
+        >
           <Text style={styles.statusText}>
             {getStatusText(intervention.status)}
           </Text>
@@ -84,13 +99,14 @@ export const AdminInterventionCard: FC<AdminInterventionCardProps> = ({
       <View style={styles.content}>
         {/* Client */}
         <Text style={styles.clientText}>
-          Client: {intervention.customer?.first_name} {intervention.customer?.last_name}
+          Client: {intervention.customer?.first_name}{' '}
+          {intervention.customer?.last_name}
         </Text>
 
         {/* Technicien (seulement pour les admins) */}
         {showTechnician && (
           <Text style={styles.technicianText}>
-            Technicien: {intervention.technician?.first_name || "Non assigné"}
+            Technicien: {intervention.technician?.first_name || 'Non assigné'}
           </Text>
         )}
 
@@ -111,11 +127,13 @@ export const AdminInterventionCard: FC<AdminInterventionCardProps> = ({
               <Text style={styles.actionText}>Modifier</Text>
             </Pressable>
           )}
-          
+
           {onAddTaskPress && (
             <Pressable onPress={onAddTaskPress} style={styles.actionButton}>
               <Feather name="plus" size={16} color="#28A745" />
-              <Text style={[styles.actionText, { color: "#28A745" }]}>Ajouter tâche</Text>
+              <Text style={[styles.actionText, { color: '#28A745' }]}>
+                Ajouter tâche
+              </Text>
             </Pressable>
           )}
         </View>
@@ -126,11 +144,11 @@ export const AdminInterventionCard: FC<AdminInterventionCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     borderRadius: 8,
     padding: 16,
     marginBottom: 12,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,

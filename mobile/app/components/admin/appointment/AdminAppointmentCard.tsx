@@ -91,13 +91,18 @@ export const AdminAppointmentCard: React.FC<AdminAppointmentCardProps> = ({
           <Text style={styles.title} numberOfLines={2}>
             {appointment.title}
           </Text>
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(appointment.status) }]}>
+          <View
+            style={[
+              styles.statusBadge,
+              { backgroundColor: getStatusColor(appointment.status) },
+            ]}
+          >
             <Text style={styles.statusText}>
               {getStatusText(appointment.status)}
             </Text>
           </View>
         </View>
-        
+
         {showActions && (
           <View style={styles.actions}>
             {onEditPress && (
@@ -117,33 +122,25 @@ export const AdminAppointmentCard: React.FC<AdminAppointmentCardProps> = ({
       <View style={styles.content}>
         <View style={styles.infoRow}>
           <Feather name="calendar" size={16} color="#666" />
-          <Text style={styles.infoText}>
-            {formatDate(appointment.date)}
-          </Text>
+          <Text style={styles.infoText}>{formatDate(appointment.date)}</Text>
         </View>
 
         <View style={styles.infoRow}>
           <Feather name="user" size={16} color="#666" />
-          <Text style={styles.infoText}>
-            {getUserName()}
-          </Text>
+          <Text style={styles.infoText}>{getUserName()}</Text>
         </View>
 
         {appointment.equipment && (
           <View style={styles.infoRow}>
             <Feather name="monitor" size={16} color="#666" />
-            <Text style={styles.infoText}>
-              {appointment.equipment.name}
-            </Text>
+            <Text style={styles.infoText}>{appointment.equipment.name}</Text>
           </View>
         )}
 
         {appointment.type_intervention && (
           <View style={styles.infoRow}>
             <Feather name="tool" size={16} color="#666" />
-            <Text style={styles.infoText}>
-              {appointment.type_intervention}
-            </Text>
+            <Text style={styles.infoText}>{appointment.type_intervention}</Text>
           </View>
         )}
 
@@ -160,9 +157,7 @@ export const AdminAppointmentCard: React.FC<AdminAppointmentCardProps> = ({
             Créé le {formatDate(appointment.created_at)}
           </Text>
           {appointment.company && (
-            <Text style={styles.company}>
-              {appointment.company.name}
-            </Text>
+            <Text style={styles.company}>{appointment.company.name}</Text>
           )}
         </View>
       </View>

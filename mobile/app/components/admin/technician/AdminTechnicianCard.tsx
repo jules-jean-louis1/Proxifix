@@ -1,5 +1,5 @@
-import React, { FC } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import React, { FC } from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 
 interface Technician {
   id: number;
@@ -28,20 +28,20 @@ export const AdminTechnicianCard: FC<AdminTechnicianCardProps> = ({
   // Formatter la date d'ajout
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
     });
   };
 
   // Formatter le rôle
   const formatRole = (role: string) => {
     switch (role) {
-      case "ROLE_TECHNICIAN":
-        return "Technicien";
-      case "ROLE_ADMIN":
-        return "Admin";
+      case 'ROLE_TECHNICIAN':
+        return 'Technicien';
+      case 'ROLE_ADMIN':
+        return 'Admin';
       default:
         return role;
     }
@@ -59,9 +59,7 @@ export const AdminTechnicianCard: FC<AdminTechnicianCardProps> = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.role}>
-          {formatRole(technician.role)}
-        </Text>
+        <Text style={styles.role}>{formatRole(technician.role)}</Text>
 
         <Text style={styles.location}>
           {technician.zipcode} - {technician.city}
@@ -69,7 +67,9 @@ export const AdminTechnicianCard: FC<AdminTechnicianCardProps> = ({
 
         <Text style={styles.email}>{technician.email}</Text>
 
-        {technician.phone && <Text style={styles.phone}>{technician.phone}</Text>}
+        {technician.phone && (
+          <Text style={styles.phone}>{technician.phone}</Text>
+        )}
       </View>
     </Pressable>
   );
@@ -77,12 +77,12 @@ export const AdminTechnicianCard: FC<AdminTechnicianCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 8,
     padding: 16,
     marginVertical: 8,
     marginHorizontal: 16,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -92,41 +92,41 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 12,
   },
   name: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
   },
   date: {
     fontSize: 12,
-    color: "#666",
+    color: '#666',
   },
   content: {
     marginBottom: 12,
   },
   role: {
     fontSize: 14,
-    color: "#F9556D",
-    fontWeight: "bold",
+    color: '#F9556D',
+    fontWeight: 'bold',
     marginBottom: 4,
   },
   location: {
     fontSize: 14,
-    color: "#555",
+    color: '#555',
     marginBottom: 4,
   },
   email: {
     fontSize: 14,
-    color: "#007AFF",
+    color: '#007AFF',
     marginBottom: 4,
   },
   phone: {
     fontSize: 14,
-    color: "#555",
+    color: '#555',
   },
 });

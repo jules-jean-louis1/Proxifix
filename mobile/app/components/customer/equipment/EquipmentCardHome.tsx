@@ -1,7 +1,7 @@
-import React from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
-import { getStatus, getStatusColor } from "@/app/utils/intervention";
-import { router } from "expo-router";
+import React from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { getStatus, getStatusColor } from '@/app/utils/intervention';
+import { router } from 'expo-router';
 
 interface EquipmentCardHomeProps {
   equipment: any[];
@@ -15,10 +15,10 @@ export const EquipmentCardHome: React.FC<EquipmentCardHomeProps> = ({
   }
 
   return (
-    <View style={{ width: "100%", alignItems: "center", marginTop: 20 }}>
+    <View style={{ width: '100%', alignItems: 'center', marginTop: 20 }}>
       <View style={styles.header}>
         <Text style={styles.titleSide}>Vos équipements</Text>
-        <Pressable onPress={() => router.push("/customer/equipments")}>
+        <Pressable onPress={() => router.push('/customer/equipments')}>
           <Text>Voir plus</Text>
         </Pressable>
       </View>
@@ -28,7 +28,7 @@ export const EquipmentCardHome: React.FC<EquipmentCardHomeProps> = ({
             const status =
               e.interventions && e.interventions.length > 0
                 ? getStatus(e.interventions[0])
-                : "No data";
+                : 'No data';
             const statusColor = getStatusColor(e.interventions[0]?.status);
             return (
               <View style={styles.card} key={index}>
@@ -49,51 +49,51 @@ export const EquipmentCardHome: React.FC<EquipmentCardHomeProps> = ({
 
 const styles = StyleSheet.create({
   header: {
-    width: "90%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    width: '90%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 16,
   },
   equipmentCard: {
     borderRadius: 20,
     marginBottom: 20,
-    width: "90%",
-    alignSelf: "center",
+    width: '90%',
+    alignSelf: 'center',
   },
   equipmentCardContainer: {
-    width: "100%",
+    width: '100%',
   },
   card: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#ffffff",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
     borderRadius: 10,
     padding: 16,
     marginBottom: 10,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   titleSide: {
-    color: "#637381",
-    fontWeight: "bold",
+    color: '#637381',
+    fontWeight: 'bold',
     fontSize: 12,
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
   },
   name: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#364A63",
+    fontWeight: 'bold',
+    color: '#364A63',
   },
   status: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   noIntervention: {
     fontSize: 14,
-    color: "#999",
+    color: '#999',
   },
 });

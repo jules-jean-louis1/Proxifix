@@ -1,9 +1,9 @@
-import { View, ScrollView } from "react-native";
-import React from "react";
-import { router } from "expo-router";
-import { AdminCustomerForm } from "@/app/components/admin/customer/AdminCustomerForm";
-import { useApi } from "@/app/hooks/useApi";
-import { ToolBarAdmin } from "@/app/components/admin/navigation/ToolBarAdmin";
+import { View, ScrollView } from 'react-native';
+import React from 'react';
+import { router } from 'expo-router';
+import { AdminCustomerForm } from '@/app/components/admin/customer/AdminCustomerForm';
+import { useApi } from '@/app/hooks/useApi';
+import { ToolBarAdmin } from '@/app/components/admin/navigation/ToolBarAdmin';
 
 const AdminCustomerNew = () => {
   const api = useApi();
@@ -27,7 +27,7 @@ const AdminCustomerNew = () => {
         showBack
       />
       <ScrollView style={styles.container}>
-        <AdminCustomerForm 
+        <AdminCustomerForm
           mode="create"
           onSubmit={handleSubmit}
           onCancel={() => router.back()}

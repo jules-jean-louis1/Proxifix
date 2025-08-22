@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, FlatList, StyleSheet } from "react-native";
-import { Controller, useFormContext } from "react-hook-form";
-import { useApi } from "@/app/hooks/useApi";
-import { TextInput } from "react-native-paper";
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+} from 'react-native';
+import { Controller, useFormContext } from 'react-hook-form';
+import { useApi } from '@/app/hooks/useApi';
+import { TextInput } from 'react-native-paper';
 
 interface AppSimpleSearchInputProps {
   nameField: string;
@@ -25,8 +31,8 @@ export const AppSimpleSearchInput: React.FC<AppSimpleSearchInputProps> = ({
 }) => {
   const { control } = useFormContext();
   const api = useApi();
-  
-  const [searchText, setSearchText] = useState("");
+
+  const [searchText, setSearchText] = useState('');
   const [results, setResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -40,7 +46,9 @@ export const AppSimpleSearchInput: React.FC<AppSimpleSearchInputProps> = ({
     }
 
     try {
-      const response = await api.get(`${searchEndpoint}${encodeURIComponent(query)}`);
+      const response = await api.get(
+        `${searchEndpoint}${encodeURIComponent(query)}`
+      );
       setResults(response.data || []);
       setShowResults(true);
     } catch (error) {
@@ -69,7 +77,7 @@ export const AppSimpleSearchInput: React.FC<AppSimpleSearchInputProps> = ({
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
-      
+
       <Controller
         control={control}
         name={nameField}
@@ -79,14 +87,14 @@ export const AppSimpleSearchInput: React.FC<AppSimpleSearchInputProps> = ({
             <TextInput
               style={[styles.input, error && styles.inputError]}
               value={searchText}
-              onChangeText={(text) => {
+              onChangeText={text => {
                 setSearchText(text);
                 if (!text) {
-                  onChange("");
+                  onChange('');
                   setSelectedItem(null);
                 }
               }}
-              placeholder={placeholder || "Tapez pour rechercher..."}
+              placeholder={placeholder || 'Tapez pour rechercher...'}
               onFocus={() => {
                 if (results.length > 0) {
                   setShowResults(true);
@@ -98,7 +106,7 @@ export const AppSimpleSearchInput: React.FC<AppSimpleSearchInputProps> = ({
               <View style={styles.resultsContainer}>
                 <FlatList
                   data={results}
-                  keyExtractor={(item) => item[valueKey]?.toString()}
+                  keyExtractor={item => item[valueKey]?.toString()}
                   renderItem={({ item }) => (
                     <TouchableOpacity
                       style={styles.resultItem}
@@ -129,25 +137,25 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     marginBottom: 4,
-    color: "#364A63",
-    fontWeight: "bold",
+    color: '#364A63',
+    fontWeight: 'bold',
   },
   input: {
     borderWidth: 1,
-    borderColor: "#E0E0E0",
+    borderColor: '#E0E0E0',
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   inputError: {
-    borderColor: "#B00020",
+    borderColor: '#B00020',
   },
   resultsContainer: {
-    position: "relative",
-    backgroundColor: "#fff",
+    position: 'relative',
+    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: "#E0E0E0",
+    borderColor: '#E0E0E0',
     borderTopWidth: 0,
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
@@ -160,15 +168,15 @@ const styles = StyleSheet.create({
   resultItem: {
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
+    borderBottomColor: '#F0F0F0',
   },
   resultText: {
     fontSize: 16,
-    color: "#333",
+    color: '#333',
   },
   errorText: {
     marginTop: 4,
     fontSize: 12,
-    color: "#B00020",
+    color: '#B00020',
   },
 });

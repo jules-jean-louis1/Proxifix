@@ -56,6 +56,9 @@ Si vous n'utilisez pas Docker, suivez ces étapes :
    ```bash
    symfony server:start
     ```
+
+# BACKEND
+
 ### Exécution des tests
 Pour exécuter les tests, utilisez la commande suivante :
 
@@ -122,4 +125,40 @@ vendor/bin/php-cs-fixer fix --dry-run --diff
 
 # Correction automatique du formatage
 vendor/bin/php-cs-fixer fix
+```
+
+# FRONTEND
+### Exécution des tests
+
+```bash
+npm run test
+```
+
+Lint le code
+
+```bash
+npm run lint
+```
+
+Formate le code
+
+```bash
+npm run format
+```
+Type-check le code
+
+```bash
+npm run type-check
+```
+
+Test complet pour CI
+
+```bash
+npm run ci
+```
+
+## Génération des Types TypeScript depuis le Backend
+
+```bash
+npm run generate-types
 ```

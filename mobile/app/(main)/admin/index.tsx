@@ -1,13 +1,13 @@
-import { AppButton } from "@/app/components/buttons/AppButton";
-import { useSessionContext } from "@/app/context/useSessionContext";
-import { useApi } from "@/app/hooks/useApi";
-import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
-import { Text } from "react-native-paper";
-import { AdminInterventionCard } from "@/app/components/admin/intervention/AdminInterventionCard";
-import { Feather } from "@expo/vector-icons";
-import { ToolBarAdmin } from "@/app/components/admin/navigation/ToolBarAdmin";
+import { AppButton } from '@/app/components/buttons/AppButton';
+import { useSessionContext } from '@/app/context/useSessionContext';
+import { useApi } from '@/app/hooks/useApi';
+import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Text } from 'react-native-paper';
+import { AdminInterventionCard } from '@/app/components/admin/intervention/AdminInterventionCard';
+import { Feather } from '@expo/vector-icons';
+import { ToolBarAdmin } from '@/app/components/admin/navigation/ToolBarAdmin';
 
 export default function AdminHome() {
   const api = useApi();
@@ -18,7 +18,7 @@ export default function AdminHome() {
 
   useEffect(() => {
     if (!sessionData) return;
-    console.log("Session data:", sessionData);
+    console.log('Session data:', sessionData);
     fetchInterventions();
   }, []);
 
@@ -29,7 +29,7 @@ export default function AdminHome() {
     }
 
     try {
-      let endpoint = "";
+      let endpoint = '';
 
       if (sessionCtx?.isTechnician()) {
         // Pour les techniciens : récupérer les interventions assignées à eux
@@ -45,7 +45,7 @@ export default function AdminHome() {
       }
     } catch (error) {
       console.error(
-        "Erreur lors de la récupération des interventions :",
+        'Erreur lors de la récupération des interventions :',
         error
       );
       setInterventions([]);
@@ -71,7 +71,7 @@ export default function AdminHome() {
           rightContent={
             <Pressable
               onPress={() => {
-                router.push("/admin/settings");
+                router.push('/admin/settings');
               }}
             >
               <Feather name="settings" size={24} color="#344260" />
@@ -85,31 +85,31 @@ export default function AdminHome() {
           <View>
             <View
               style={{
-                flexDirection: "column",
-                justifyContent: "space-between",
+                flexDirection: 'column',
+                justifyContent: 'space-between',
                 marginBottom: 4,
               }}
             >
               <AppButton
                 type="primary"
                 children="Clients"
-                onPress={() => router.push("/admin/customers")}
+                onPress={() => router.push('/admin/customers')}
                 style={{ flex: 1, marginRight: 2 }}
-                icon={"plus"}
+                icon={'plus'}
               />
               <AppButton
                 type="primary"
                 children="Interventions"
-                onPress={() => router.push("/admin/interventions/new")}
+                onPress={() => router.push('/admin/interventions/new')}
                 style={{ flex: 1, marginLeft: 2 }}
-                icon={"plus"}
+                icon={'plus'}
               />
               <AppButton
                 type="primary"
                 children="Ajouter un equipement"
-                onPress={() => router.push("/admin/equipments/new")}
+                onPress={() => router.push('/admin/equipments/new')}
                 style={{ flex: 1, marginLeft: 2 }}
-                icon={"plus"}
+                icon={'plus'}
               />
             </View>
           </View>
@@ -123,7 +123,7 @@ export default function AdminHome() {
                 key={intervention.id}
                 intervention={intervention}
                 showTechnician={false}
-                onPress={() => router.push("/admin/interventions")}
+                onPress={() => router.push('/admin/interventions')}
               />
             ))
           ) : (
@@ -142,7 +142,7 @@ export default function AdminHome() {
           rightContent={
             <Pressable
               onPress={() => {
-                router.push("/admin/settings");
+                router.push('/admin/settings');
               }}
             >
               <Feather name="settings" size={24} color="#344260" />
@@ -159,38 +159,38 @@ export default function AdminHome() {
           <View>
             <View
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
+                flexDirection: 'row',
+                justifyContent: 'space-between',
                 marginBottom: 4,
               }}
             >
               <AppButton
                 type="primary"
                 children="Clients"
-                onPress={() => router.push("/admin/customers")}
+                onPress={() => router.push('/admin/customers')}
                 style={{ flex: 1, marginRight: 2 }}
-                icon={"plus"}
+                icon={'plus'}
               />
               <AppButton
                 type="primary"
                 children="Interventions"
-                onPress={() => router.push("/admin/interventions/new")}
+                onPress={() => router.push('/admin/interventions/new')}
                 style={{ flex: 1, marginLeft: 2 }}
-                icon={"plus"}
+                icon={'plus'}
               />
             </View>
 
             <View
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
+                flexDirection: 'row',
+                justifyContent: 'space-between',
                 marginBottom: 4,
               }}
             >
               <AppButton
                 type="primary"
                 children="Ajouter un technicien"
-                onPress={() => router.push("/admin/technicians/new")}
+                onPress={() => router.push('/admin/technicians/new')}
                 style={{ flex: 1, marginLeft: 2 }}
               />
             </View>
@@ -203,7 +203,7 @@ export default function AdminHome() {
               key={intervention.id}
               intervention={intervention}
               showTechnician={true}
-              onPress={() => router.push("/admin/interventions")}
+              onPress={() => router.push('/admin/interventions')}
             />
           ))}
         </ScrollView>
@@ -221,37 +221,37 @@ export default function AdminHome() {
 const styles = StyleSheet.create({
   containerWrapper: {
     flex: 1,
-    backgroundColor: "#ffffffff",
+    backgroundColor: '#ffffffff',
     paddingBottom: 40,
   },
   container: {
     flex: 1,
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
     padding: 16,
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FFF",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
   },
   loadingText: {
     fontSize: 16,
-    color: "#01358D",
+    color: '#01358D',
   },
   title: {
     marginBottom: 8,
-    color: "#01358D",
+    color: '#01358D',
   },
   subtitle: {
     fontSize: 16,
-    color: "#666",
+    color: '#666',
     marginBottom: 16,
   },
   sectionTitle: {
     marginTop: 24,
     marginBottom: 16,
-    color: "#01358D",
+    color: '#01358D',
   },
   buttonContainer: {
     gap: 4,
@@ -260,10 +260,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   noDataText: {
-    textAlign: "center",
-    color: "#666",
+    textAlign: 'center',
+    color: '#666',
     fontSize: 16,
     marginTop: 32,
-    fontStyle: "italic",
+    fontStyle: 'italic',
   },
 });

@@ -1,9 +1,9 @@
-import React from "react";
-import { Pressable, Text, View, StyleSheet } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { getStatus } from "@/app/utils/intervention";
+import React from 'react';
+import { Pressable, Text, View, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { getStatus } from '@/app/utils/intervention';
 
 interface InterventionCardProps {
   intervention?: any;
@@ -32,7 +32,7 @@ export const InterventionCard: React.FC<InterventionCardProps> = ({
           <Text style={styles.interventionDescription}>
             {intervention.company && intervention.company.name
               ? intervention.company.name
-              : "Aucune entreprise associée"}
+              : 'Aucune entreprise associée'}
           </Text>
         </View>
 
@@ -58,7 +58,7 @@ export const InterventionCard: React.FC<InterventionCardProps> = ({
           <View style={styles.dateContainer}>
             {intervention.created_at ? (
               <Text style={styles.footerDate}>
-                {format(new Date(intervention.created_at), "dd MMMM yyyy", {
+                {format(new Date(intervention.created_at), 'dd MMMM yyyy', {
                   locale: fr,
                 })}
               </Text>
@@ -84,10 +84,10 @@ export const InterventionCard: React.FC<InterventionCardProps> = ({
 const styles = StyleSheet.create({
   interventionItem: {
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 8,
     marginBottom: 10,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
@@ -95,39 +95,39 @@ const styles = StyleSheet.create({
   },
   interventionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#E53953",
+    fontWeight: 'bold',
+    color: '#E53953',
     marginBottom: 5,
   },
   interventionDescription: {
     fontSize: 16,
-    color: "#5B6880",
+    color: '#5B6880',
     marginBottom: 5,
   },
   containerInformation: {
     flex: 1,
-    flexDirection: "row",
+    flexDirection: 'row',
     marginBottom: 5,
   },
   footerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginTop: 10,
   },
   dateContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(75, 192, 192, 0.2)",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(75, 192, 192, 0.2)',
     padding: 8,
     borderRadius: 8,
     marginRight: 8,
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
   },
   dateText: {
     fontSize: 13,
-    color: "#4BC0C0",
-    fontWeight: "bold",
+    color: '#4BC0C0',
+    fontWeight: 'bold',
   },
   icon: {
     paddingLeft: 5,
@@ -137,23 +137,23 @@ const styles = StyleSheet.create({
   },
   status: {
     fontSize: 13,
-    fontWeight: "bold",
-    backgroundColor: "rgba(0, 119, 193, 0.2)",
-    color: "#48A3D7",
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(0, 119, 193, 0.2)',
+    color: '#48A3D7',
     padding: 8,
     borderRadius: 8,
     marginRight: 8,
-    textAlign: "center",
+    textAlign: 'center',
   },
   footerDate: {
     fontSize: 14,
-    color: "#5B6880",
+    color: '#5B6880',
     flex: 1,
-    textAlign: "right",
+    textAlign: 'right',
   },
-  titleFlex : {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between"
-  }
+  titleFlex: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
 });

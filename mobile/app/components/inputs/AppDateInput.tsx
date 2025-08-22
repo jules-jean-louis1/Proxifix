@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Platform, View, Text, StyleSheet, Button } from "react-native";
-import { Controller, useFormContext } from "react-hook-form";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import React, { useState } from 'react';
+import { Platform, View, Text, StyleSheet, Button } from 'react-native';
+import { Controller, useFormContext } from 'react-hook-form';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 interface AppDateInputProps {
   nameField: string;
@@ -18,7 +18,7 @@ export const AppDateInput: React.FC<AppDateInputProps> = ({
   defaultValue = new Date(),
   placeholder,
   rules = {},
-  formatDate = (date) => date.toISOString().split("T")[0], // Format par défaut : YYYY-MM-DD
+  formatDate = date => date.toISOString().split('T')[0], // Format par défaut : YYYY-MM-DD
 }: AppDateInputProps) => {
   const { control } = useFormContext();
   const [showPicker, setShowPicker] = useState(false);
@@ -36,7 +36,7 @@ export const AppDateInput: React.FC<AppDateInputProps> = ({
             title={
               value
                 ? formatDate(new Date(value)) // Utilise la fonction de formatage
-                : placeholder || "Sélectionner une date"
+                : placeholder || 'Sélectionner une date'
             }
             onPress={() => setShowPicker(true)}
           />
@@ -44,7 +44,7 @@ export const AppDateInput: React.FC<AppDateInputProps> = ({
             <DateTimePicker
               value={value ? new Date(value) : defaultValue}
               mode="date"
-              display={Platform.OS === "ios" ? "inline" : "default"}
+              display={Platform.OS === 'ios' ? 'inline' : 'default'}
               onChange={(event, selectedDate) => {
                 setShowPicker(false);
                 if (selectedDate) {
@@ -66,12 +66,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 8,
-    color: "#364A63",
+    color: '#364A63',
   },
   errorText: {
-    color: "red",
+    color: 'red',
     fontSize: 12,
     marginTop: 4,
   },

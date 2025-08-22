@@ -1,7 +1,7 @@
-import React from "react";
-import { Controller, useFormContext } from "react-hook-form";
-import { StyleSheet, Text } from "react-native";
-import { TextInput } from "react-native-paper";
+import React from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
+import { StyleSheet, Text } from 'react-native';
+import { TextInput } from 'react-native-paper';
 
 interface AppTextFieldProps {
   nameField: string;
@@ -16,10 +16,10 @@ interface AppTextFieldProps {
 export const AppTextField: React.FC<AppTextFieldProps> = ({
   nameField,
   label,
-  defaultValue = "",
+  defaultValue = '',
   rules = {},
   secureTextEntry = false,
-  placeholder = "",
+  placeholder = '',
   ...rest
 }) => {
   const { control } = useFormContext();
@@ -30,7 +30,10 @@ export const AppTextField: React.FC<AppTextFieldProps> = ({
       name={nameField}
       defaultValue={defaultValue}
       rules={rules}
-      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+      render={({
+        field: { onChange, onBlur, value },
+        fieldState: { error },
+      }) => (
         <>
           <TextInput
             mode="outlined"
@@ -46,9 +49,9 @@ export const AppTextField: React.FC<AppTextFieldProps> = ({
             textColor="#000000"
             theme={{
               colors: {
-                onSurfaceVariant: "#49454F",
-                placeholder: "#49454F",
-                text: "#000000",
+                onSurfaceVariant: '#49454F',
+                placeholder: '#49454F',
+                text: '#000000',
               },
             }}
             style={styles.input}
@@ -63,13 +66,13 @@ export const AppTextField: React.FC<AppTextFieldProps> = ({
 
 const styles = StyleSheet.create({
   input: {
-    width: "100%",
+    width: '100%',
     marginBottom: 15,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     borderRadius: 8,
   },
   errorText: {
-    color: "red",
+    color: 'red',
     fontSize: 12,
     marginTop: -10,
     marginBottom: 10,

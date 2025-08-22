@@ -1,12 +1,12 @@
-import { useSessionContext } from "@/app/context/useSessionContext";
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Image, Pressable, ScrollView } from "react-native";
-import { Button, Text } from "react-native-paper";
-import { useApi } from "@/app/hooks/useApi";
-import { Feather } from "@expo/vector-icons";
-import { EquipmentCardHome } from "@/app/components/customer/equipment/EquipmentCardHome";
-import { router } from "expo-router";
-import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
+import { useSessionContext } from '@/app/context/useSessionContext';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Image, Pressable, ScrollView } from 'react-native';
+import { Button, Text } from 'react-native-paper';
+import { useApi } from '@/app/hooks/useApi';
+import { Feather } from '@expo/vector-icons';
+import { EquipmentCardHome } from '@/app/components/customer/equipment/EquipmentCardHome';
+import { router } from 'expo-router';
+import { ToolBarCustomer } from '@/app/components/customer/navigation/ToolBarCustomer';
 
 export const CustomerHome = () => {
   const sessionCtx = useSessionContext();
@@ -22,7 +22,7 @@ export const CustomerHome = () => {
         setEquipment(resp.data);
       } catch (error) {
         console.error(
-          "Erreur lors de la récupération des équipements :",
+          'Erreur lors de la récupération des équipements :',
           error
         );
       }
@@ -30,12 +30,12 @@ export const CustomerHome = () => {
   }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#FFF" }}>
+    <View style={{ flex: 1, backgroundColor: '#FFF' }}>
       <ToolBarCustomer
         rightContent={
           <Pressable
             onPress={() => {
-              router.push("/customer/settings");
+              router.push('/customer/settings');
             }}
           >
             <Feather name="user" size={24} color="#344260" />
@@ -50,10 +50,10 @@ export const CustomerHome = () => {
           <View style={styles.interventionBlock}>
             <Pressable
               style={styles.button}
-              onPress={() => router.push("/customer/interventions")}
+              onPress={() => router.push('/customer/interventions')}
             >
               <Image
-                source={require("../../assets/images/tool_test 1.png")}
+                source={require('../../assets/images/tool_test 1.png')}
                 style={styles.icon}
               />
               <View style={styles.textContainer}>
@@ -93,10 +93,10 @@ export const CustomerHome = () => {
           <View style={styles.rowButtonsSide}>
             <Pressable
               style={styles.buttonSide}
-              onPress={() => router.push("/customer/equipments")}
+              onPress={() => router.push('/customer/equipments')}
             >
               <Image
-                source={require("../../assets/images/equipment.png")}
+                source={require('../../assets/images/equipment.png')}
                 style={styles.iconSide}
               />
               <Text variant="titleLarge" style={styles.titleSide}>
@@ -105,10 +105,10 @@ export const CustomerHome = () => {
             </Pressable>
             <Pressable
               style={styles.buttonSide}
-              onPress={() => router.push("/customer/settings")}
+              onPress={() => router.push('/customer/settings')}
             >
               <Image
-                source={require("../../assets/images/settings.png")}
+                source={require('../../assets/images/settings.png')}
                 style={styles.iconSide}
               />
               <Text variant="titleLarge" style={styles.titleSide}>
@@ -126,124 +126,124 @@ export const CustomerHome = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
     marginBottom: 50,
     marginTop: 20,
   },
   text: {
-    color: "#000",
+    color: '#000',
   },
   textTitle: {
-    color: "#364A63",
+    color: '#364A63',
     fontSize: 25,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 10,
-    width: "90%",
-    alignSelf: "center",
+    width: '90%',
+    alignSelf: 'center',
   },
   textSubTitle: {
-    color: "#364A63",
+    color: '#364A63',
     fontSize: 16,
     marginBottom: 20,
-    fontWeight: "light",
+    fontWeight: 'light',
   },
   button: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#283276",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#283276',
     borderRadius: 20,
     padding: 16,
-    width: "100%",
-    alignSelf: "center",
-    shadowColor: "#000",
+    width: '100%',
+    alignSelf: 'center',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
   },
   buttonSide: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#F5F5F8",
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F5F5F8',
     borderRadius: 20,
     padding: 16,
-    width: "50%",
+    width: '50%',
   },
   icon: {
     width: 60,
     height: 60,
-    resizeMode: "contain",
+    resizeMode: 'contain',
     marginRight: 12,
   },
   iconSide: {
     width: 80,
     height: 72,
-    resizeMode: "contain",
+    resizeMode: 'contain',
     marginRight: 12,
   },
   textContainer: {
     flex: 1,
   },
   titleSide: {
-    color: "#637381",
-    fontWeight: "bold",
+    color: '#637381',
+    fontWeight: 'bold',
     fontSize: 18,
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
     marginBottom: 4,
   },
   title: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#fff',
+    fontWeight: 'bold',
     fontSize: 18,
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
     marginBottom: 4,
   },
   subTitle: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 14,
     flex: 1,
   },
   row: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   rowButtonsSide: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "90%",
-    alignSelf: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '90%',
+    alignSelf: 'center',
+    alignItems: 'center',
     gap: 10,
     marginBottom: 20,
   },
   rowButtons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-    alignSelf: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    alignSelf: 'center',
+    alignItems: 'center',
   },
   label: {
-    color: "#000",
+    color: '#000',
     fontSize: 14,
   },
   contentUnder: {
-    flexDirection: "row-reverse",
+    flexDirection: 'row-reverse',
     height: 48,
   },
   interventionBlock: {
-    width: "90%",
-    alignSelf: "center",
+    width: '90%',
+    alignSelf: 'center',
     borderRadius: 20,
-    overflow: "hidden",
-    backgroundColor: "#F5F5F8",
-    height: "auto",
+    overflow: 'hidden',
+    backgroundColor: '#F5F5F8',
+    height: 'auto',
     marginBottom: 20,
   },
   buttonUnder: {
     flex: 1,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     borderWidth: 0,
     elevation: 0,
   },
@@ -256,8 +256,8 @@ const styles = StyleSheet.create({
   },
   verticalDivider: {
     width: 1,
-    height: "80%",
-    backgroundColor: "#000",
+    height: '80%',
+    backgroundColor: '#000',
     marginHorizontal: 8,
   },
 });

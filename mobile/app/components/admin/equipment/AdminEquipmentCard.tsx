@@ -1,5 +1,5 @@
-import React, { FC } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import React, { FC } from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 
 interface Equipment {
   id: number;
@@ -40,10 +40,10 @@ export const AdminEquipmentCard: FC<AdminEquipmentCardProps> = ({
   // Formatter la date d'ajout
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
     });
   };
 
@@ -58,33 +58,23 @@ export const AdminEquipmentCard: FC<AdminEquipmentCardProps> = ({
 
       <View style={styles.content}>
         {equipment.brand && (
-          <Text style={styles.brand}>
-            {equipment.brand.name}
-          </Text>
+          <Text style={styles.brand}>{equipment.brand.name}</Text>
         )}
 
         {equipment.reference && (
-          <Text style={styles.reference}>
-            Réf: {equipment.reference}
-          </Text>
+          <Text style={styles.reference}>Réf: {equipment.reference}</Text>
         )}
 
         {equipment.model && (
-          <Text style={styles.model}>
-            Modèle: {equipment.model}
-          </Text>
+          <Text style={styles.model}>Modèle: {equipment.model}</Text>
         )}
 
         {equipment.type_equipment && (
-          <Text style={styles.type}>
-            Type: {equipment.type_equipment.name}
-          </Text>
+          <Text style={styles.type}>Type: {equipment.type_equipment.name}</Text>
         )}
 
         {equipment.operating_system && (
-          <Text style={styles.os}>
-            OS: {equipment.operating_system.name}
-          </Text>
+          <Text style={styles.os}>OS: {equipment.operating_system.name}</Text>
         )}
       </View>
 
@@ -93,9 +83,7 @@ export const AdminEquipmentCard: FC<AdminEquipmentCardProps> = ({
           <Text style={styles.owner}>
             Propriétaire: {equipment.user.first_name} {equipment.user.last_name}
           </Text>
-          <Text style={styles.ownerEmail}>
-            {equipment.user.email}
-          </Text>
+          <Text style={styles.ownerEmail}>{equipment.user.email}</Text>
         </View>
       )}
     </Pressable>
@@ -104,12 +92,12 @@ export const AdminEquipmentCard: FC<AdminEquipmentCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 8,
     padding: 16,
     marginVertical: 8,
     marginHorizontal: 16,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -119,63 +107,63 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 12,
   },
   name: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
     flex: 1,
   },
   date: {
     fontSize: 12,
-    color: "#666",
+    color: '#666',
   },
   content: {
     marginBottom: 12,
   },
   brand: {
     fontSize: 16,
-    color: "#F9556D",
-    fontWeight: "600",
+    color: '#F9556D',
+    fontWeight: '600',
     marginBottom: 4,
   },
   reference: {
     fontSize: 14,
-    color: "#555",
+    color: '#555',
     marginBottom: 2,
   },
   model: {
     fontSize: 14,
-    color: "#555",
+    color: '#555',
     marginBottom: 2,
   },
   type: {
     fontSize: 14,
-    color: "#007AFF",
+    color: '#007AFF',
     marginBottom: 2,
   },
   os: {
     fontSize: 14,
-    color: "#34C759",
+    color: '#34C759',
     marginBottom: 2,
   },
   footer: {
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "#eee",
+    borderTopColor: '#eee',
   },
   owner: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#333",
+    fontWeight: '600',
+    color: '#333',
     marginBottom: 2,
   },
   ownerEmail: {
     fontSize: 12,
-    color: "#666",
+    color: '#666',
   },
 });

@@ -1,5 +1,5 @@
-import React, { FC } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import React, { FC } from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 
 interface Customer {
   id: number;
@@ -30,10 +30,10 @@ export const AdminCustomerCard: FC<AdminCustomerCardProps> = ({
   // Formatter la date d'ajout
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
     });
   };
 
@@ -61,11 +61,11 @@ export const AdminCustomerCard: FC<AdminCustomerCardProps> = ({
       <View style={styles.footer}>
         <Text style={styles.stats}>
           {customer.equipment.length} équipement
-          {customer.equipment.length > 1 ? "s" : ""}
+          {customer.equipment.length > 1 ? 's' : ''}
         </Text>
         <Text style={styles.stats}>
           {customer.appointmentRequests.length} demande
-          {customer.appointmentRequests.length > 1 ? "s" : ""}
+          {customer.appointmentRequests.length > 1 ? 's' : ''}
         </Text>
       </View>
     </Pressable>
@@ -74,12 +74,12 @@ export const AdminCustomerCard: FC<AdminCustomerCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 8,
     padding: 16,
     marginVertical: 8,
     marginHorizontal: 16,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -89,46 +89,46 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 12,
   },
   name: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
   },
   date: {
     fontSize: 12,
-    color: "#666",
+    color: '#666',
   },
   content: {
     marginBottom: 12,
   },
   location: {
     fontSize: 14,
-    color: "#555",
+    color: '#555',
     marginBottom: 4,
   },
   email: {
     fontSize: 14,
-    color: "#007AFF",
+    color: '#007AFF',
     marginBottom: 4,
   },
   phone: {
     fontSize: 14,
-    color: "#555",
+    color: '#555',
   },
   footer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "#eee",
+    borderTopColor: '#eee',
   },
   stats: {
     fontSize: 12,
-    color: "#666",
+    color: '#666',
   },
 });

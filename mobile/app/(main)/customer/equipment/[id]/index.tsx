@@ -1,10 +1,10 @@
-import { useApi } from "@/app/hooks/useApi";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
-import { EquipmentModalForm } from "@/app/components/customer/equipment/EquipmentModalForm";
+import { useApi } from '@/app/hooks/useApi';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { ToolBarCustomer } from '@/app/components/customer/navigation/ToolBarCustomer';
+import { EquipmentModalForm } from '@/app/components/customer/equipment/EquipmentModalForm';
 
 export default function EquipmentDetails() {
   const { id } = useLocalSearchParams();
@@ -21,15 +21,15 @@ export default function EquipmentDetails() {
       try {
         const response = await api.get(`/equipment/${id}`);
         setEquipment(response.data);
-        const typeEquipmentResponse = await api.get("/type-equipment");
+        const typeEquipmentResponse = await api.get('/type-equipment');
         setTypeEquipment(typeEquipmentResponse.data);
-        const brandsResponse = await api.get("/brand");
+        const brandsResponse = await api.get('/brand');
         setBrands(brandsResponse.data);
-        const osResponse = await api.get("/operating-system");
+        const osResponse = await api.get('/operating-system');
         setOs(osResponse.data);
       } catch (error) {
         console.error(
-          "Error:",
+          'Error:',
           (error as any).response
             ? (error as any).response.data
             : (error as any).message
@@ -61,7 +61,7 @@ export default function EquipmentDetails() {
       <ToolBarCustomer
         title="Détails de l'équipement"
         showBack={true}
-        onBackPress={() => router.replace("/customer/equipments")}
+        onBackPress={() => router.replace('/customer/equipments')}
         bottomBar
       />
       <ScrollView style={styles.container}>
@@ -122,8 +122,8 @@ export default function EquipmentDetails() {
                 <Text style={styles.cardTitle}>{request.title}</Text>
                 <Text style={styles.cardText}>{request.description}</Text>
                 <Text style={styles.cardText}>
-                  Statut :{" "}
-                  {request.status === "accepted" ? "Accepté" : "En attente"}
+                  Statut :{' '}
+                  {request.status === 'accepted' ? 'Accepté' : 'En attente'}
                 </Text>
               </View>
             ))
@@ -149,53 +149,53 @@ export default function EquipmentDetails() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9F9F9",
+    backgroundColor: '#F9F9F9',
     padding: 16,
   },
   centered: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loadingText: {
     fontSize: 16,
-    color: "#01358D",
+    color: '#01358D',
   },
   errorText: {
     fontSize: 16,
-    color: "#B00020",
+    color: '#B00020',
   },
   section: {
     marginBottom: 24,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#01358D",
+    fontWeight: 'bold',
+    color: '#01358D',
     marginBottom: 16,
   },
   subtitle: {
     fontSize: 20,
-    fontWeight: "600",
-    color: "#01358D",
+    fontWeight: '600',
+    color: '#01358D',
     marginBottom: 12,
   },
   row: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 8,
   },
   infoText: {
     fontSize: 16,
     marginLeft: 8,
-    color: "#364A63",
+    color: '#364A63',
   },
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -203,13 +203,13 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#01358D",
+    fontWeight: 'bold',
+    color: '#01358D',
     marginBottom: 4,
   },
   cardText: {
     fontSize: 14,
-    color: "#364A63",
+    color: '#364A63',
     marginBottom: 4,
   },
 });

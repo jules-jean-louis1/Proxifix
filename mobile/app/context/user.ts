@@ -1,10 +1,10 @@
-import { SessionToken } from "../utils/types";
+import { SessionToken } from '../utils/types';
 
 export enum USER_ROLE {
-  "SUPER_ADMIN" = "ROLE_SUPER_ADMIN",
-  "ADMIN" = "ROLE_ADMIN",
-  "TECHNICIAN" = "ROLE_TECHNICIAN",
-  "CUSTOMER" = "ROLE_CUSTOMER",
+  'SUPER_ADMIN' = 'ROLE_SUPER_ADMIN',
+  'ADMIN' = 'ROLE_ADMIN',
+  'TECHNICIAN' = 'ROLE_TECHNICIAN',
+  'CUSTOMER' = 'ROLE_CUSTOMER',
 }
 
 export const USER_AVAILABLES_ROLES = [

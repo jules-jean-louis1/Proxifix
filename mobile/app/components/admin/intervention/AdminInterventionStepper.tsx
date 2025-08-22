@@ -1,19 +1,25 @@
-import { AppButton } from "@/app/components/buttons/AppButton";
-import { AppSelectInput } from "@/app/components/inputs/AppSelectInput";
-import { AppTextField } from "@/app/components/inputs/AppTextField";
-import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
-import { useSessionContext } from "@/app/context/useSessionContext";
-import { getStatus } from "@/app/utils/intervention";
-import { useApi } from "@/app/hooks/useApi";
-import { Feather } from "@expo/vector-icons";
-import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { Pressable, ScrollView, View, Alert } from "react-native";
-import { Text } from "react-native-paper";
-import { AppSimpleSearchInput } from "../../inputs/AppSimpleSearchInput";
+import { AppButton } from '@/app/components/buttons/AppButton';
+import { AppSelectInput } from '@/app/components/inputs/AppSelectInput';
+import { AppTextField } from '@/app/components/inputs/AppTextField';
+import { ToolBarCustomer } from '@/app/components/customer/navigation/ToolBarCustomer';
+import { useSessionContext } from '@/app/context/useSessionContext';
+import { getStatus } from '@/app/utils/intervention';
+import { useApi } from '@/app/hooks/useApi';
+import { Feather } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { Pressable, ScrollView, View, Alert } from 'react-native';
+import { Text } from 'react-native-paper';
+import { AppSimpleSearchInput } from '../../inputs/AppSimpleSearchInput';
 
-type StepName = "detail" | "user" | "status" | "tasks" | "summary" | "confirmation";
+type StepName =
+  | 'detail'
+  | 'user'
+  | 'status'
+  | 'tasks'
+  | 'summary'
+  | 'confirmation';
 
 type Step = {
   name: string;
@@ -21,12 +27,12 @@ type Step = {
 };
 
 const STEPS: Step[] = [
-  { name: "detail", title: "Détails de l'intervention" },
-  { name: "user", title: "Client et technicien" },
-  { name: "status", title: "Temps/Status" },
-  { name: "tasks", title: "Tâches" },
-  { name: "summary", title: "Récapitulatif" },
-  { name: "confirmation", title: "Confirmation" },
+  { name: 'detail', title: "Détails de l'intervention" },
+  { name: 'user', title: 'Client et technicien' },
+  { name: 'status', title: 'Temps/Status' },
+  { name: 'tasks', title: 'Tâches' },
+  { name: 'summary', title: 'Récapitulatif' },
+  { name: 'confirmation', title: 'Confirmation' },
 ] as const;
 
 interface Intervention {
@@ -39,11 +45,11 @@ interface Intervention {
   technician_id?: number;
   status: string;
   company_id: number;
-  tasks?: Array<{ title: string; description: string }>;
+  tasks?: { title: string; description: string }[];
 }
 
 interface AdminInterventionStepperProps {
-  mode: "create" | "edit";
+  mode: 'create' | 'edit';
   interventionId?: string;
   initialStep?: StepName;
   initialData?: Intervention;
@@ -56,7 +62,7 @@ export const AdminInterventionStepper: React.FC<
 > = ({
   mode,
   interventionId,
-  initialStep = "detail",
+  initialStep = 'detail',
   initialData,
   onSubmit,
   onCancel,
@@ -69,14 +75,20 @@ export const AdminInterventionStepper: React.FC<
   const [equipment, setEquipment] = useState<any[]>([]);
   const [availableTasks, setAvailableTasks] = useState<any[]>([]); // Tâches disponibles depuis l'API
   const [selectedTasks, setSelectedTasks] = useState<
-    Array<{ title: string; description: string; id?: number; name?: string; price?: number }>
+    {
+      title: string;
+      description: string;
+      id?: number;
+      name?: string;
+      price?: number;
+    }[]
   >([]); // Tâches sélectionnées pour cette intervention
   const [interventionStatuses, setInterventionStatuses] = useState<string[]>([
-    "pending",
-    "assigned",
-    "awaiting_pickup",
-    "in_progress",
-    "completed",
+    'pending',
+    'assigned',
+    'awaiting_pickup',
+    'in_progress',
+    'completed',
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -88,32 +100,32 @@ export const AdminInterventionStepper: React.FC<
 
   const methods = useForm({
     defaultValues: initialData || {
-      title: "",
-      description: "",
+      title: '',
+      description: '',
       type_intervention_id: 0,
       user_id: 0,
       equipment_id: 0,
       technician_id: isAdmin ? 0 : sessionData?.id,
-      status: "pending",
+      status: 'pending',
       company_id: sessionData?.company?.id || 0,
     },
   });
 
   const { handleSubmit } = methods;
-  const selectedUserId = methods.watch("user_id");
+  const selectedUserId = methods.watch('user_id');
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case "pending":
-        return "En attente";
-      case "assigned":
-        return "Assignée";
-      case "awaiting_pickup":
-        return "En attente de récupération";
-      case "in_progress":
-        return "En cours";
-      case "completed":
-        return "Terminée";
+      case 'pending':
+        return 'En attente';
+      case 'assigned':
+        return 'Assignée';
+      case 'awaiting_pickup':
+        return 'En attente de récupération';
+      case 'in_progress':
+        return 'En cours';
+      case 'completed':
+        return 'Terminée';
       default:
         return status;
     }
@@ -122,18 +134,14 @@ export const AdminInterventionStepper: React.FC<
   const isStepActive = (stepName: StepName) => activeStep === stepName;
 
   const nextStep = () => {
-    const currentStepIndex = steps.findIndex(
-      (step) => step.name === activeStep
-    );
+    const currentStepIndex = steps.findIndex(step => step.name === activeStep);
     if (currentStepIndex < steps.length - 1) {
       setActiveStep(steps[currentStepIndex + 1].name as StepName);
     }
   };
 
   const previousStep = () => {
-    const currentStepIndex = steps.findIndex(
-      (step) => step.name === activeStep
-    );
+    const currentStepIndex = steps.findIndex(step => step.name === activeStep);
     if (currentStepIndex > 0) {
       setActiveStep(steps[currentStepIndex - 1].name as StepName);
     }
@@ -149,22 +157,22 @@ export const AdminInterventionStepper: React.FC<
 
   // Fonctions pour le récapitulatif
   const getSelectedClient = () => {
-    const userId = methods.getValues("user_id");
+    const userId = methods.getValues('user_id');
     return user.find(u => u.id === userId);
   };
 
   const getSelectedTechnician = () => {
-    const techId = methods.getValues("technician_id");
+    const techId = methods.getValues('technician_id');
     return companyUser.find(u => u.id === techId);
   };
 
   const getSelectedEquipment = () => {
-    const equipId = methods.getValues("equipment_id");
+    const equipId = methods.getValues('equipment_id');
     return equipment.find(e => e.id === equipId);
   };
 
   const getSelectedTypeIntervention = () => {
-    const typeId = methods.getValues("type_intervention_id");
+    const typeId = methods.getValues('type_intervention_id');
     return typeIntervention.find(t => t.id === typeId);
   };
 
@@ -174,7 +182,7 @@ export const AdminInterventionStepper: React.FC<
 
   // Charger l'intervention existante si mode edit
   useEffect(() => {
-    if (mode === "edit" && interventionId) {
+    if (mode === 'edit' && interventionId) {
       const loadIntervention = async () => {
         try {
           const response = await api.get(`/intervention/${interventionId}`);
@@ -197,7 +205,7 @@ export const AdminInterventionStepper: React.FC<
           }
         } catch (error) {
           console.error("Erreur lors du chargement de l'intervention:", error);
-          Alert.alert("Erreur", "Impossible de charger l'intervention");
+          Alert.alert('Erreur', "Impossible de charger l'intervention");
           router.back();
         }
       };
@@ -210,24 +218,26 @@ export const AdminInterventionStepper: React.FC<
   useEffect(() => {
     (async () => {
       try {
-        const [typeResponse, usersResponse, companyUsersResponse, tasksResponse] =
-          await Promise.all([
-            api.get(
-              `/type-intervention?company_id=${sessionData?.company?.id}`
-            ),
-            api.get(`/customer?customer_company_id=${sessionData?.company.id}`),
-            api.get(
-              `/user?company_id=${sessionData?.company?.id}&role=ROLE_TECHNICIAN`
-            ),
-            api.get(`/task?company_id=${sessionData?.company?.id}`),
-          ]);
+        const [
+          typeResponse,
+          usersResponse,
+          companyUsersResponse,
+          tasksResponse,
+        ] = await Promise.all([
+          api.get(`/type-intervention?company_id=${sessionData?.company?.id}`),
+          api.get(`/customer?customer_company_id=${sessionData?.company.id}`),
+          api.get(
+            `/user?company_id=${sessionData?.company?.id}&role=ROLE_TECHNICIAN`
+          ),
+          api.get(`/task?company_id=${sessionData?.company?.id}`),
+        ]);
 
         setTypeIntervention(typeResponse.data);
         setUser(usersResponse.data);
         setCompanyUser(companyUsersResponse.data);
         setAvailableTasks(tasksResponse.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       }
     })();
   }, []);
@@ -242,7 +252,7 @@ export const AdminInterventionStepper: React.FC<
           );
           setEquipment(response.data);
         } catch (error) {
-          console.error("Error fetching equipment:", error);
+          console.error('Error fetching equipment:', error);
         }
       })();
     } else {
@@ -255,16 +265,16 @@ export const AdminInterventionStepper: React.FC<
     try {
       // Formater les tâches pour le backend (attendues sous 'task' avec juste les ids)
       const formattedTasks = selectedTasks.map(task => ({ id: task.id }));
-      
+
       await onSubmit({
         ...data,
         company_id: sessionData?.company?.id,
         task: formattedTasks, // Backend attend 'task' (pas 'tasks')
       });
       setIsSubmitted(true);
-      setActiveStep("confirmation");
+      setActiveStep('confirmation');
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error('Error submitting form:', error);
     } finally {
       setIsLoading(false);
     }
@@ -274,20 +284,20 @@ export const AdminInterventionStepper: React.FC<
     <View style={{ flex: 1 }}>
       <ToolBarCustomer
         title={
-          mode === "create" ? "Nouvelle intervention" : "Modifier intervention"
+          mode === 'create' ? 'Nouvelle intervention' : 'Modifier intervention'
         }
         showBack
         onBackPress={onCancel || (() => router.back())}
         bottomBar
       />
 
-      <ScrollView style={{ flex: 1, padding: 16, backgroundColor: "#fff" }}>
+      <ScrollView style={{ flex: 1, padding: 16, backgroundColor: '#fff' }}>
         <View>
           <Text
             variant="bodyMedium"
-            style={{ textAlign: "center", color: "#465270", marginBottom: 8 }}
+            style={{ textAlign: 'center', color: '#465270', marginBottom: 8 }}
           >
-            {mode === "create"
+            {mode === 'create'
               ? "Veuillez renseigner les détails principaux de l'intervention"
               : "Modifiez les détails de l'intervention"}
           </Text>
@@ -295,7 +305,7 @@ export const AdminInterventionStepper: React.FC<
           {/* Indicateur de progression */}
           <View
             style={{
-              flexDirection: "row",
+              flexDirection: 'row',
               marginVertical: 16,
               paddingHorizontal: 8,
             }}
@@ -303,22 +313,22 @@ export const AdminInterventionStepper: React.FC<
             {STEPS.map((step, index) => {
               const isActive = step.name === activeStep;
               const isCompleted =
-                STEPS.findIndex((s) => s.name === activeStep) > index;
+                STEPS.findIndex(s => s.name === activeStep) > index;
 
               return (
-                <View key={step.name} style={{ flex: 1, alignItems: "center" }}>
+                <View key={step.name} style={{ flex: 1, alignItems: 'center' }}>
                   <View
                     style={{
                       width: 30,
                       height: 30,
                       borderRadius: 15,
                       backgroundColor: isActive
-                        ? "#007AFF"
+                        ? '#007AFF'
                         : isCompleted
-                        ? "#28A745"
-                        : "#E0E0E0",
-                      justifyContent: "center",
-                      alignItems: "center",
+                          ? '#28A745'
+                          : '#E0E0E0',
+                      justifyContent: 'center',
+                      alignItems: 'center',
                       marginBottom: 4,
                     }}
                   >
@@ -327,9 +337,9 @@ export const AdminInterventionStepper: React.FC<
                     ) : (
                       <Text
                         style={{
-                          color: isActive ? "white" : "#7A7A7A",
+                          color: isActive ? 'white' : '#7A7A7A',
                           fontSize: 12,
-                          fontWeight: "bold",
+                          fontWeight: 'bold',
                         }}
                       >
                         {index + 1}
@@ -340,12 +350,12 @@ export const AdminInterventionStepper: React.FC<
                     style={{
                       fontSize: 10,
                       color: isActive
-                        ? "#007AFF"
+                        ? '#007AFF'
                         : isCompleted
-                        ? "#28A745"
-                        : "#7A7A7A",
-                      textAlign: "center",
-                      fontWeight: isActive ? "bold" : "normal",
+                          ? '#28A745'
+                          : '#7A7A7A',
+                      textAlign: 'center',
+                      fontWeight: isActive ? 'bold' : 'normal',
                     }}
                   >
                     {step.title}
@@ -355,12 +365,12 @@ export const AdminInterventionStepper: React.FC<
                   {index < STEPS.length - 1 && (
                     <View
                       style={{
-                        position: "absolute",
+                        position: 'absolute',
                         top: 15,
-                        left: "75%",
-                        width: "50%",
+                        left: '75%',
+                        width: '50%',
                         height: 2,
-                        backgroundColor: isCompleted ? "#28A745" : "#E0E0E0",
+                        backgroundColor: isCompleted ? '#28A745' : '#E0E0E0',
                         zIndex: -1,
                       }}
                     />
@@ -373,17 +383,17 @@ export const AdminInterventionStepper: React.FC<
 
         <FormProvider {...methods}>
           {/* Step 1: Détails de l'intervention */}
-          {isStepActive("detail") && (
+          {isStepActive('detail') && (
             <View>
               <Text
                 variant="titleLarge"
-                style={{ color: "#465270", marginBottom: 8 }}
+                style={{ color: '#465270', marginBottom: 8 }}
               >
                 Détails de l'intervention
               </Text>
               <Text
                 variant="bodyMedium"
-                style={{ color: "#465270", marginBottom: 16 }}
+                style={{ color: '#465270', marginBottom: 16 }}
               >
                 Nom de l'intervention et détails
               </Text>
@@ -398,7 +408,7 @@ export const AdminInterventionStepper: React.FC<
               <AppSelectInput
                 nameField="type_intervention_id"
                 label="Type d'intervention"
-                options={typeIntervention.map((item) => ({
+                options={typeIntervention.map(item => ({
                   label: item.name,
                   value: item.id,
                 }))}
@@ -409,28 +419,28 @@ export const AdminInterventionStepper: React.FC<
               <AppTextField
                 nameField="description"
                 label="Description de l'intervention"
-                rules={{ required: "La description est requise" }}
+                rules={{ required: 'La description est requise' }}
                 placeholder="Entrez la description de l'intervention"
                 multiline
                 numberOfLines={4}
               />
 
-              <AppButton type="primary" onPress={nextStep} children="Suivant"/>
+              <AppButton type="primary" onPress={nextStep} children="Suivant" />
             </View>
           )}
 
           {/* Step 2: Client et technicien */}
-          {isStepActive("user") && (
+          {isStepActive('user') && (
             <View>
               <Text
                 variant="titleLarge"
-                style={{ color: "#465270", marginBottom: 8 }}
+                style={{ color: '#465270', marginBottom: 8 }}
               >
                 Client et technicien
               </Text>
               <Text
                 variant="bodyMedium"
-                style={{ color: "#465270", marginBottom: 16 }}
+                style={{ color: '#465270', marginBottom: 16 }}
               >
                 Sélectionnez le client et le technicien
               </Text>
@@ -440,9 +450,11 @@ export const AdminInterventionStepper: React.FC<
                 label="Client"
                 placeholder="Rechercher un client..."
                 searchEndpoint="/customer?query="
-                displayKey={(user: any) => `${user.first_name} ${user.last_name}`}
+                displayKey={(user: any) =>
+                  `${user.first_name} ${user.last_name}`
+                }
                 valueKey="id"
-                rules={{ required: "Le client est requis" }}
+                rules={{ required: 'Le client est requis' }}
               />
 
               <AppSelectInput
@@ -450,7 +462,7 @@ export const AdminInterventionStepper: React.FC<
                 label="Équipement"
                 options={
                   selectedUserId && equipment.length > 0
-                    ? equipment.map((item) => ({
+                    ? equipment.map(item => ({
                         label: item.name,
                         value: item.id,
                       }))
@@ -458,10 +470,10 @@ export const AdminInterventionStepper: React.FC<
                 }
                 rules={{ required: "L'équipement est requis" }}
                 placeholder={
-                  selectedUserId 
+                  selectedUserId
                     ? equipment.length > 0
                       ? "Sélectionnez l'équipement"
-                      : "Aucun équipement disponible"
+                      : 'Aucun équipement disponible'
                     : "Sélectionnez d'abord un client"
                 }
               />
@@ -470,34 +482,42 @@ export const AdminInterventionStepper: React.FC<
                 <AppSelectInput
                   nameField="technician_id"
                   label="Technicien"
-                  options={companyUser.map((item) => ({
+                  options={companyUser.map(item => ({
                     label: `${item.first_name} ${item.last_name}`,
                     value: item.id,
                   }))}
-                  rules={{ required: "Le technicien est requis" }}
+                  rules={{ required: 'Le technicien est requis' }}
                   placeholder="Sélectionnez le technicien"
                 />
               )}
 
-              <View style={{ flexDirection: "column", gap: 12 }}>  
-                <AppButton type="secondary" onPress={previousStep} children="Précédent"/>
-                <AppButton type="primary" onPress={nextStep} children="Suivant"/>
+              <View style={{ flexDirection: 'column', gap: 12 }}>
+                <AppButton
+                  type="secondary"
+                  onPress={previousStep}
+                  children="Précédent"
+                />
+                <AppButton
+                  type="primary"
+                  onPress={nextStep}
+                  children="Suivant"
+                />
               </View>
             </View>
           )}
 
           {/* Step 3: Statut */}
-          {isStepActive("status") && (
+          {isStepActive('status') && (
             <View>
               <Text
                 variant="titleLarge"
-                style={{ color: "#465270", marginBottom: 8 }}
+                style={{ color: '#465270', marginBottom: 8 }}
               >
                 Statut de l'intervention
               </Text>
               <Text
                 variant="bodyMedium"
-                style={{ color: "#465270", marginBottom: 16 }}
+                style={{ color: '#465270', marginBottom: 16 }}
               >
                 Sélectionnez le statut de l'intervention
               </Text>
@@ -505,82 +525,118 @@ export const AdminInterventionStepper: React.FC<
               <AppSelectInput
                 nameField="status"
                 label="Statut"
-                options={interventionStatuses.map((item) => ({
+                options={interventionStatuses.map(item => ({
                   label: getStatusText(item),
                   value: item,
                 }))}
-                rules={{ required: "Le statut est requis" }}
+                rules={{ required: 'Le statut est requis' }}
                 placeholder="Sélectionnez le statut"
               />
 
-              <View style={{ flexDirection: "column", gap: 12 }}>
-                <AppButton type="secondary" onPress={previousStep} children="Précédent"/>
-                <AppButton type="primary" onPress={nextStep} children="Suivant"/>
+              <View style={{ flexDirection: 'column', gap: 12 }}>
+                <AppButton
+                  type="secondary"
+                  onPress={previousStep}
+                  children="Précédent"
+                />
+                <AppButton
+                  type="primary"
+                  onPress={nextStep}
+                  children="Suivant"
+                />
               </View>
             </View>
           )}
 
           {/* Step 4: Tâches */}
-          {isStepActive("tasks") && (
+          {isStepActive('tasks') && (
             <View>
               <Text
                 variant="titleLarge"
-                style={{ color: "#465270", marginBottom: 8 }}
+                style={{ color: '#465270', marginBottom: 8 }}
               >
                 Tâches de l'intervention
               </Text>
               <Text
                 variant="bodyMedium"
-                style={{ color: "#465270", marginBottom: 16 }}
+                style={{ color: '#465270', marginBottom: 16 }}
               >
-                {mode === "create" ? "Ajoutez" : "Modifiez"} les tâches à
+                {mode === 'create' ? 'Ajoutez' : 'Modifiez'} les tâches à
                 effectuer pour cette intervention (optionnel)
               </Text>
 
               {/* Sélection des tâches depuis l'API */}
               <View style={{ marginBottom: 16 }}>
-                <Text style={{ fontSize: 14, marginBottom: 8, color: "#364A63", fontWeight: "bold" }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    marginBottom: 8,
+                    color: '#364A63',
+                    fontWeight: 'bold',
+                  }}
+                >
                   Ajouter une tâche
                 </Text>
-                
+
                 {availableTasks
                   .filter(task => !selectedTasks.find(st => st.id === task.id))
-                  .map((task) => (
+                  .map(task => (
                     <Pressable
                       key={task.id}
                       onPress={() => addSelectedTask(task.id)}
                       style={{
                         padding: 12,
-                        backgroundColor: "#f8f9fa",
+                        backgroundColor: '#f8f9fa',
                         borderRadius: 8,
                         marginVertical: 2,
                         borderWidth: 1,
-                        borderColor: "#E0E0E0",
+                        borderColor: '#E0E0E0',
                       }}
                     >
-                      <View style={{ flexDirection: "row", alignItems: "center" }}>
+                      <View
+                        style={{ flexDirection: 'row', alignItems: 'center' }}
+                      >
                         <Feather name="plus-circle" size={16} color="#007AFF" />
                         <View style={{ marginLeft: 8, flex: 1 }}>
-                          <Text style={{ fontWeight: "bold", color: "#465270" }}>
+                          <Text
+                            style={{ fontWeight: 'bold', color: '#465270' }}
+                          >
                             {task.name || task.title}
                           </Text>
-                          <Text style={{ color: "#7A7A7A", fontSize: 12 }}>
-                            {task.description} {task.price ? `• ${task.price}€` : ''}
+                          <Text style={{ color: '#7A7A7A', fontSize: 12 }}>
+                            {task.description}{' '}
+                            {task.price ? `• ${task.price}€` : ''}
                           </Text>
                         </View>
                       </View>
                     </Pressable>
                   ))}
-                
-                {availableTasks.filter(task => !selectedTasks.find(st => st.id === task.id)).length === 0 && (
-                  <Text style={{ color: "#7A7A7A", fontStyle: "italic", textAlign: "center", padding: 12 }}>
+
+                {availableTasks.filter(
+                  task => !selectedTasks.find(st => st.id === task.id)
+                ).length === 0 && (
+                  <Text
+                    style={{
+                      color: '#7A7A7A',
+                      fontStyle: 'italic',
+                      textAlign: 'center',
+                      padding: 12,
+                    }}
+                  >
                     Toutes les tâches disponibles ont été ajoutées
                   </Text>
                 )}
               </View>
 
               {/* Affichage des tâches sélectionnées */}
-              <Text style={{ marginTop: 16, marginBottom: 8, fontWeight: "bold", color: "#465270" }}>
+              <Text
+                style={{
+                  marginTop: 16,
+                  marginBottom: 8,
+                  fontWeight: 'bold',
+                  color: '#465270',
+                }}
+              >
                 Tâches sélectionnées ({selectedTasks.length})
               </Text>
 
@@ -589,25 +645,27 @@ export const AdminInterventionStepper: React.FC<
                   key={index}
                   style={{
                     padding: 12,
-                    backgroundColor: "#f5f5f5",
+                    backgroundColor: '#f5f5f5',
                     borderRadius: 8,
                     marginVertical: 4,
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                   }}
                 >
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontWeight: "bold", color: "#465270" }}>
+                    <Text style={{ fontWeight: 'bold', color: '#465270' }}>
                       {task.name || task.title}
                     </Text>
-                    <Text style={{ color: "#7A7A7A" }}>
+                    <Text style={{ color: '#7A7A7A' }}>
                       {task.description} {task.price ? `• ${task.price}€` : ''}
                     </Text>
                   </View>
                   <Pressable
                     onPress={() =>
-                      setSelectedTasks(selectedTasks.filter((_, i) => i !== index))
+                      setSelectedTasks(
+                        selectedTasks.filter((_, i) => i !== index)
+                      )
                     }
                     style={{ padding: 8 }}
                   >
@@ -617,22 +675,36 @@ export const AdminInterventionStepper: React.FC<
               ))}
 
               {selectedTasks.length === 0 && (
-                <View style={{
-                  padding: 16,
-                  backgroundColor: "#f8f9fa",
-                  borderRadius: 8,
-                  alignItems: "center",
-                  marginVertical: 8,
-                }}>
-                  <Text style={{ color: "#7A7A7A", textAlign: "center" }}>
+                <View
+                  style={{
+                    padding: 16,
+                    backgroundColor: '#f8f9fa',
+                    borderRadius: 8,
+                    alignItems: 'center',
+                    marginVertical: 8,
+                  }}
+                >
+                  <Text style={{ color: '#7A7A7A', textAlign: 'center' }}>
                     Aucune tâche sélectionnée.
-                    {"\n"}Utilisez le menu déroulant ci-dessus pour ajouter des tâches.
+                    {'\n'}Utilisez le menu déroulant ci-dessus pour ajouter des
+                    tâches.
                   </Text>
                 </View>
               )}
 
-              <View style={{ flexDirection: "column", gap: 12, marginTop: 16, marginBottom: 32 }}>
-                <AppButton type="secondary" onPress={previousStep} children="Précédent"/>
+              <View
+                style={{
+                  flexDirection: 'column',
+                  gap: 12,
+                  marginTop: 16,
+                  marginBottom: 32,
+                }}
+              >
+                <AppButton
+                  type="secondary"
+                  onPress={previousStep}
+                  children="Précédent"
+                />
                 <AppButton
                   type="primary"
                   onPress={nextStep}
@@ -643,93 +715,187 @@ export const AdminInterventionStepper: React.FC<
           )}
 
           {/* Step 5: Récapitulatif */}
-          {isStepActive("summary") && (
+          {isStepActive('summary') && (
             <View>
               <Text
                 variant="titleLarge"
-                style={{ color: "#465270", marginBottom: 8 }}
+                style={{ color: '#465270', marginBottom: 8 }}
               >
                 Récapitulatif de l'intervention
               </Text>
               <Text
                 variant="bodyMedium"
-                style={{ color: "#465270", marginBottom: 16 }}
+                style={{ color: '#465270', marginBottom: 16 }}
               >
-                Vérifiez les informations avant la {mode === "create" ? "création" : "modification"}
+                Vérifiez les informations avant la{' '}
+                {mode === 'create' ? 'création' : 'modification'}
               </Text>
 
               {/* Détails de l'intervention */}
-              <View style={{ backgroundColor: "#f8f9fa", padding: 16, borderRadius: 8, marginBottom: 16 }}>
-                <Text style={{ fontWeight: "bold", color: "#465270", marginBottom: 8 }}>
+              <View
+                style={{
+                  backgroundColor: '#f8f9fa',
+                  padding: 16,
+                  borderRadius: 8,
+                  marginBottom: 16,
+                }}
+              >
+                <Text
+                  style={{
+                    fontWeight: 'bold',
+                    color: '#465270',
+                    marginBottom: 8,
+                  }}
+                >
                   📋 Détails de l'intervention
                 </Text>
                 <Text style={{ marginBottom: 4 }}>
-                  <Text style={{ fontWeight: "bold" }}>Titre:</Text> {methods.getValues("title")}
+                  <Text style={{ fontWeight: 'bold' }}>Titre:</Text>{' '}
+                  {methods.getValues('title')}
                 </Text>
                 <Text style={{ marginBottom: 4 }}>
-                  <Text style={{ fontWeight: "bold" }}>Type:</Text> {getSelectedTypeIntervention()?.name}
+                  <Text style={{ fontWeight: 'bold' }}>Type:</Text>{' '}
+                  {getSelectedTypeIntervention()?.name}
                 </Text>
                 <Text style={{ marginBottom: 4 }}>
-                  <Text style={{ fontWeight: "bold" }}>Description:</Text> {methods.getValues("description")}
+                  <Text style={{ fontWeight: 'bold' }}>Description:</Text>{' '}
+                  {methods.getValues('description')}
                 </Text>
                 <Text style={{ marginBottom: 4 }}>
-                  <Text style={{ fontWeight: "bold" }}>Statut:</Text> {getStatusText(methods.getValues("status"))}
+                  <Text style={{ fontWeight: 'bold' }}>Statut:</Text>{' '}
+                  {getStatusText(methods.getValues('status'))}
                 </Text>
               </View>
 
               {/* Client et Équipement */}
-              <View style={{ backgroundColor: "#f8f9fa", padding: 16, borderRadius: 8, marginBottom: 16 }}>
-                <Text style={{ fontWeight: "bold", color: "#465270", marginBottom: 8 }}>
+              <View
+                style={{
+                  backgroundColor: '#f8f9fa',
+                  padding: 16,
+                  borderRadius: 8,
+                  marginBottom: 16,
+                }}
+              >
+                <Text
+                  style={{
+                    fontWeight: 'bold',
+                    color: '#465270',
+                    marginBottom: 8,
+                  }}
+                >
                   👤 Client et Équipement
                 </Text>
                 <Text style={{ marginBottom: 4 }}>
-                  <Text style={{ fontWeight: "bold" }}>Client:</Text> {getSelectedClient() ? `${getSelectedClient()?.first_name} ${getSelectedClient()?.last_name}` : 'Non sélectionné'}
+                  <Text style={{ fontWeight: 'bold' }}>Client:</Text>{' '}
+                  {getSelectedClient()
+                    ? `${getSelectedClient()?.first_name} ${getSelectedClient()?.last_name}`
+                    : 'Non sélectionné'}
                 </Text>
                 <Text style={{ marginBottom: 4 }}>
-                  <Text style={{ fontWeight: "bold" }}>Équipement:</Text> {getSelectedEquipment()?.name || 'Non sélectionné'}
+                  <Text style={{ fontWeight: 'bold' }}>Équipement:</Text>{' '}
+                  {getSelectedEquipment()?.name || 'Non sélectionné'}
                 </Text>
                 {isAdmin && (
                   <Text style={{ marginBottom: 4 }}>
-                    <Text style={{ fontWeight: "bold" }}>Technicien:</Text> {getSelectedTechnician() ? `${getSelectedTechnician()?.first_name} ${getSelectedTechnician()?.last_name}` : 'Non assigné'}
+                    <Text style={{ fontWeight: 'bold' }}>Technicien:</Text>{' '}
+                    {getSelectedTechnician()
+                      ? `${getSelectedTechnician()?.first_name} ${getSelectedTechnician()?.last_name}`
+                      : 'Non assigné'}
                   </Text>
                 )}
               </View>
 
               {/* Tâches sélectionnées */}
-              <View style={{ backgroundColor: "#f8f9fa", padding: 16, borderRadius: 8, marginBottom: 16 }}>
-                <Text style={{ fontWeight: "bold", color: "#465270", marginBottom: 8 }}>
+              <View
+                style={{
+                  backgroundColor: '#f8f9fa',
+                  padding: 16,
+                  borderRadius: 8,
+                  marginBottom: 16,
+                }}
+              >
+                <Text
+                  style={{
+                    fontWeight: 'bold',
+                    color: '#465270',
+                    marginBottom: 8,
+                  }}
+                >
                   🔧 Tâches sélectionnées ({selectedTasks.length})
                 </Text>
                 {selectedTasks.length > 0 ? (
                   <>
                     {selectedTasks.map((task, index) => (
-                      <View key={index} style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
-                        <Text style={{ flex: 1 }}>• {task.name || task.title}</Text>
-                        {task.price && <Text style={{ fontWeight: "bold", color: "#007AFF" }}>{task.price}€</Text>}
+                      <View
+                        key={index}
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          marginBottom: 4,
+                        }}
+                      >
+                        <Text style={{ flex: 1 }}>
+                          • {task.name || task.title}
+                        </Text>
+                        {task.price && (
+                          <Text
+                            style={{ fontWeight: 'bold', color: '#007AFF' }}
+                          >
+                            {task.price}€
+                          </Text>
+                        )}
                       </View>
                     ))}
                     {getTotalPrice() > 0 && (
-                      <View style={{ borderTopWidth: 1, borderTopColor: "#E0E0E0", paddingTop: 8, marginTop: 8 }}>
-                        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                          <Text style={{ fontWeight: "bold", fontSize: 16 }}>Total estimé:</Text>
-                          <Text style={{ fontWeight: "bold", fontSize: 16, color: "#007AFF" }}>{getTotalPrice()}€</Text>
+                      <View
+                        style={{
+                          borderTopWidth: 1,
+                          borderTopColor: '#E0E0E0',
+                          paddingTop: 8,
+                          marginTop: 8,
+                        }}
+                      >
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                          }}
+                        >
+                          <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
+                            Total estimé:
+                          </Text>
+                          <Text
+                            style={{
+                              fontWeight: 'bold',
+                              fontSize: 16,
+                              color: '#007AFF',
+                            }}
+                          >
+                            {getTotalPrice()}€
+                          </Text>
                         </View>
                       </View>
                     )}
                   </>
                 ) : (
-                  <Text style={{ color: "#7A7A7A", fontStyle: "italic" }}>Aucune tâche sélectionnée</Text>
+                  <Text style={{ color: '#7A7A7A', fontStyle: 'italic' }}>
+                    Aucune tâche sélectionnée
+                  </Text>
                 )}
               </View>
 
-              <View style={{ flexDirection: "column", gap: 12, marginTop: 16 }}>
-                <AppButton type="secondary" onPress={previousStep} children="Retour aux tâches"/>
+              <View style={{ flexDirection: 'column', gap: 12, marginTop: 16 }}>
+                <AppButton
+                  type="secondary"
+                  onPress={previousStep}
+                  children="Retour aux tâches"
+                />
                 <AppButton
                   type="primary"
                   onPress={handleSubmit(handleFormSubmit)}
                   loading={isLoading}
                   children={
-                    mode === "create"
+                    mode === 'create'
                       ? "Confirmer et créer l'intervention"
                       : "Confirmer et mettre à jour l'intervention"
                   }
@@ -739,56 +905,68 @@ export const AdminInterventionStepper: React.FC<
           )}
 
           {/* Step 6: Confirmation */}
-          {isStepActive("confirmation") && (
-            <View style={{ alignItems: "center", paddingVertical: 32 }}>
-              <View style={{
-                width: 80,
-                height: 80,
-                borderRadius: 40,
-                backgroundColor: "#28A745",
-                justifyContent: "center",
-                alignItems: "center",
-                marginBottom: 24
-              }}>
+          {isStepActive('confirmation') && (
+            <View style={{ alignItems: 'center', paddingVertical: 32 }}>
+              <View
+                style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: 40,
+                  backgroundColor: '#28A745',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginBottom: 24,
+                }}
+              >
                 <Feather name="check" size={40} color="white" />
               </View>
 
               <Text
                 variant="titleLarge"
-                style={{ color: "#465270", marginBottom: 8, textAlign: "center" }}
+                style={{
+                  color: '#465270',
+                  marginBottom: 8,
+                  textAlign: 'center',
+                }}
               >
-                {mode === "create" ? "Intervention créée avec succès !" : "Intervention mise à jour avec succès !"}
+                {mode === 'create'
+                  ? 'Intervention créée avec succès !'
+                  : 'Intervention mise à jour avec succès !'}
               </Text>
 
               <Text
                 variant="bodyMedium"
-                style={{ color: "#7A7A7A", marginBottom: 32, textAlign: "center", lineHeight: 20 }}
+                style={{
+                  color: '#7A7A7A',
+                  marginBottom: 32,
+                  textAlign: 'center',
+                  lineHeight: 20,
+                }}
               >
-                {mode === "create" 
-                  ? "Votre intervention a été créée et est maintenant disponible dans la liste des interventions."
-                  : "Les modifications ont été enregistrées avec succès."
-                }
-                {"\n"}
-                {selectedTasks.length > 0 && getTotalPrice() > 0 && (
-                  `Coût total estimé: ${getTotalPrice()}€`
-                )}
+                {mode === 'create'
+                  ? 'Votre intervention a été créée et est maintenant disponible dans la liste des interventions.'
+                  : 'Les modifications ont été enregistrées avec succès.'}
+                {'\n'}
+                {selectedTasks.length > 0 &&
+                  getTotalPrice() > 0 &&
+                  `Coût total estimé: ${getTotalPrice()}€`}
               </Text>
 
-              <View style={{ flexDirection: "column", gap: 12, width: "100%" }}>
-                <AppButton 
-                  type="primary" 
-                  onPress={() => router.back()} 
+              <View style={{ flexDirection: 'column', gap: 12, width: '100%' }}>
+                <AppButton
+                  type="primary"
+                  onPress={() => router.back()}
                   children="Retour à la liste"
                 />
-                {mode === "create" && (
-                  <AppButton 
-                    type="secondary" 
+                {mode === 'create' && (
+                  <AppButton
+                    type="secondary"
                     onPress={() => {
-                      setActiveStep("detail");
+                      setActiveStep('detail');
                       setSelectedTasks([]);
                       setIsSubmitted(false);
                       methods.reset();
-                    }} 
+                    }}
                     children="Créer une nouvelle intervention"
                   />
                 )}

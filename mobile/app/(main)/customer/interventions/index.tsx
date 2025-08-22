@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
   Text,
   ScrollView,
   ActivityIndicator,
-} from "react-native";
-import { useApi } from "@/app/hooks/useApi";
-import { useSessionContext } from "@/app/context/useSessionContext";
-import { AppointmentModalForm } from "@/app/components/customer/appointment/AppointmentModalForm";
-import { AppointmentCard } from "@/app/components/customer/appointment/AppointmentCard";
-import { InterventionCard } from "@/app/components/customer/intervention/InterventionCard";
-import { FAB, MD2Colors } from "react-native-paper";
-import { useRouter } from "expo-router";
-import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
+} from 'react-native';
+import { useApi } from '@/app/hooks/useApi';
+import { useSessionContext } from '@/app/context/useSessionContext';
+import { AppointmentModalForm } from '@/app/components/customer/appointment/AppointmentModalForm';
+import { AppointmentCard } from '@/app/components/customer/appointment/AppointmentCard';
+import { InterventionCard } from '@/app/components/customer/intervention/InterventionCard';
+import { FAB, MD2Colors } from 'react-native-paper';
+import { useRouter } from 'expo-router';
+import { ToolBarCustomer } from '@/app/components/customer/navigation/ToolBarCustomer';
 
 export default function InterventionsPage() {
   const api = useApi();
@@ -32,17 +32,17 @@ export default function InterventionsPage() {
         setLoading(true);
         setError(null);
         const response = await api.get(
-          `/intervention?user_id=${sessionData?.id}`,
+          `/intervention?user_id=${sessionData?.id}`
         );
         const appointmentsResponse = await api.get(
-          `/appointment?user_id=${sessionData?.id}`,
+          `/appointment?user_id=${sessionData?.id}`
         );
         setInterventions(response.data);
         setAppointments(appointmentsResponse.data);
         setFetchData(false);
       } catch (error) {
-        console.error("Error fetching interventions:", error);
-        setError("Impossible de récupérer les interventions.");
+        console.error('Error fetching interventions:', error);
+        setError('Impossible de récupérer les interventions.');
       } finally {
         setLoading(false);
       }
@@ -122,18 +122,18 @@ export default function InterventionsPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
     padding: 16,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#344260",
+    fontWeight: 'bold',
+    color: '#344260',
     marginBottom: 10,
   },
   description: {
     fontSize: 16,
-    color: "#5B6880",
+    color: '#5B6880',
   },
   listContainer: {
     marginBottom: 20,
@@ -143,8 +143,8 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 15,
-    color: "#344260",
-    fontWeight: "bold",
+    color: '#344260',
+    fontWeight: 'bold',
     marginBottom: 10,
   },
   icon: {
@@ -155,46 +155,46 @@ const styles = StyleSheet.create({
   },
   status: {
     fontSize: 13,
-    fontWeight: "bold",
-    backgroundColor: "rgba(0, 119, 193, 0.2)",
-    color: "#48A3D7",
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(0, 119, 193, 0.2)',
+    color: '#48A3D7',
     padding: 8,
     borderRadius: 8,
     marginRight: 8,
-    textAlign: "center",
+    textAlign: 'center',
   },
   footerDate: {
     fontSize: 14,
-    color: "#5B6880",
+    color: '#5B6880',
     flex: 1,
-    textAlign: "right",
+    textAlign: 'right',
   },
   buttonContainer: {
-    flexDirection: "column",
-    alignItems: "center",
+    flexDirection: 'column',
+    alignItems: 'center',
     padding: 16,
-    justifyContent: "space-evenly",
+    justifyContent: 'space-evenly',
   },
   errorText: {
-    color: "red",
+    color: 'red',
     fontSize: 18,
-    textAlign: "center",
+    textAlign: 'center',
   },
   textEmptyData: {
     fontSize: 16,
-    color: "#000000ff",
-    textAlign: "center",
-    fontWeight: "semibold",
+    color: '#000000ff',
+    textAlign: 'center',
+    fontWeight: 'semibold',
     marginTop: 20,
   },
   fabContainer: {
-    position: "absolute",
+    position: 'absolute',
     right: 0,
     bottom: 60,
-    width: "100%",
-    alignItems: "flex-end",
+    width: '100%',
+    alignItems: 'flex-end',
     zIndex: 100,
-    backgroundColor: "#F9556D",
+    backgroundColor: '#F9556D',
   },
   fab: {
     margin: 16,
