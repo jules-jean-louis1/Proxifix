@@ -28,8 +28,8 @@ describe('AdminCustomerCard Component', () => {
     const { getByText } = render(
       <AdminCustomerCard customer={mockCustomer} onPress={() => {}} />
     );
-    
-    // Vérifie que les informations du client sont affichées
+
+    // Verify customer information is displayed
     expect(getByText('John Doe')).toBeTruthy();
     expect(getByText('john.doe@test.com')).toBeTruthy();
   });
@@ -43,8 +43,8 @@ describe('AdminCustomerCard Component', () => {
         onPress={mockOnPress}
       />
     );
-    
-    // Trouve la card par le nom du client et simule un press
+
+    // Find the card by customer name and simulate a press
     const card = getByText('John Doe');
     fireEvent.press(card);
     
@@ -55,8 +55,8 @@ describe('AdminCustomerCard Component', () => {
     const { getByText } = render(
       <AdminCustomerCard customer={mockCustomer} onPress={() => {}} />
     );
-    
-    // Vérifie que les stats d'équipement et de demandes sont affichées
+
+    // Verify customer stats are displayed
     expect(getByText('0 équipement')).toBeTruthy();
     expect(getByText('0 demande')).toBeTruthy();
   });
@@ -70,8 +70,8 @@ describe('AdminCustomerCard Component', () => {
     const { queryByText } = render(
       <AdminCustomerCard customer={customerWithoutCompany} onPress={() => {}} />
     );
-    
-    // Vérifie que l'app ne crash pas sans entreprise
+
+    // Verify the app does not crash without company
     expect(queryByText('John Doe')).toBeTruthy();
   });
 });

@@ -36,7 +36,6 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
   const sessionData = sessionCtx?.session;
 
   const onSubmit = async (data: any) => {
-    const values = methods.getValues();
 
     const strategies: Record<string, () => Promise<void>> = {
       update: async () => {
