@@ -1,13 +1,17 @@
-import React, { useContext, createContext, type PropsWithChildren } from "react";
-import { setStorageItemAsync, useStorageState } from "./useStorageState";
-import { router } from "expo-router";
+import React, {
+  useContext,
+  createContext,
+  type PropsWithChildren,
+} from 'react';
+import { setStorageItemAsync, useStorageState } from './useStorageState';
+import { router } from 'expo-router';
 
 const AuthContext = createContext<{
   signIn: (email: string, password: string) => Promise<boolean>;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
-  setSession: (session: string| null) => void;
+  setSession: (session: string | null) => void;
 }>({
   signIn: async () => false,
   signOut: () => null,
@@ -22,8 +26,8 @@ export function useSession() {
 }
 
 export function SessionProvider({ children }: PropsWithChildren) {
-  const [[isLoading, session], setSession] = useStorageState("session");
-  
+  const [[isLoading, session], setSession] = useStorageState('session');
+
   return (
     <AuthContext.Provider
       value={{
@@ -31,14 +35,14 @@ export function SessionProvider({ children }: PropsWithChildren) {
           try {
             const apiUrl = process.env.EXPO_PUBLIC_API_URL;
             const resp = await fetch(`${apiUrl}/auth/login`, {
-              method: "POST",
+              method: 'POST',
               headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
               },
               body: JSON.stringify({ email, password }),
             });
             if (!resp.ok) {
-              throw new Error("Login failed");
+              throw new Error('Login failed');
             }
             const data = await resp.json();
             const sessionData = JSON.stringify({
@@ -49,19 +53,19 @@ export function SessionProvider({ children }: PropsWithChildren) {
             setSession(sessionData);
             return true;
           } catch (e) {
-            console.error("Error during signIn:", e);
+            console.error('Error during signIn:', e);
             return false;
           }
         },
         signOut: async () => {
           setSession(null);
-          router.replace("/");
+          router.replace('/');
         },
         setSession: async (session: string | null) => {
           if (session) {
-            await setStorageItemAsync("session", session);
+            await setStorageItemAsync('session', session);
           } else {
-            await setStorageItemAsync("session", null);
+            await setStorageItemAsync('session', null);
           }
         },
         session,

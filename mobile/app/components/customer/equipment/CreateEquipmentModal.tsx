@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from 'react';
 import {
   Modal,
   View,
@@ -6,14 +6,14 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-} from "react-native";
-import { FormProvider, useForm } from "react-hook-form";
-import { Feather } from "@expo/vector-icons";
-import { AppTextField } from "../../inputs/AppTextField";
-import { AppSelectInput } from "../../inputs/AppSelectInput";
-import { useApi } from "@/app/hooks/useApi";
-import { useSessionContext } from "@/app/context/useSessionContext";
-import { AppButton } from "../../buttons/AppButton";
+} from 'react-native';
+import { FormProvider, useForm } from 'react-hook-form';
+import { Feather } from '@expo/vector-icons';
+import { AppTextField } from '../../inputs/AppTextField';
+import { AppSelectInput } from '../../inputs/AppSelectInput';
+import { useApi } from '@/app/hooks/useApi';
+import { useSessionContext } from '@/app/context/useSessionContext';
+import { AppButton } from '../../buttons/AppButton';
 
 interface CreateEquipmentModalProps {
   onSuccess?: (newEquipment: any) => void;
@@ -43,9 +43,9 @@ export const CreateEquipmentModal: FC<CreateEquipmentModalProps> = ({
   useEffect(() => {
     (async () => {
       try {
-        const resp = await api.get("/brand");
+        const resp = await api.get('/brand');
         setBrands(resp.data);
-        const typeE = await api.get("/type-equipment");
+        const typeE = await api.get('/type-equipment');
         setTypeEquipments(typeE.data);
       } catch (e) {
         console.log(e);
@@ -61,14 +61,14 @@ export const CreateEquipmentModal: FC<CreateEquipmentModalProps> = ({
         user_id: sessionData?.id,
       };
 
-      const response = await api.post("/equipment", payload);
+      const response = await api.post('/equipment', payload);
 
       // Appeler le callback avec le nouvel équipement
       onSuccess(response.data);
 
       hideModal();
     } catch (error) {
-      console.error("Error creating equipment:", error);
+      console.error('Error creating equipment:', error);
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +102,7 @@ export const CreateEquipmentModal: FC<CreateEquipmentModalProps> = ({
                 nameField="name"
                 label="Nom de l'équipement"
                 placeholder="Ex: Ordinateur portable"
-                rules={{ required: "Le nom est requis" }}
+                rules={{ required: 'Le nom est requis' }}
               />
               <AppSelectInput
                 label="Marque"
@@ -112,7 +112,7 @@ export const CreateEquipmentModal: FC<CreateEquipmentModalProps> = ({
                   label: brand.name,
                   value: brand.id,
                 }))}
-                rules={{ required: "Ce champ est requis" }}
+                rules={{ required: 'Ce champ est requis' }}
               />
               <AppSelectInput
                 label="Type d'équipement"
@@ -122,7 +122,7 @@ export const CreateEquipmentModal: FC<CreateEquipmentModalProps> = ({
                   label: type.name,
                   value: type.id,
                 }))}
-                rules={{ required: "Ce champ est requis" }}
+                rules={{ required: 'Ce champ est requis' }}
               />
               <AppTextField
                 nameField="model"
@@ -148,7 +148,7 @@ export const CreateEquipmentModal: FC<CreateEquipmentModalProps> = ({
 
           <View style={styles.buttonContainer}>
             <AppButton
-              children={"Créer"}
+              children={'Créer'}
               type="primary"
               onPress={handleSubmit(onSubmit)}
               loading={isLoading}
@@ -163,36 +163,36 @@ export const CreateEquipmentModal: FC<CreateEquipmentModalProps> = ({
 
 const styles = StyleSheet.create({
   fab: {
-    backgroundColor: "#007AFF",
+    backgroundColor: '#007AFF',
   },
   iconButton: {
     padding: 8,
     borderRadius: 20,
-    backgroundColor: "#F0F8FF",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#F0F8FF',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
+    borderBottomColor: '#e0e0e0',
   },
   closeButton: {
     padding: 8,
     borderRadius: 20,
-    backgroundColor: "#F0F3F4",
+    backgroundColor: '#F0F3F4',
   },
   title: {
     fontSize: 18,
-    textAlign: "center",
-    color: "#344260",
+    textAlign: 'center',
+    color: '#344260',
   },
   modalContent: {
     flex: 1,
@@ -202,12 +202,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   buttonContainer: {
-    flexDirection: "column",
+    flexDirection: 'column',
     padding: 16,
     paddingTop: 8,
     gap: 12,
     borderTopWidth: 1,
-    borderTopColor: "#e0e0e0",
+    borderTopColor: '#e0e0e0',
   },
   cancelButton: {
     flex: 1,

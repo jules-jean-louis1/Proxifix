@@ -1,9 +1,9 @@
-import { View, ScrollView } from "react-native";
-import React from "react";
-import { router } from "expo-router";
-import { AdminEquipmentForm } from "@/app/components/admin/equipment/AdminEquipmentForm";
-import { useApi } from "@/app/hooks/useApi";
-import { ToolBarAdmin } from "@/app/components/admin/navigation/ToolBarAdmin";
+import { View, ScrollView } from 'react-native';
+import React from 'react';
+import { router } from 'expo-router';
+import { AdminEquipmentForm } from '@/app/components/admin/equipment/AdminEquipmentForm';
+import { useApi } from '@/app/hooks/useApi';
+import { ToolBarAdmin } from '@/app/components/admin/navigation/ToolBarAdmin';
 
 const AdminEquipmentNew = () => {
   const api = useApi();
@@ -27,7 +27,7 @@ const AdminEquipmentNew = () => {
         showBack
       />
       <ScrollView style={styles.container}>
-        <AdminEquipmentForm 
+        <AdminEquipmentForm
           mode="create"
           onSubmit={handleSubmit}
           onCancel={() => router.back()}

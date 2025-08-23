@@ -1,13 +1,13 @@
-import { AdminInterventionCard } from "@/app/components/admin/intervention/AdminInterventionCard";
-import { AdminAppointmentCard } from "@/app/components/admin/appointment/AdminAppointmentCard";
-import { useSessionContext } from "@/app/context/useSessionContext";
-import { useApi } from "@/app/hooks/useApi";
-import { Feather } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React, { useEffect } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
-import { StyleSheet } from "react-native";
-import { FAB } from "react-native-paper";
+import { AdminInterventionCard } from '@/app/components/admin/intervention/AdminInterventionCard';
+import { AdminAppointmentCard } from '@/app/components/admin/appointment/AdminAppointmentCard';
+import { useSessionContext } from '@/app/context/useSessionContext';
+import { useApi } from '@/app/hooks/useApi';
+import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { FAB } from 'react-native-paper';
 
 const AdminInterventionsPage = () => {
   const router = useRouter();
@@ -17,8 +17,8 @@ const AdminInterventionsPage = () => {
   const [interventions, setInterventions] = React.useState<any[]>([]);
   const [appointments, setAppointments] = React.useState<any[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
-  const [mode, setMode] = React.useState<"interventions" | "appointments">(
-    "interventions"
+  const [mode, setMode] = React.useState<'interventions' | 'appointments'>(
+    'interventions'
   );
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const AdminInterventionsPage = () => {
       if (!sessionData?.company?.id) return;
 
       try {
-        let endpoint = "";
+        let endpoint = '';
 
         if (sessionCtx?.isTechnician()) {
           // Pour les techniciens : récupérer les interventions assignées à eux
@@ -43,7 +43,7 @@ const AdminInterventionsPage = () => {
         setInterventions(response.data);
         setAppointments(responseAppointments.data);
       } catch (error) {
-        console.error("Erreur lors du chargement des interventions:", error);
+        console.error('Erreur lors du chargement des interventions:', error);
       }
     })();
   }, []);
@@ -52,29 +52,29 @@ const AdminInterventionsPage = () => {
     <View style={{ flex: 1, padding: 16 }}>
       <Pressable
         style={{
-          flexDirection: "row",
-          alignItems: "center",
+          flexDirection: 'row',
+          alignItems: 'center',
           marginBottom: 16,
         }}
         onPress={() =>
-          setMode((prev) =>
-            prev === "interventions" ? "appointments" : "interventions"
+          setMode(prev =>
+            prev === 'interventions' ? 'appointments' : 'interventions'
           )
         }
       >
-        <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-          {mode === "appointments" ? "Rendez-vous" : "Interventions"}
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+          {mode === 'appointments' ? 'Rendez-vous' : 'Interventions'}
         </Text>
         <Feather
-          name={"chevron-down"}
+          name={'chevron-down'}
           size={24}
           color="black"
           style={{ marginLeft: 8 }}
         />
       </Pressable>
       <ScrollView style={styles.container}>
-        {mode === "appointments"
-          ? appointments.map((appointment) => (
+        {mode === 'appointments'
+          ? appointments.map(appointment => (
               <AdminAppointmentCard
                 key={appointment.id}
                 appointment={appointment}
@@ -84,11 +84,11 @@ const AdminInterventionsPage = () => {
                 }}
                 onEditPress={() => {
                   // Navigation vers l'édition du rendez-vous
-                  console.log("Navigate to appointment edit:", appointment.id);
+                  console.log('Navigate to appointment edit:', appointment.id);
                 }}
               />
             ))
-          : interventions.map((intervention) => (
+          : interventions.map(intervention => (
               <AdminInterventionCard
                 key={intervention.id}
                 intervention={intervention}
@@ -112,7 +112,7 @@ const AdminInterventionsPage = () => {
         icon="plus"
         style={styles.fab}
         label="Ajouter une intervention"
-        onPress={() => router.push("/admin/interventions/new")}
+        onPress={() => router.push('/admin/interventions/new')}
       />
     </View>
   );
@@ -127,6 +127,6 @@ const styles = StyleSheet.create({
   fab: {
     margin: 16,
     marginBottom: 70,
-    backgroundColor: "#01358D",
+    backgroundColor: '#01358D',
   },
 });

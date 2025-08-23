@@ -1,7 +1,7 @@
-import { Stack } from "expo-router";
-import { PaperProvider } from "react-native-paper";
-import { SessionProvider } from "./context/authContext";
-import React from "react";
+import { Stack } from 'expo-router';
+import { PaperProvider } from 'react-native-paper';
+import { SessionProvider } from './context/authContext';
+import React from 'react';
 
 export default function RootLayout() {
   return (

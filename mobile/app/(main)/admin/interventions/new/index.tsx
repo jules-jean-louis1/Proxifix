@@ -11,14 +11,12 @@ const AdminInterventionsNewPage = () => {
     try {
       const response = await api.post('/intervention', data);
       console.log('Intervention created successfully:', response.data);
-      Alert.alert(
-        'Succès',
-        'L\'intervention a été créée avec succès',
-        [{ text: 'OK', onPress: () => router.push('/admin/interventions') }]
-      );
+      Alert.alert('Succès', "L'intervention a été créée avec succès", [
+        { text: 'OK', onPress: () => router.push('/admin/interventions') },
+      ]);
     } catch (error) {
       console.error('Error creating intervention:', error);
-      Alert.alert('Erreur', 'Impossible de créer l\'intervention');
+      Alert.alert('Erreur', "Impossible de créer l'intervention");
     }
   };
 

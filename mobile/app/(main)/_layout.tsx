@@ -1,8 +1,8 @@
-import { Redirect, Stack } from "expo-router";
-import { useSession } from "../context/authContext";
-import { useEffect, useState } from "react";
-import React from "react";
-import { useSessionContext } from "../context/useSessionContext";
+import { Redirect, Stack } from 'expo-router';
+import { useSession } from '../context/authContext';
+import { useEffect, useState } from 'react';
+import React from 'react';
+import { useSessionContext } from '../context/useSessionContext';
 
 export default function MainLayout() {
   const { session, isLoading } = useSession();
@@ -11,7 +11,7 @@ export default function MainLayout() {
 
   useEffect(() => {
     setIsAdmin(sessionCtx?.getIsAdmin() ?? false);
-    console.log("Session context:", sessionCtx?.session);
+    console.log('Session context:', sessionCtx?.session);
   }, [sessionCtx]);
 
   if (isLoading) {

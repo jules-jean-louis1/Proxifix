@@ -1,7 +1,7 @@
-import * as React from "react";
-import { Controller, useFormContext } from "react-hook-form";
-import { View, Text } from "react-native";
-import { DatePickerInput } from "react-native-paper-dates";
+import * as React from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
+import { View, Text } from 'react-native';
+import { DatePickerInput } from 'react-native-paper-dates';
 
 type AppDateInputFieldProps = {
   nameField: string;
@@ -15,7 +15,7 @@ export const AppDateInputField: React.FC<AppDateInputFieldProps> = ({
   nameField,
   label,
   defaultValue = new Date(),
-  placeholder = "Sélectionner une date",
+  placeholder = 'Sélectionner une date',
   rules = {},
 }: AppDateInputFieldProps) => {
   const [inputDate, setInputDate] = React.useState<Date | undefined>(undefined);
@@ -33,7 +33,7 @@ export const AppDateInputField: React.FC<AppDateInputFieldProps> = ({
             locale="fr"
             label={label}
             value={value}
-            onChange={(date) => {
+            onChange={date => {
               onChange(date);
               setInputDate(date);
             }}
@@ -42,7 +42,7 @@ export const AppDateInputField: React.FC<AppDateInputFieldProps> = ({
             mode="outlined"
             placeholder={placeholder}
           />
-          {error && <Text style={{ color: "red" }}>{error.message}</Text>}
+          {error && <Text style={{ color: 'red' }}>{error.message}</Text>}
         </View>
       )}
     />

@@ -1,7 +1,13 @@
-import { jwtDecode } from "jwt-decode";
-import { useSession } from "./authContext";
-import { getIsAdmin, isAdmin, isCustomer, isSuperAdmin, isTechnician } from "./user";
-import { SessionToken } from "../utils/types";
+import { jwtDecode } from 'jwt-decode';
+import { useSession } from './authContext';
+import {
+  getIsAdmin,
+  isAdmin,
+  isCustomer,
+  isSuperAdmin,
+  isTechnician,
+} from './user';
+import { SessionToken } from '../utils/types';
 
 export const useSessionContext = () => {
   const { session } = useSession();

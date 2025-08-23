@@ -1,12 +1,12 @@
-import { useSessionContext } from "@/app/context/useSessionContext";
-import { useApi } from "@/app/hooks/useApi";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { FC, useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
-import React from "react";
-import { Text } from "react-native-paper";
-import { AdminCustomerForm } from "@/app/components/admin/customer/AdminCustomerForm";
-import { ToolBarAdmin } from "@/app/components/admin/navigation/ToolBarAdmin";
+import { useSessionContext } from '@/app/context/useSessionContext';
+import { useApi } from '@/app/hooks/useApi';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { FC, useEffect, useState } from 'react';
+import { ScrollView, View } from 'react-native';
+import React from 'react';
+import { Text } from 'react-native-paper';
+import { AdminCustomerForm } from '@/app/components/admin/customer/AdminCustomerForm';
+import { ToolBarAdmin } from '@/app/components/admin/navigation/ToolBarAdmin';
 
 const AdminCustomerDetailsPage: FC = () => {
   const { id } = useLocalSearchParams();
@@ -61,7 +61,7 @@ const AdminCustomerDetailsPage: FC = () => {
             initialData={customer}
             onSubmit={handleSubmit}
             onCancel={() => router.back()}
-            onDelete={(id) => {
+            onDelete={id => {
               try {
                 api.delete(`/customer/${id}`);
                 router.back();

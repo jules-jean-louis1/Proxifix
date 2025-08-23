@@ -1,7 +1,7 @@
-import { Stack, Redirect, Tabs } from "expo-router";
-import { useSessionContext } from "../../context/useSessionContext";
-import React from "react";
-import TabBarAdmin from "@/app/components/admin/navigation/TabBarAdmin";
+import { Stack, Redirect, Tabs } from 'expo-router';
+import { useSessionContext } from '../../context/useSessionContext';
+import React from 'react';
+import TabBarAdmin from '@/app/components/admin/navigation/TabBarAdmin';
 
 export default function AdminLayout() {
   const sessionCtx = useSessionContext();
@@ -14,8 +14,8 @@ export default function AdminLayout() {
 
   return (
     <Tabs
-      screenOptions={{ tabBarActiveTintColor: "#01358D", headerShown: false }}
-      tabBar={(props) => <TabBarAdmin />}
+      screenOptions={{ tabBarActiveTintColor: '#01358D', headerShown: false }}
+      tabBar={props => <TabBarAdmin />}
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="interventions" options={{ headerShown: false }} />

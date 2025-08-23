@@ -1,6 +1,6 @@
-import { useApi } from "@/app/hooks/useApi";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { FC, useEffect, useState } from "react";
+import { useApi } from '@/app/hooks/useApi';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { FC, useEffect, useState } from 'react';
 import {
   Text,
   View,
@@ -10,12 +10,12 @@ import {
   Alert,
   TouchableOpacity,
   ActivityIndicator,
-} from "react-native";
-import React from "react";
-import { Feather } from "@expo/vector-icons";
-import { useForm, FormProvider } from "react-hook-form";
-import { AppSelectInput } from "@/app/components/inputs/AppSelectInput";
-import { ToolBarAdmin } from "@/app/components/admin/navigation/ToolBarAdmin";
+} from 'react-native';
+import React from 'react';
+import { Feather } from '@expo/vector-icons';
+import { useForm, FormProvider } from 'react-hook-form';
+import { AppSelectInput } from '@/app/components/inputs/AppSelectInput';
+import { ToolBarAdmin } from '@/app/components/admin/navigation/ToolBarAdmin';
 
 interface AppointmentData {
   id: number;
@@ -48,21 +48,21 @@ const AdminAppointmentDetailsPage: FC = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   // États pour les champs modifiables
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
   // Form pour le select
   const methods = useForm({
     defaultValues: {
-      status: "",
+      status: '',
     },
   });
 
   const statusOptions = [
-    { label: "En attente", value: "pending" },
-    { label: "Planifié", value: "scheduled" },
-    { label: "Terminé", value: "completed" },
-    { label: "Annulé", value: "cancelled" },
+    { label: 'En attente', value: 'pending' },
+    { label: 'Planifié', value: 'scheduled' },
+    { label: 'Terminé', value: 'completed' },
+    { label: 'Annulé', value: 'cancelled' },
   ];
 
   useEffect(() => {
@@ -78,11 +78,11 @@ const AdminAppointmentDetailsPage: FC = () => {
         setAppointment(appointmentData);
         setTitle(appointmentData.title);
         setDescription(appointmentData.description);
-        methods.setValue("status", appointmentData.status);
+        methods.setValue('status', appointmentData.status);
       }
     } catch (error) {
-      console.error("Erreur lors du chargement du rendez-vous:", error);
-      Alert.alert("Erreur", "Impossible de charger les détails du rendez-vous");
+      console.error('Erreur lors du chargement du rendez-vous:', error);
+      Alert.alert('Erreur', 'Impossible de charger les détails du rendez-vous');
     } finally {
       setLoading(false);
     }
@@ -104,9 +104,9 @@ const AdminAppointmentDetailsPage: FC = () => {
 
       await api.put(`/appointment/${id}`, payload);
 
-      Alert.alert("Succès", "Rendez-vous mis à jour avec succès", [
+      Alert.alert('Succès', 'Rendez-vous mis à jour avec succès', [
         {
-          text: "OK",
+          text: 'OK',
           onPress: () => {
             setIsEditing(false);
             loadAppointment(); // Recharger les données
@@ -114,8 +114,8 @@ const AdminAppointmentDetailsPage: FC = () => {
         },
       ]);
     } catch (error) {
-      console.error("Erreur lors de la sauvegarde:", error);
-      Alert.alert("Erreur", "Impossible de sauvegarder les modifications");
+      console.error('Erreur lors de la sauvegarde:', error);
+      Alert.alert('Erreur', 'Impossible de sauvegarder les modifications');
     } finally {
       setSaving(false);
     }
@@ -125,45 +125,45 @@ const AdminAppointmentDetailsPage: FC = () => {
     if (appointment) {
       setTitle(appointment.title);
       setDescription(appointment.description);
-      methods.setValue("status", appointment.status);
+      methods.setValue('status', appointment.status);
     }
     setIsEditing(false);
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
   const getStatusColor = (statusValue: string) => {
     switch (statusValue) {
-      case "pending":
-        return "#FF9800";
-      case "scheduled":
-        return "#2196F3";
-      case "completed":
-        return "#4CAF50";
-      case "cancelled":
-        return "#F44336";
+      case 'pending':
+        return '#FF9800';
+      case 'scheduled':
+        return '#2196F3';
+      case 'completed':
+        return '#4CAF50';
+      case 'cancelled':
+        return '#F44336';
       default:
-        return "#757575";
+        return '#757575';
     }
   };
 
   const getUserName = () => {
-    if (!appointment?.user) return "Client non défini";
+    if (!appointment?.user) return 'Client non défini';
     const [, firstName, lastName] = appointment.user;
     return `${firstName} ${lastName}`;
   };
 
   const getUserEmail = () => {
-    if (!appointment?.user) return "";
+    if (!appointment?.user) return '';
     const [, , , email] = appointment.user;
     return email;
   };
@@ -196,17 +196,17 @@ const AdminAppointmentDetailsPage: FC = () => {
           <TouchableOpacity
             onPress={() => setIsEditing(!isEditing)}
             style={styles.editButton}
-            disabled={appointment.status === "scheduled"}
+            disabled={appointment.status === 'scheduled'}
           >
             <Feather
-              name={isEditing ? "x" : "edit-2"}
+              name={isEditing ? 'x' : 'edit-2'}
               size={24}
-              color={appointment.status === "scheduled" ? "#ccc" : "#01358D"}
+              color={appointment.status === 'scheduled' ? '#ccc' : '#01358D'}
             />
           </TouchableOpacity>
         }
       />
-      {appointment.status === "scheduled" && (
+      {appointment.status === 'scheduled' && (
         <View style={styles.warningBanner}>
           <Feather name="alert-triangle" size={16} color="#FF9800" />
           <Text style={styles.warningText}>
@@ -279,7 +279,7 @@ const AdminAppointmentDetailsPage: FC = () => {
                 ]}
               >
                 <Text style={styles.statusText}>
-                  {statusOptions.find((opt) => opt.value === appointment.status)
+                  {statusOptions.find(opt => opt.value === appointment.status)
                     ?.label || appointment.status}
                 </Text>
               </View>
@@ -313,7 +313,7 @@ const AdminAppointmentDetailsPage: FC = () => {
               />
             ) : (
               <Text style={styles.fieldValue}>
-                {appointment.description || "Aucune description"}
+                {appointment.description || 'Aucune description'}
               </Text>
             )}
           </View>
@@ -379,36 +379,36 @@ const AdminAppointmentDetailsPage: FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: '#f5f5f5',
   },
   centered: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
+    borderBottomColor: '#e0e0e0',
   },
   backButton: {
     padding: 8,
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
   },
   editButton: {
     padding: 8,
   },
   warningBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFF3CD",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF3CD',
     padding: 12,
     marginHorizontal: 16,
     marginTop: 16,
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   warningText: {
-    color: "#856404",
+    color: '#856404',
     fontSize: 14,
     flex: 1,
   },
@@ -428,23 +428,23 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
     marginBottom: 12,
   },
   clientCard: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   clientInfo: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
   },
   clientDetails: {
@@ -452,24 +452,24 @@ const styles = StyleSheet.create({
   },
   clientName: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
+    fontWeight: '600',
+    color: '#333',
   },
   clientEmail: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
   },
   equipmentCard: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
   },
   equipmentDetails: {
@@ -477,28 +477,28 @@ const styles = StyleSheet.create({
   },
   equipmentName: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
+    fontWeight: '600',
+    color: '#333',
   },
   equipmentId: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
   },
   infoRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 12,
     gap: 8,
   },
   infoLabel: {
     fontSize: 14,
-    fontWeight: "500",
-    color: "#333",
+    fontWeight: '500',
+    color: '#333',
     minWidth: 60,
   },
   infoValue: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
     flex: 1,
   },
   statusBadge: {
@@ -507,42 +507,42 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   statusText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   fieldContainer: {
     marginBottom: 16,
   },
   fieldLabel: {
     fontSize: 14,
-    fontWeight: "500",
-    color: "#333",
+    fontWeight: '500',
+    color: '#333',
     marginBottom: 8,
   },
   fieldValue: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
     lineHeight: 20,
   },
   textInput: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
     borderRadius: 8,
     padding: 12,
     fontSize: 14,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   textArea: {
     height: 100,
-    textAlignVertical: "top",
+    textAlignVertical: 'top',
   },
   pickerContainer: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
     borderRadius: 8,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   selectContainer: {
     flex: 1,
@@ -551,7 +551,7 @@ const styles = StyleSheet.create({
     height: 40,
   },
   actionButtons: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 12,
     marginTop: 24,
   },
@@ -559,29 +559,29 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     borderRadius: 8,
-    alignItems: "center",
+    alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: '#f5f5f5',
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
   },
   cancelButtonText: {
-    color: "#666",
-    fontWeight: "600",
+    color: '#666',
+    fontWeight: '600',
   },
   saveButton: {
-    backgroundColor: "#01358D",
+    backgroundColor: '#01358D',
   },
   saveButtonText: {
-    color: "#fff",
-    fontWeight: "600",
+    color: '#fff',
+    fontWeight: '600',
   },
   systemInfo: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -589,17 +589,17 @@ const styles = StyleSheet.create({
   },
   systemText: {
     fontSize: 12,
-    color: "#999",
+    color: '#999',
     marginBottom: 4,
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: "#666",
+    color: '#666',
   },
   errorText: {
     fontSize: 16,
-    color: "#F44336",
+    color: '#F44336',
   },
 });
 

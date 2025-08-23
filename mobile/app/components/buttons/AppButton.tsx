@@ -1,9 +1,9 @@
-import React from "react";
-import { Button, ButtonProps } from "react-native-paper";
-import { StyleSheet, TextStyle, ViewStyle } from "react-native";
+import React from 'react';
+import { Button, ButtonProps } from 'react-native-paper';
+import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 interface AppButtonProps extends ButtonProps {
-  type: "primary" | "secondary" | "tertiary";
+  type: 'primary' | 'secondary' | 'tertiary';
 }
 
 export const AppButton: React.FC<AppButtonProps> = ({
@@ -16,10 +16,10 @@ export const AppButton: React.FC<AppButtonProps> = ({
   const textStyle: TextStyle = styles[`${type}Text`];
 
   return (
-    <Button 
+    <Button
       mode="contained"
-      style={[buttonStyle, style]} 
-      labelStyle={textStyle} 
+      style={[buttonStyle, style]}
+      labelStyle={textStyle}
       contentStyle={styles.buttonContent}
       {...props}
     >
@@ -35,38 +35,38 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   primary: {
-    backgroundColor: "#F9556D",
-    width: "100%",
+    backgroundColor: '#F9556D',
+    width: '100%',
     marginVertical: 10,
     borderRadius: 8,
   },
   primaryText: {
-    color: "#FFFFFF",
-    fontFamily: "Rubik-Bold.ttf",
+    color: '#FFFFFF',
+    fontFamily: 'Rubik-Bold.ttf',
     fontSize: 16,
   },
   secondary: {
-    backgroundColor: "#F0F3F4",
-    width: "100%",
+    backgroundColor: '#F0F3F4',
+    width: '100%',
     marginVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#F9556D",
+    borderColor: '#F9556D',
   },
   secondaryText: {
-    color: "#F9556D",
-    fontFamily: "Rubik-Bold.ttf",
+    color: '#F9556D',
+    fontFamily: 'Rubik-Bold.ttf',
     fontSize: 16,
   },
   tertiary: {
-    backgroundColor: "#01358D",
-    width: "100%",
+    backgroundColor: '#01358D',
+    width: '100%',
     marginVertical: 10,
     borderRadius: 8,
   },
   tertiaryText: {
-    color: "#FFFFFF",
-    fontFamily: "Rubik-Bold.ttf",
+    color: '#FFFFFF',
+    fontFamily: 'Rubik-Bold.ttf',
     fontSize: 16,
   },
 });

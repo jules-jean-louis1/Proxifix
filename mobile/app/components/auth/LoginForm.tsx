@@ -1,8 +1,8 @@
-import { AppButton } from "../buttons/AppButton";
-import React from "react";
-import { useSession } from "@/app/context/authContext";
-import { FormProvider, useForm } from "react-hook-form";
-import { AppTextField } from "../inputs/AppTextField";
+import { AppButton } from '../buttons/AppButton';
+import React from 'react';
+import { useSession } from '@/app/context/authContext';
+import { FormProvider, useForm } from 'react-hook-form';
+import { AppTextField } from '../inputs/AppTextField';
 
 interface LoginFormProps {
   success: boolean | null;
@@ -18,7 +18,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   const { signIn } = useSession();
 
   const onSubmit = async (data: any) => {
-    if (data.email === "" || data.password === "") {
+    if (data.email === '' || data.password === '') {
       return;
     }
     const success = await signIn(data.email, data.password);
@@ -34,7 +34,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           required: "L'adresse email est obligatoire",
           pattern: {
             value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-            message: "Adresse email invalide",
+            message: 'Adresse email invalide',
           },
         }}
       />
@@ -43,12 +43,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         label="Mot de passe"
         placeholder="Entrez votre mot de passe"
         secureTextEntry={true}
-        rules={{ required: "Le mot de passe est obligatoire" }}
+        rules={{ required: 'Le mot de passe est obligatoire' }}
       />
       <AppButton
-        children={"Connexion"}
+        children={'Connexion'}
         type="primary"
-        onPress={handleSubmit((data) => {
+        onPress={handleSubmit(data => {
           onSubmit(data);
         })}
         disabled={false}

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
@@ -8,7 +8,7 @@ const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -40,7 +40,7 @@ const removeStoredSession = async (): Promise<void> => {
 };
 
 // Ajout automatique du token à chaque requête
-api.interceptors.request.use(async (config) => {
+api.interceptors.request.use(async config => {
   const sessionStr = await getStoredSession();
   if (sessionStr) {
     try {
@@ -57,10 +57,10 @@ api.interceptors.request.use(async (config) => {
 
 // Intercepteur de réponse pour gérer les erreurs d'authentification
 api.interceptors.response.use(
-  (response) => {
+  response => {
     return response;
   },
-  async (error) => {
+  async error => {
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -69,12 +69,12 @@ api.interceptors.response.use(
       try {
         // Récupérer la session pour obtenir le refresh token
         const sessionStr = await getStoredSession();
-        if (!sessionStr) throw new Error("No session available");
+        if (!sessionStr) throw new Error('No session available');
 
         const session = JSON.parse(sessionStr);
         const refreshToken = session?.refreshToken;
 
-        if (!refreshToken) throw new Error("No refresh token available");
+        if (!refreshToken) throw new Error('No refresh token available');
 
         // Faire la requête de refresh
         const res = await axios.post(`${API_BASE_URL}/auth/refresh`, {
@@ -96,7 +96,7 @@ api.interceptors.response.use(
         }
 
         // Mettre à jour le header de la requête originale
-        originalRequest.headers["Authorization"] = `Bearer ${token}`;
+        originalRequest.headers['Authorization'] = `Bearer ${token}`;
 
         // Relancer la requête originale
         return axios(originalRequest);

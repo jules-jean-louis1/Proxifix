@@ -1,15 +1,15 @@
-import { Feather } from "@expo/vector-icons";
-import React, { FC, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { View, Text, Modal, StyleSheet, TouchableOpacity } from "react-native";
-import { AppTextField } from "../../inputs/AppTextField";
-import { AppSelectInput } from "../../inputs/AppSelectInput";
-import { AppButton } from "../../buttons/AppButton";
-import { useSessionContext } from "@/app/context/useSessionContext";
-import { useApi } from "@/app/hooks/useApi";
+import { Feather } from '@expo/vector-icons';
+import React, { FC, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { View, Text, Modal, StyleSheet, TouchableOpacity } from 'react-native';
+import { AppTextField } from '../../inputs/AppTextField';
+import { AppSelectInput } from '../../inputs/AppSelectInput';
+import { AppButton } from '../../buttons/AppButton';
+import { useSessionContext } from '@/app/context/useSessionContext';
+import { useApi } from '@/app/hooks/useApi';
 
 interface EquipmentModalFormProps {
-  type: "create" | "update" | "delete";
+  type: 'create' | 'update' | 'delete';
   equipment?: any;
   brands?: any[];
   typeEquipment?: any[];
@@ -36,7 +36,6 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
   const sessionData = sessionCtx?.session;
 
   const onSubmit = async (data: any) => {
-    const values = methods.getValues();
 
     const strategies: Record<string, () => Promise<void>> = {
       update: async () => {
@@ -46,14 +45,14 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
         });
         setEquipments?.((prev: any) =>
           prev.map((item: any) =>
-            item.id === equipment?.id ? response.data : item,
-          ),
+            item.id === equipment?.id ? response.data : item
+          )
         );
         setModalVisible(false);
         onSuccess();
       },
       create: async () => {
-        const response = await api.post("/equipment/new", {
+        const response = await api.post('/equipment/new', {
           ...data,
           user_id: sessionData?.id,
         });
@@ -74,7 +73,7 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
     try {
       await api.delete(`/equipment/${equipment?.id}`);
       setEquipments?.((prev: any) =>
-        prev.filter((item: any) => item.id !== equipment?.id),
+        prev.filter((item: any) => item.id !== equipment?.id)
       );
       setModalVisible(false);
     } catch (error) {
@@ -99,7 +98,7 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
           setModalVisible(!modalVisible);
         }}
       >
-        <View style={{ flex: 1, justifyContent: "center" }}>
+        <View style={{ flex: 1, justifyContent: 'center' }}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <TouchableOpacity
@@ -107,17 +106,17 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
                 style={{
                   padding: 10,
                   borderRadius: 50,
-                  backgroundColor: "#F0F3F4",
+                  backgroundColor: '#F0F3F4',
                 }}
               >
-                <Feather name="x" size={24} color={"#000"} />
+                <Feather name="x" size={24} color={'#000'} />
               </TouchableOpacity>
             </View>
             <View style={styles.modalContent}>
               <Text style={styles.title}>
-                {type === "create"
-                  ? "Ajouter un équipement"
-                  : "Modifier un equipement"}
+                {type === 'create'
+                  ? 'Ajouter un équipement'
+                  : 'Modifier un equipement'}
               </Text>
               <FormProvider {...methods}>
                 <AppTextField
@@ -125,29 +124,29 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
                   label="Nom"
                   defaultValue={equipment?.name}
                   placeholder="Entrez le nom de l'équipement"
-                  rules={{ required: "Le nom est obligatoire" }}
+                  rules={{ required: 'Le nom est obligatoire' }}
                 />
                 <AppSelectInput
                   nameField="type_equipment_id"
                   label="Type"
                   placeholder="Sélectionnez le type d'équipement"
                   defaultValue={equipment?.type_equipment.id}
-                  options={typeEquipment!.map((type) => ({
+                  options={typeEquipment!.map(type => ({
                     label: type.name,
                     value: type.id,
                   }))}
-                  rules={{ required: "Le type est obligatoire" }}
+                  rules={{ required: 'Le type est obligatoire' }}
                 />
                 <AppSelectInput
                   nameField="brand_id"
                   label="Marque"
                   placeholder="Sélectionnez la marque"
                   defaultValue={equipment?.brand.id}
-                  options={brands!.map((brand) => ({
+                  options={brands!.map(brand => ({
                     label: brand.name,
                     value: brand.id,
                   }))}
-                  rules={{ required: "La marque est obligatoire" }}
+                  rules={{ required: 'La marque est obligatoire' }}
                 />
                 <AppSelectInput
                   nameField="operating_system_id"
@@ -156,7 +155,7 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
                   defaultValue={
                     equipment?.operating_system
                       ? equipment.operating_system.id
-                      : ""
+                      : ''
                   }
                   options={os!.map((os: any) => ({
                     label: os.name,
@@ -171,12 +170,12 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
                     methods.reset();
                   }}
                 />
-                {type === "update" ? (
+                {type === 'update' ? (
                   <>
                     <AppButton
                       type="primary"
                       children="Modifier"
-                      onPress={handleSubmit((data) => {
+                      onPress={handleSubmit(data => {
                         onSubmit(data);
                       })}
                     />
@@ -187,7 +186,7 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
                         onPress={() => handleDeleteEquipment()}
                       />
                     ) : (
-                      <Text style={{ textAlign: "center", marginTop: 10 }}>
+                      <Text style={{ textAlign: 'center', marginTop: 10 }}>
                         Un équipement associé à une intervention ne peut pas
                         être supprimé.
                       </Text>
@@ -197,7 +196,7 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
                   <AppButton
                     type="primary"
                     children="Ajouter"
-                    onPress={handleSubmit((data) => {
+                    onPress={handleSubmit(data => {
                       onSubmit(data);
                     })}
                   />
@@ -214,11 +213,11 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     padding: 16,
   },
   modalContent: {
@@ -226,9 +225,9 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: 24,
     marginBottom: 20,
-    color: "#344260",
+    color: '#344260',
   },
 });

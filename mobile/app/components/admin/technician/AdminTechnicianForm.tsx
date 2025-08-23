@@ -1,9 +1,9 @@
-import React from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { Button, View } from "react-native";
-import { AppTextField } from "../../inputs/AppTextField";
-import { AppButton } from "../../buttons/AppButton";
-import { AppSelectInput } from "../../inputs/AppSelectInput";
+import React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { Button, View } from 'react-native';
+import { AppTextField } from '../../inputs/AppTextField';
+import { AppButton } from '../../buttons/AppButton';
+import { AppSelectInput } from '../../inputs/AppSelectInput';
 
 interface Technician {
   id: number;
@@ -22,15 +22,15 @@ interface Technician {
 }
 
 interface AdminTechnicianFormProps {
-  mode: "create" | "edit";
+  mode: 'create' | 'edit';
   initialData?: Technician;
   onSubmit: (data: Technician) => void;
   onCancel?: () => void;
 }
 
 const roleOptions = [
-  { label: "Technicien", value: "ROLE_TECHNICIAN" },
-  { label: "Admin", value: "ROLE_ADMIN" },
+  { label: 'Technicien', value: 'ROLE_TECHNICIAN' },
+  { label: 'Admin', value: 'ROLE_ADMIN' },
 ];
 
 export const AdminTechnicianForm: React.FC<AdminTechnicianFormProps> = ({
@@ -42,17 +42,17 @@ export const AdminTechnicianForm: React.FC<AdminTechnicianFormProps> = ({
   const methods = useForm<Technician>({
     defaultValues: initialData || {
       id: 0,
-      email: "",
-      role: "ROLE_TECHNICIAN",
-      first_name: "",
-      last_name: "",
-      created_at: "",
-      updated_at: "",
-      zip_code: "",
-      city: "",
-      phone: "",
-      address: "",
-      password: "",
+      email: '',
+      role: 'ROLE_TECHNICIAN',
+      first_name: '',
+      last_name: '',
+      created_at: '',
+      updated_at: '',
+      zip_code: '',
+      city: '',
+      phone: '',
+      address: '',
+      password: '',
     },
   });
 
@@ -62,19 +62,19 @@ export const AdminTechnicianForm: React.FC<AdminTechnicianFormProps> = ({
         <AppTextField
           nameField="first_name"
           label="Prénom"
-          rules={{ required: "Le prénom est requis" }}
+          rules={{ required: 'Le prénom est requis' }}
         />
         <AppTextField
           nameField="last_name"
           label="Nom"
-          rules={{ required: "Le nom est requis" }}
+          rules={{ required: 'Le nom est requis' }}
         />
         <AppTextField
           nameField="email"
           label="Email"
           rules={{
             required: "L'email est requis",
-            pattern: { value: /^\S+@\S+$/, message: "Email invalide" },
+            pattern: { value: /^\S+@\S+$/, message: 'Email invalide' },
           }}
         />
         <AppSelectInput
@@ -82,24 +82,24 @@ export const AdminTechnicianForm: React.FC<AdminTechnicianFormProps> = ({
           label="Rôle"
           placeholder="Sélectionnez le rôle"
           options={roleOptions}
-          rules={{ required: "Le rôle est requis" }}
+          rules={{ required: 'Le rôle est requis' }}
         />
-        {mode === "create" && (
+        {mode === 'create' && (
           <AppTextField
             nameField="password"
             label="Mot de passe"
             secureTextEntry
-            rules={{ required: "Le mot de passe est requis" }}
+            rules={{ required: 'Le mot de passe est requis' }}
           />
         )}
         <AppTextField
           nameField="phone"
           label="Téléphone"
           rules={{
-            required: "Le téléphone est requis",
+            required: 'Le téléphone est requis',
             pattern: {
               value: /^(?:\d{10}|(?:\d{2}\s){4}\d{2})$/,
-              message: "Numéro de téléphone invalide",
+              message: 'Numéro de téléphone invalide',
             },
           }}
         />
@@ -107,23 +107,25 @@ export const AdminTechnicianForm: React.FC<AdminTechnicianFormProps> = ({
           nameField="zipcode"
           label="Code Postal"
           rules={{
-            required: "Le code postal est requis",
-            pattern: { value: /^\d{5}$/, message: "Code postal invalide" },
+            required: 'Le code postal est requis',
+            pattern: { value: /^\d{5}$/, message: 'Code postal invalide' },
           }}
         />
         <AppTextField
           nameField="city"
           label="Ville"
-          rules={{ required: "La ville est requise" }}
+          rules={{ required: 'La ville est requise' }}
         />
         <AppTextField
           nameField="address"
           label="Adresse"
           rules={{ required: "L'adresse est requise" }}
         />
-        <View style={{ flexDirection: "column", justifyContent: "space-between" }}>
+        <View
+          style={{ flexDirection: 'column', justifyContent: 'space-between' }}
+        >
           <AppButton
-            children={mode === "create" ? "Créer" : "Mettre à jour"}
+            children={mode === 'create' ? 'Créer' : 'Mettre à jour'}
             type="primary"
             onPress={methods.handleSubmit(onSubmit)}
           />

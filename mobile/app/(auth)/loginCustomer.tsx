@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
-import { LoginForm } from "../components/auth/LoginForm";
-import { Divider } from "react-native-paper";
-import { ToolBarCustomer } from "@/app/components/customer/navigation/ToolBarCustomer";
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { LoginForm } from '../components/auth/LoginForm';
+import { Divider } from 'react-native-paper';
+import { ToolBarCustomer } from '@/app/components/customer/navigation/ToolBarCustomer';
 
 export default function LoginCustomer() {
   const [success, setSuccess] = useState<boolean | null>(null);
@@ -14,17 +14,17 @@ export default function LoginCustomer() {
       return;
     }
     if (success) {
-      router.replace("/(main)/customer");
+      router.replace('/(main)/customer');
     }
   }, [success]);
 
   return (
     <View style={{ flex: 1 }}>
       <ToolBarCustomer
-        title={"Espace Client"}
+        title={'Espace Client'}
         bottomBar
         showBack
-        onBackPress={() => router.push("/")}
+        onBackPress={() => router.push('/')}
       />
       <View style={styles.container}>
         <View style={styles.form}>
@@ -49,10 +49,10 @@ export default function LoginCustomer() {
           <Divider />
         </View>
         <Text style={styles.inline}>
-          Vous n'avez pas de compte ?{" "}
+          Vous n'avez pas de compte ?{' '}
           <Text
-            style={{ color: "#E53953", fontWeight: "bold" }}
-            onPress={() => router.push("/registerCustomer")}
+            style={{ color: '#E53953', fontWeight: 'bold' }}
+            onPress={() => router.push('/registerCustomer')}
           >
             Inscrivez-vous
           </Text>
@@ -65,43 +65,43 @@ export default function LoginCustomer() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#F0F3F4",
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F0F3F4',
   },
   form: {
-    width: "90%",
+    width: '90%',
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 8,
-    flexDirection: "column",
+    flexDirection: 'column',
   },
   title: {
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 10,
   },
   subtitle: {
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: 16,
     marginTop: 20,
     marginBottom: 40,
   },
   inline: {
-    textAlign: "center",
-    color: "#5B6880",
+    textAlign: 'center',
+    color: '#5B6880',
     fontSize: 14,
     marginVertical: 20,
   },
   errorMessage: {
-    textAlign: "center",
-    color: "#ff0000",
+    textAlign: 'center',
+    color: '#ff0000',
   },
   containerBar: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
     marginTop: 30,
   },
 });

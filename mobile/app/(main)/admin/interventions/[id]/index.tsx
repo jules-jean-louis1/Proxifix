@@ -11,14 +11,12 @@ const AdminInterventionEditPage = () => {
   const handleUpdate = async (data: any) => {
     try {
       await api.put(`/intervention/${id}`, data);
-      Alert.alert(
-        'Succès',
-        'L\'intervention a été mise à jour avec succès',
-        [{ text: 'OK', onPress: () => router.back() }]
-      );
+      Alert.alert('Succès', "L'intervention a été mise à jour avec succès", [
+        { text: 'OK', onPress: () => router.back() },
+      ]);
     } catch (error) {
       console.error('Error updating intervention:', error);
-      Alert.alert('Erreur', 'Impossible de mettre à jour l\'intervention');
+      Alert.alert('Erreur', "Impossible de mettre à jour l'intervention");
     }
   };
 

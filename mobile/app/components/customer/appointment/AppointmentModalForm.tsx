@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from 'react';
 import {
   Modal,
   View,
@@ -6,21 +6,21 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-} from "react-native";
-import { AppButton } from "../../buttons/AppButton";
-import { FormProvider, useForm } from "react-hook-form";
-import { useSessionContext } from "@/app/context/useSessionContext";
-import { useApi } from "@/app/hooks/useApi";
-import { AppSelectInput } from "../../inputs/AppSelectInput";
-import { Feather } from "@expo/vector-icons";
-import { AppTextField } from "../../inputs/AppTextField";
-import { ActivityIndicator, MD2Colors } from "react-native-paper";
-import { APPOINTMENT_STATUS } from "@/app/utils/intervention";
-import { CreateEquipmentModal } from "@/app/components/customer/equipment/CreateEquipmentModal";
-import { TimeSlotPicker } from "./TimeSlotPicker";
+} from 'react-native';
+import { AppButton } from '../../buttons/AppButton';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useSessionContext } from '@/app/context/useSessionContext';
+import { useApi } from '@/app/hooks/useApi';
+import { AppSelectInput } from '../../inputs/AppSelectInput';
+import { Feather } from '@expo/vector-icons';
+import { AppTextField } from '../../inputs/AppTextField';
+import { ActivityIndicator, MD2Colors } from 'react-native-paper';
+import { APPOINTMENT_STATUS } from '@/app/utils/intervention';
+import { CreateEquipmentModal } from '@/app/components/customer/equipment/CreateEquipmentModal';
+import { TimeSlotPicker } from './TimeSlotPicker';
 
 interface AppointmentModalFormProps {
-  mode: "create" | "update";
+  mode: 'create' | 'update';
   id?: any;
   button?: React.ReactElement;
   onSuccess?: () => void;
@@ -44,11 +44,11 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
   } | null>(null);
   const methods = useForm({
     defaultValues: {
-      equipment_id: "",
-      company_id: "",
-      title: "",
-      description: "",
-      date: "",
+      equipment_id: '',
+      company_id: '',
+      title: '',
+      description: '',
+      date: '',
     },
   });
   const { handleSubmit } = methods;
@@ -71,18 +71,18 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
         }
         setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching equipments or companies:", error);
+        console.error('Error fetching equipments or companies:', error);
       }
     })();
   }, [modalVisible]);
 
   useEffect(() => {
-    if (appointment && mode === "update") {
-      methods.setValue("equipment_id", appointment.equipment?.id || "");
-      methods.setValue("company_id", appointment.company?.id || "");
-      methods.setValue("title", appointment.title || "");
-      methods.setValue("description", appointment.description || "");
-      methods.setValue("date", appointment.date || "");
+    if (appointment && mode === 'update') {
+      methods.setValue('equipment_id', appointment.equipment?.id || '');
+      methods.setValue('company_id', appointment.company?.id || '');
+      methods.setValue('title', appointment.title || '');
+      methods.setValue('description', appointment.description || '');
+      methods.setValue('date', appointment.date || '');
 
       // Initialiser les états pour le TimeSlotPicker
       if (appointment.date) {
@@ -107,10 +107,10 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
         date: selectedDateTime ? selectedDateTime.toISOString() : data.date,
       };
 
-      if (mode === "create") {
-        await api.post("/appointment", submitData);
+      if (mode === 'create') {
+        await api.post('/appointment', submitData);
       } else if (
-        mode === "update" &&
+        mode === 'update' &&
         appointment.status === APPOINTMENT_STATUS.PENDING
       ) {
         await api.put(`/appointment/${appointment?.id}`, submitData);
@@ -121,7 +121,7 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
       setSelectedDateTime(null);
       setSelectedTimeSlot(null);
     } catch (error) {
-      console.error("Error saving appointment:", error);
+      console.error('Error saving appointment:', error);
     }
   };
 
@@ -154,15 +154,15 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
               style={{
                 padding: 10,
                 borderRadius: 50,
-                backgroundColor: "#F0F3F4",
+                backgroundColor: '#F0F3F4',
               }}
             >
-              <Feather name="x" size={24} color={"#000"} />
+              <Feather name="x" size={24} color={'#000'} />
             </TouchableOpacity>
             <Text style={styles.title}>
-              {mode === "create"
-                ? "Créer un rendez-vous"
-                : "Modifier un rendez-vous"}
+              {mode === 'create'
+                ? 'Créer un rendez-vous'
+                : 'Modifier un rendez-vous'}
             </Text>
             <View style={{ width: 24 }}></View>
           </View>
@@ -179,7 +179,7 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                         label: equipment.name,
                         value: equipment.id,
                       }))}
-                      rules={{ required: "Ce champ est requis" }}
+                      rules={{ required: 'Ce champ est requis' }}
                     />
                   </View>
                   <CreateEquipmentModal
@@ -188,9 +188,9 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                         <Feather name="plus" size={20} color="#007AFF" />
                       </TouchableOpacity>
                     }
-                    onSuccess={(newEquipment) => {
-                      setEquipments((prev) => [...prev, newEquipment]);
-                      methods.setValue("equipment_id", newEquipment.id);
+                    onSuccess={newEquipment => {
+                      setEquipments(prev => [...prev, newEquipment]);
+                      methods.setValue('equipment_id', newEquipment.id);
                     }}
                   />
                 </View>
@@ -202,18 +202,18 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                   label: company.name,
                   value: company.id,
                 }))}
-                rules={{ required: "Ce champ est requis" }}
+                rules={{ required: 'Ce champ est requis' }}
               />
               <TimeSlotPicker
                 companyId={
-                  mode === "create"
-                    ? methods.watch("company_id")
+                  mode === 'create'
+                    ? methods.watch('company_id')
                     : appointment?.company.id
                 }
                 onSlotSelect={(date, startTime, endTime) => {
                   setSelectedDateTime(date);
                   setSelectedTimeSlot({ start: startTime, end: endTime });
-                  methods.setValue("date", date.toISOString());
+                  methods.setValue('date', date.toISOString());
                 }}
                 selectedDate={selectedDateTime || undefined}
                 selectedTime={selectedTimeSlot?.start}
@@ -222,7 +222,7 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                 nameField="title"
                 label="Titre"
                 placeholder="Entrez le titre de l'intervention"
-                rules={{ required: "Le titre est requis" }}
+                rules={{ required: 'Le titre est requis' }}
               />
               <AppTextField
                 nameField="description"
@@ -232,7 +232,7 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                 numberOfLines={3}
               />
               {appointment &&
-                mode === "update" &&
+                mode === 'update' &&
                 appointment.status === APPOINTMENT_STATUS.PENDING && (
                   <AppButton
                     type="secondary"
@@ -244,7 +244,7 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                     }}
                   />
                 )}
-              {mode === "create" && (
+              {mode === 'create' && (
                 <AppButton
                   type="secondary"
                   children="Annuler"
@@ -272,37 +272,37 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
+    borderBottomColor: '#e0e0e0',
   },
   modalContent: {
     flex: 1,
     padding: 16,
   },
   title: {
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: 18,
-    color: "#344260",
+    color: '#344260',
   },
   equipmentSection: {
     marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#344260",
+    fontWeight: '600',
+    color: '#344260',
     marginBottom: 8,
   },
   equipmentRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   equipmentSelect: {
@@ -311,8 +311,8 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 8,
     borderRadius: 20,
-    backgroundColor: "#F0F8FF",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#F0F8FF',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
