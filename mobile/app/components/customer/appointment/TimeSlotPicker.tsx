@@ -105,7 +105,7 @@ export const TimeSlotPicker: FC<TimeSlotPickerProps> = ({
                 style={[
                   styles.dayText,
                   isSelected && styles.dayTextSelected,
-                  isToday && styles.dayTextToday,
+                  isToday && !isSelected && styles.dayTextToday,
                 ]}
               >
                 {format(day, 'EEE', { locale: fr })}
@@ -114,12 +114,12 @@ export const TimeSlotPicker: FC<TimeSlotPickerProps> = ({
                 style={[
                   styles.dateText,
                   isSelected && styles.dateTextSelected,
-                  isToday && styles.dateTextToday,
+                  isToday && !isSelected && styles.dateTextToday,
                 ]}
               >
                 {format(day, 'd')}
               </Text>
-              {isToday && <Text style={styles.todayLabel}>Aujourd'hui</Text>}
+              {isToday && !isSelected && <Text style={styles.todayLabel}>Aujourd'hui</Text>}
             </TouchableOpacity>
           );
         })}
@@ -201,7 +201,8 @@ const styles = StyleSheet.create({
   },
   dayButtonToday: {
     borderWidth: 2,
-    borderColor: '#E53953',
+    borderColor: '#007AFF',
+    backgroundColor: '#E3F2FD',
   },
   dayText: {
     fontSize: 12,
@@ -213,7 +214,8 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   dayTextToday: {
-    color: '#E53953',
+    color: '#007AFF',
+    fontWeight: '600',
   },
   dateText: {
     fontSize: 18,
@@ -225,13 +227,14 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   dateTextToday: {
-    color: '#E53953',
+    color: '#007AFF',
+    fontWeight: 'bold',
   },
   todayLabel: {
     fontSize: 10,
-    color: '#E53953',
+    color: '#007AFF',
     marginTop: 2,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   slotsContainer: {
     maxHeight: 200,

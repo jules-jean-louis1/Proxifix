@@ -24,17 +24,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
             normalizationContext: ['groups' => ['company_specialization:get_all']],
         ),
         new Get(
-            name: 'app_company_specialization_get_by_id',
+            name: 'app_company_specialization_get_one',
             uriTemplate: '/company-specialization/{id}',
             normalizationContext: ['groups' => ['company_specialization:get_by_id']]
         ),
         new Post(
-            name: 'app_company_specialization_new',
+            name: 'app_company_specialization_create',
             uriTemplate: '/company-specialization',
             denormalizationContext: ['groups' => ['company_specialization:write']]
         ),
         new Put(
-            name: 'app_company_specialization_update',
+            name: 'app_company_specialization_edit',
             uriTemplate: '/company-specialization/{id}',
             denormalizationContext: ['groups' => ['company_specialization:write']]
         ),
@@ -52,15 +52,15 @@ class CompanySpecialization
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['company:read', 'company:get_list'])]
+    #[Groups(['company:read', 'company:get_list', 'company_specialization:get_all'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true, unique: true)]
-    #[Groups(['company:read', 'company:get_list'])]
+    #[Groups(['company:read', 'company:get_list', 'company_specialization:get_all'])]
     private ?string $slug = null;
 
     #[ORM\Column(length: 255, nullable: true, unique: true)]
-    #[Groups(['company:read', 'company:get_list'])]
+    #[Groups(['company:read', 'company:get_list', 'company_specialization:get_all'])]
     private ?string $label = null;
 
     /**

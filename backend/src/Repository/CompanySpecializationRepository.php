@@ -16,6 +16,23 @@ class CompanySpecializationRepository extends ServiceEntityRepository
         parent::__construct($registry, CompanySpecialization::class);
     }
 
+    public function get(?int $id = null, ?string $label = null): array
+    {
+        $qb = $this->createQueryBuilder('cs');
+
+        if (null !== $id) {
+            $qb->andWhere('cs.id = :id')
+                ->setParameter('id', $id);
+        }
+
+        if (null !== $label) {
+            $qb->andWhere('LOWER(cs.label) = :label')
+                ->setParameter('label', strtolower($label));
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
     //    /**
     //     * @return CompanySpecialization[] Returns an array of CompanySpecialization objects
     //     */
