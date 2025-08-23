@@ -20,7 +20,7 @@ final class CompanySpecializationController extends AbstractController
         $id = $request->query->get('id');
         $label = $request->query->get('label');
 
-        $idInt = $id !== null ? (int) $id : null;
+        $idInt = null !== $id ? (int) $id : null;
 
         $specializations = $repository->get($idInt, $label);
 
