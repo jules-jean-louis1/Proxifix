@@ -41,6 +41,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
               },
               body: JSON.stringify({ email, password }),
             });
+            console.log(resp);
             if (!resp.ok) {
               throw new Error('Login failed');
             }

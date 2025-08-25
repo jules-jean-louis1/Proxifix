@@ -25,8 +25,19 @@ fi
 
 # Attendre que la base de données soit prête
 echo "Waiting for database to be ready..."
-until php bin/console doctrine:query:sql "SELECT 1" > /dev/null 2>&1; do
-    echo "Database is not ready, waiting..."
+echo "Testing database connection..."
+
+# Afficher les variables d'environnement pour debug
+echo "DATABASE_URL: $DATABASE_URL"
+echo "APP_ENV: $APP_ENV"
+
+# Tester la connexion avec affichage des erreurs
+php bin/console doctrine:query:sql "SELECT 1" 2>&1 | head -10
+
+until php bin/console doctrine:query:sql "SELECT 1" --verbose > /dev/null 2>&1; do
+    echo "Database is not ready, waiting... Error details:"
+    # Exécuter la commande à nouveau mais en affichant la sortie d'erreur
+    php bin/console doctrine:query:sql "SELECT 1" --verbose
     sleep 2
 done
 

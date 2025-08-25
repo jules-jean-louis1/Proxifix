@@ -127,8 +127,6 @@ const EquipmentsPage = () => {
       <ToolBarCustomer
         title={'Mes équipements'}
         bottomBar
-        showBack
-        onBackPress={() => router.push('/customer')}
       />
       <ScrollView style={styles.container}>
         <FlatList
@@ -185,6 +183,7 @@ const styles = StyleSheet.create({
   },
   fab: {
     margin: 16,
+    backgroundColor: '#F9556D',
   },
   container: {
     flex: 1,

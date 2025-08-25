@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { CustomerAppointmentStepper } from './CustomerAppointmentStepper';
 import { Card, Icon } from 'react-native-paper';

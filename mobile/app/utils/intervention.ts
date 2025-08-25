@@ -77,11 +77,15 @@ export enum Appointment_Status {
   'pending' = 'pending',
   'accepted' = 'accepted',
   'rejected' = 'rejected',
+  'confirmed' = 'confirmed',
+  'scheduled' = 'scheduled',
 }
 export const APPOINTMENT_STATUS = {
   PENDING: Appointment_Status.pending,
   ACCEPTED: Appointment_Status.accepted,
   REJECTED: Appointment_Status.rejected,
+  CONFIRMED: Appointment_Status.confirmed,
+  SCHEDULED: Appointment_Status.scheduled,
 } as const;
 
 export const getStatusAppointmentCard = (status: string): string => {
@@ -92,6 +96,10 @@ export const getStatusAppointmentCard = (status: string): string => {
       return 'Accepté';
     case APPOINTMENT_STATUS.REJECTED:
       return 'Rejeté';
+    case APPOINTMENT_STATUS.CONFIRMED:
+      return 'Confirmé';
+    case APPOINTMENT_STATUS.SCHEDULED:
+      return 'Planifié';
     default:
       return 'Statut inconnu';
   }

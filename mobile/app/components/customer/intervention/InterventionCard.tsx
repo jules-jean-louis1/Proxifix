@@ -3,7 +3,11 @@ import { Pressable, Text, View, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { getStatus } from '@/app/utils/intervention';
+import {
+  getStatus,
+  getStatusColor,
+  getStatusColorBackground,
+} from '@/app/utils/intervention';
 
 interface InterventionCardProps {
   intervention?: any;
@@ -19,7 +23,18 @@ export const InterventionCard: React.FC<InterventionCardProps> = ({
       <View style={styles.interventionItem}>
         <View style={styles.titleFlex}>
           <Text style={styles.interventionTitle}>{intervention.title}</Text>
-          <Text>{intervention.status}</Text>
+          <Text
+            style={{
+              fontSize: 12,
+              fontWeight: '600',
+              color: getStatusColor(intervention.status),
+              backgroundColor: getStatusColorBackground(intervention.status),
+              padding: 8,
+              borderRadius: 8
+            }}
+          >
+            {getStatus(intervention)}
+          </Text>
         </View>
 
         <View style={styles.containerInformation}>
@@ -114,6 +129,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 10,
+  },
+  statusContainer: {
+    padding: 8,
+    borderRadius: 8,
   },
   dateContainer: {
     flexDirection: 'row',

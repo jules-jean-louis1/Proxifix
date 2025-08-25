@@ -13,17 +13,17 @@ services:
   database:
     image: postgres:${POSTGRES_VERSION:-15}-alpine
     environment:
-      POSTGRES_DB: ${DB_DEV_NAME:-cda_app}
-      POSTGRES_PASSWORD: ${DB_DEV_PASSWORD:-password}
-      POSTGRES_USER: ${DB_DEV_USER:-cda_app}
+      POSTGRES_DB: ${DB_DEV_NAME}
+      POSTGRES_PASSWORD: ${DB_DEV_PASSWORD}
+      POSTGRES_USER: ${DB_DEV_USER}
     networks:
       - symfony
     volumes:
       - database_data:/var/lib/postgresql/data:rw
     ports:
-      - "${DB_DEV_PORT:-5434}:5432"
+      - "${DB_DEV_PORT}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_DEV_USER:-cda_app}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_DEV_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -31,17 +31,17 @@ services:
   database_test:
     image: postgres:${POSTGRES_VERSION:-15}-alpine
     environment:
-      POSTGRES_DB: ${DB_TEST_NAME:-cda_app_test}
-      POSTGRES_PASSWORD: ${DB_TEST_PASSWORD:-password}
-      POSTGRES_USER: ${DB_TEST_USER:-cda_app}
+      POSTGRES_DB: ${DB_TEST_NAME}
+      POSTGRES_PASSWORD: ${DB_TEST_PASSWORD}
+      POSTGRES_USER: ${DB_TEST_USER}
     networks:
       - symfony
     volumes:
       - database_test_data:/var/lib/postgresql/data:rw
     ports:
-      - "${DB_TEST_PORT:-5433}:5432"
+      - "${DB_TEST_PORT}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_TEST_USER:-cda_app}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_TEST_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -53,12 +53,32 @@ services:
     networks:
       - symfony
     environment:
-      DATABASE_URL: "postgresql://${DB_DEV_USER:-cda_app}:${DB_DEV_PASSWORD:-password}@database:5432/${DB_DEV_NAME:-cda_app}?serverVersion=15&charset=utf8"
-      DATABASE_TEST_URL: "postgresql://${DB_TEST_USER:-cda_app}:${DB_TEST_PASSWORD:-password}@database_test:5432/${DB_TEST_NAME:-cda_app_test}?serverVersion=15&charset=utf8"
-      APP_ENV: ${APP_ENV:-dev}
-      JWT_SECRET_KEY: /var/www/symfony/config/jwt/private.pem
-      JWT_PUBLIC_KEY: /var/www/symfony/config/jwt/public.pem
-      JWT_PASSPHRASE: ${JWT_PASSPHRASE:-proxifix_jwt_passphrase}
+      # Symfony Configuration
+      APP_ENV: ${APP_ENV}
+      KERNEL_CLASS: ${KERNEL_CLASS}
+      APP_SECRET: ${APP_SECRET}
+      SYMFONY_DEPRECATIONS_HELPER: ${SYMFONY_DEPRECATIONS_HELPER}
+      PANTHER_APP_ENV: ${PANTHER_APP_ENV}
+      PANTHER_ERROR_SCREENSHOT_DIR: ${PANTHER_ERROR_SCREENSHOT_DIR}
+      
+      # Database URLs
+      DATABASE_URL: "postgresql://${DB_DEV_USER}:${DB_DEV_PASSWORD}@${DB_DEV_HOST}:5432/${DB_DEV_NAME}?serverVersion=${POSTGRES_VERSION}&charset=utf8"
+      DATABASE_TEST_URL: "postgresql://${DB_TEST_USER}:${DB_TEST_PASSWORD}@${DB_TEST_HOST}:5432/${DB_TEST_NAME}?serverVersion=${POSTGRES_VERSION}&charset=utf8"
+      
+      # JWT Configuration
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      JWT_PASSPHRASE: ${JWT_PASSPHRASE}
+      
+      # Database Connection Details (for scripts)
+      DB_DEV_NAME: ${DB_DEV_NAME}
+      DB_DEV_USER: ${DB_DEV_USER}
+      DB_DEV_PASSWORD: ${DB_DEV_PASSWORD}
+      DB_DEV_HOST: ${DB_DEV_HOST}
+      DB_TEST_NAME: ${DB_TEST_NAME}
+      DB_TEST_USER: ${DB_TEST_USER}
+      DB_TEST_PASSWORD: ${DB_TEST_PASSWORD}
+      DB_TEST_HOST: ${DB_TEST_HOST}
     depends_on:
       database:
         condition: service_healthy
@@ -72,7 +92,7 @@ services:
     networks:
       - symfony
     ports:
-      - "8082:80"
+      - "${BACKEND_API_PORT}:80"
     depends_on:
       - php
     labels:
@@ -80,10 +100,6 @@ services:
       - "traefik.http.routers.nginx.rule=Host(`localhost`) || HostRegexp(`{host:.+}`)"
       - "traefik.http.routers.nginx.entrypoints=web"
       - "traefik.http.services.nginx.loadbalancer.server.port=80"
-      - "traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*"
-      - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
-      - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=Authorization,DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range"
-      - "traefik.http.routers.nginx.middlewares=cors"
 
 networks:
   symfony:
