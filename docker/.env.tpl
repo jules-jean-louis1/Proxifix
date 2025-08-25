@@ -21,3 +21,6 @@ NGINX_PORT=81
 
 # Configuration Docker
 PROJECT_NAME=cda_app
+
+# JWT Secret Key
+JWT_SECRET_KEY=proxifix_jwt_passphrase

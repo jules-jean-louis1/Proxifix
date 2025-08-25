@@ -53,7 +53,8 @@ export function SessionProvider({ children }: PropsWithChildren) {
             setSession(sessionData);
             return true;
           } catch (e) {
-            console.error('Error during signIn:', e);
+            // Handle the error appropriately (e.g., log to an external service)
+            // console.error('Error during signIn:', e);
             return false;
           }
         },
