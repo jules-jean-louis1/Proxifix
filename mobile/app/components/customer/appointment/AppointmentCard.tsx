@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
-import { AppointmentModalForm } from './AppointmentModalForm';
+import { CustomerAppointmentStepper } from './CustomerAppointmentStepper';
 import { Card, Icon } from 'react-native-paper';
 import {
   APPOINTMENT_STATUS,
@@ -21,6 +21,13 @@ export const AppointmentCard: FC<{
     month: '2-digit',
     year: 'numeric',
   });
+
+  const depositedDate = new Date(appointment.created_at || appointment.createdAt || date).toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+
   return (
     <Card onPress={onPress} style={styles.card}>
       <View style={styles.header}>
@@ -31,98 +38,141 @@ export const AppointmentCard: FC<{
             { backgroundColor: getStatusColorBackground(status) },
           ]}
         >
-          <Text style={{ fontSize: 14, color: getStatusColor(status) }}>
+          <Text style={{ fontSize: 12, fontWeight: '600', color: getStatusColor(status) }}>
             {getStatusAppointmentCard(status)}
           </Text>
         </View>
       </View>
-      <Card.Content>
-        <View style={styles.companyContainer}>
-          <Icon source="office-building" size={24} color="#09090B" />
-          <Text style={styles.companyName}>{company.name}</Text>
-        </View>
-        <View style={styles.equipmentContainer}>
-          <Icon source="tools" size={24} color="#09090B" />
-          <Text style={styles.equipmentName}>{appointment.equipment.name}</Text>
-        </View>
-        <View style={styles.details}>
+
+      <View style={styles.companyContainer}>
+        <Icon source="office-building" size={20} color="#6B7280" />
+        <Text style={styles.companyName}>{company.name}</Text>
+      </View>
+
+      <View style={styles.equipmentContainer}>
+        <Icon source="monitor" size={20} color="#6B7280" />
+        <Text style={styles.equipmentName}>{appointment.equipment.name}</Text>
+      </View>
+
+      <View style={styles.details}>
+        <View>
           <Text style={styles.date}>{formattedDate}</Text>
         </View>
-      </Card.Content>
-      <Card.Actions>
-        {status === APPOINTMENT_STATUS.PENDING && (
-          <AppointmentModalForm
+        <Text style={styles.depositedDate}>Déposé le : {depositedDate}</Text>
+      </View>
+
+      {status === APPOINTMENT_STATUS.PENDING && (
+        <View style={styles.actionsContainer}>
+          <CustomerAppointmentStepper
             mode="update"
             id={appointment.id}
-            onSuccess={() => onSuccess}
+            onSuccess={() => onSuccess()}
             button={
               <TouchableOpacity>
-                <Text style={styles.companyName}>Modifier</Text>
+                <Text style={styles.modifyButton}>Modifier</Text>
               </TouchableOpacity>
             }
           />
-        )}
-      </Card.Actions>
+        </View>
+      )}
     </Card>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#F5F5F8',
+    backgroundColor: '#FFFFFF',
     width: '100%',
-    borderRadius: 8,
-    padding: 16,
+    borderRadius: 16,
     marginVertical: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  companyName: {
-    fontSize: 16,
-    fontWeight: 'light',
-    color: '#637381',
-  },
-  details: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  date: {
-    fontSize: 14,
-    color: '#333',
-  },
-  time: {
-    fontSize: 14,
-    color: '#333',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   title: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#E53953',
+    flex: 1,
+    marginRight: 12,
   },
   statusContainer: {
-    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    minWidth: 80,
     alignItems: 'center',
-    padding: 8,
-    borderRadius: 8,
   },
   companyContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
+    paddingHorizontal: 20,
+  },
+  companyName: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#6B7280',
+    marginLeft: 8,
   },
   equipmentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 16,
+    paddingHorizontal: 20,
   },
   equipmentName: {
-    fontSize: 16,
-    fontWeight: 'light',
-    color: '#637381',
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#6B7280',
     marginLeft: 8,
+  },
+  details: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  date: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#10B981',
+    backgroundColor: '#ECFDF5',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  depositedDate: {
+    fontSize: 12,
+    color: '#9CA3AF',
+  },
+  time: {
+    fontSize: 14,
+    color: '#374151',
+  },
+  actionsContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  modifyButton: {
+    color: '#3B82F6',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

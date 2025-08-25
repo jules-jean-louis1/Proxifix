@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { useApi } from '@/app/hooks/useApi';
 import { useSessionContext } from '@/app/context/useSessionContext';
-import { AppointmentModalForm } from '@/app/components/customer/appointment/AppointmentModalForm';
+import { CustomerAppointmentStepper } from '@/app/components/customer/appointment/CustomerAppointmentStepper';
 import { AppointmentCard } from '@/app/components/customer/appointment/AppointmentCard';
 import { InterventionCard } from '@/app/components/customer/intervention/InterventionCard';
 import { FAB, MD2Colors } from 'react-native-paper';
@@ -96,6 +96,7 @@ export default function InterventionsPage() {
               <AppointmentCard
                 key={appointment.id}
                 appointment={appointment}
+                onPress={()=> router.push(`/customer/appointment/${appointment.id}`)}
                 onSuccess={() => setFetchData(!fetchData)}
               />
             ))}
@@ -103,9 +104,11 @@ export default function InterventionsPage() {
         )}
       </ScrollView>
       <View pointerEvents="box-none" style={styles.fabContainer}>
-        <AppointmentModalForm
+        <CustomerAppointmentStepper
           mode="create"
-          onSuccess={() => setFetchData(!fetchData)}
+          onSuccess={() => {
+            setFetchData(!fetchData);
+          }}
           button={
             <FAB
               icon="plus"
@@ -194,9 +197,10 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'flex-end',
     zIndex: 100,
-    backgroundColor: '#F9556D',
   },
   fab: {
     margin: 16,
+    backgroundColor: '#F9556D',
+    color: '#fff'
   },
 });

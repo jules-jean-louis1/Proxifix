@@ -42,6 +42,8 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
     start: string;
     end: string;
   } | null>(null);
+  const [companySpec, setCompanySpec] = useState<any[]>([]);
+
   const methods = useForm({
     defaultValues: {
       equipment_id: '',
@@ -49,22 +51,27 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
       title: '',
       description: '',
       date: '',
+      company_spec: ''
     },
   });
   const { handleSubmit } = methods;
   const sessionCtx = useSessionContext();
   const api = useApi();
   const sessionData = sessionCtx?.session;
+  const companySpecSelected = methods.watch("company_spec");
 
   useEffect(() => {
     (async () => {
       if (!modalVisible) return;
       try {
         setIsLoading(true);
-        const response = await api.get(`/equipment?user_id=${sessionData?.id}`);
-        setEquipments(response.data);
-        const companiesResponse = await api.get(`/company`);
-        setCompanies(companiesResponse.data);
+        const [equipmentsR, companySpecR] = await Promise.all([
+          api.get(`/equipment?user_id=${sessionData?.id}`),
+          api.get(`/company-specialization`),
+        ]);
+        setEquipments(equipmentsR.data);
+        setCompanySpec(companySpecR.data);
+
         if (id) {
           const resp = await api.get(`/appointment?id=${id}`);
           setAppointment(resp.data[0]);
@@ -75,6 +82,20 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
       }
     })();
   }, [modalVisible]);
+
+  useEffect(() => {
+    if (companySpecSelected) {
+      (async () => {
+        try {
+          console.log(companySpecSelected)
+          const companiesResponse = await api.get(`/company?specialization=${companySpecSelected}`);
+          setCompanies(companiesResponse.data);
+        } catch (e) {
+          console.log("", e);
+        }
+      })();
+    }
+  }, [companySpecSelected]);
 
   useEffect(() => {
     if (appointment && mode === 'update') {
@@ -195,6 +216,14 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
                   />
                 </View>
               </View>
+              <AppSelectInput
+                nameField="company_spec"
+                label="Selectionner un spé"
+                options={companySpec!.map((spec: any) => ({
+                  label: spec.label,
+                  value: spec.id,
+                }))}
+              />
               <AppSelectInput
                 nameField="company_id"
                 label="Selectionner une entreprise"

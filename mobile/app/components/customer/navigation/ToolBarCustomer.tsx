@@ -8,6 +8,7 @@ interface ToolBarCustomerProps {
   onBackPress?: () => void;
   rightContent?: React.ReactNode;
   bottomBar?: boolean;
+  icon?: React.ComponentProps<typeof Feather>['name'];
 }
 
 export const ToolBarCustomer: React.FC<ToolBarCustomerProps> = ({
@@ -16,13 +17,14 @@ export const ToolBarCustomer: React.FC<ToolBarCustomerProps> = ({
   onBackPress,
   rightContent,
   bottomBar = false,
+  icon = "arrow-left"
 }) => {
   return (
     <View style={[bottomBar ? styles.container : styles.containerBarLess]}>
       <View style={styles.left}>
         {showBack ? (
           <Pressable onPress={onBackPress} style={styles.iconButton}>
-            <Feather name="arrow-left" size={24} color="#344260" />
+            <Feather name={icon} size={24} color="#344260" />
           </Pressable>
         ) : (
           <View style={styles.iconButton} />
