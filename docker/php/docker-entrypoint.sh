@@ -4,10 +4,12 @@ set -e
 # Créer le répertoire des clés JWT et générer les clés si elles n'existent pas
 echo "Setting up JWT keys..."
 mkdir -p config/jwt
-if [ ! -f "config/jwt/private.pem" ] || [ ! -f "config/jwt/public.pem" ]; then
-    echo "Generating JWT keys..."
-    openssl genpkey -out config/jwt/private.pem -algorithm rsa -aes256 -pass pass:${JWT_PASSPHRASE}
-    openssl rsa -pubout -in config/jwt/private.pem -passin pass:${JWT_PASSPHRASE} -out config/jwt/public.pem
+if [ ! -f "config/jwt/private.pem" ]; then
+    echo "Generating new JWT keys..."
+    # Générer la clé privée chiffrée
+    openssl genpkey -algorithm RSA -out config/jwt/private.pem -pass "pass:${JWT_PASSPHRASE}" -aes256
+    # Extraire la clé publique de la clé privée
+    openssl rsa -in config/jwt/private.pem -pubout -out config/jwt/public.pem -passin "pass:${JWT_PASSPHRASE}"
 fi
 
 # S'assurer que les permissions sont correctes
