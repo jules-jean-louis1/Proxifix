@@ -3,7 +3,6 @@ import { AppSelectInput } from '@/app/components/inputs/AppSelectInput';
 import { AppTextField } from '@/app/components/inputs/AppTextField';
 import { ToolBarCustomer } from '@/app/components/customer/navigation/ToolBarCustomer';
 import { useSessionContext } from '@/app/context/useSessionContext';
-import { getStatus } from '@/app/utils/intervention';
 import { useApi } from '@/app/hooks/useApi';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -73,7 +72,7 @@ export const AdminInterventionStepper: React.FC<
   const [user, setUser] = useState<any[]>([]);
   const [companyUser, setCompanyUser] = useState<any[]>([]);
   const [equipment, setEquipment] = useState<any[]>([]);
-  const [availableTasks, setAvailableTasks] = useState<any[]>([]); // Tâches disponibles depuis l'API
+  const [availableTasks, setAvailableTasks] = useState<any[]>([]);
   const [selectedTasks, setSelectedTasks] = useState<
     {
       title: string;
@@ -188,20 +187,22 @@ export const AdminInterventionStepper: React.FC<
           const response = await api.get(`/intervention/${interventionId}`);
           const intervention = response.data;
 
-          // Pré-remplir le formulaire avec les données existantes
           methods.reset({
             title: intervention.title,
             description: intervention.description,
-            type_intervention_id: intervention.type_intervention_id,
-            user_id: intervention.user_id,
-            equipment_id: intervention.equipment_id,
-            technician_id: intervention.technician_id,
+            type_intervention_id: intervention.typeIntervention?.id,
+            user_id: intervention.customer?.id,
+            equipment_id: intervention.equipment?.id,
+            technician_id: intervention.technician?.id,
             status: intervention.status,
           });
 
-          // Charger les tâches existantes si disponibles
           if (intervention.tasks) {
             setSelectedTasks(intervention.tasks);
+          }
+
+          if (intervention.equipment) {
+            setEquipment([intervention.equipment]);
           }
         } catch (error) {
           console.error("Erreur lors du chargement de l'intervention:", error);
@@ -214,7 +215,6 @@ export const AdminInterventionStepper: React.FC<
     }
   }, [mode, interventionId]);
 
-  // Charger les données de base (types, utilisateurs, etc.)
   useEffect(() => {
     (async () => {
       try {
@@ -431,7 +431,7 @@ export const AdminInterventionStepper: React.FC<
 
           {/* Step 2: Client et technicien */}
           {isStepActive('user') && (
-            <View>
+            <View style={{ paddingBottom: 16 }}>
               <Text
                 variant="titleLarge"
                 style={{ color: '#465270', marginBottom: 8 }}
@@ -491,16 +491,18 @@ export const AdminInterventionStepper: React.FC<
                 />
               )}
 
-              <View style={{ flexDirection: 'column', gap: 12 }}>
+              <View style={{ flexDirection: 'row', gap: 2, marginBottom: 48 }}>
                 <AppButton
                   type="secondary"
                   onPress={previousStep}
                   children="Précédent"
+                  style={{ width: '48%', zIndex: 10 }}
                 />
                 <AppButton
                   type="primary"
                   onPress={nextStep}
                   children="Suivant"
+                  style={{ width: '48%' }}
                 />
               </View>
             </View>
@@ -695,9 +697,8 @@ export const AdminInterventionStepper: React.FC<
               <View
                 style={{
                   flexDirection: 'column',
-                  gap: 12,
-                  marginTop: 16,
-                  marginBottom: 32,
+                  gap: 4,
+                  paddingBottom: 32,
                 }}
               >
                 <AppButton
@@ -884,7 +885,9 @@ export const AdminInterventionStepper: React.FC<
                 )}
               </View>
 
-              <View style={{ flexDirection: 'column', gap: 12, marginTop: 16 }}>
+              <View
+                style={{ flexDirection: 'column', gap: 12, marginBottom: 64 }}
+              >
                 <AppButton
                   type="secondary"
                   onPress={previousStep}

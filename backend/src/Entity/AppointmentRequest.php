@@ -48,8 +48,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class AppointmentRequest
 {
     public const PENDING = 'pending';
-    public const CONFIRMED = 'confirmed';
-    public const SCHEDULED = 'scheduled';
+    public const ACCEPTED = 'accepted';
     public const REJECTED = 'rejected';
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -73,9 +72,8 @@ class AppointmentRequest
     #[Assert\Choice(
         choices: [
             self::REJECTED,
-            self::SCHEDULED,
-            self::CONFIRMED,
-            self::REJECTED,
+            self::ACCEPTED,
+            self::PENDING,
         ],
         message: 'Choose a valid status.'
     )]

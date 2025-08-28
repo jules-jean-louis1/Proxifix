@@ -18,6 +18,7 @@ export const InterventionCard: React.FC<InterventionCardProps> = ({
   intervention,
   onPress,
 }) => {
+  console.log('Intervention data:', intervention);
   return (
     <Pressable onPress={onPress}>
       <View style={styles.interventionItem}>
@@ -30,7 +31,7 @@ export const InterventionCard: React.FC<InterventionCardProps> = ({
               color: getStatusColor(intervention.status),
               backgroundColor: getStatusColorBackground(intervention.status),
               padding: 8,
-              borderRadius: 8
+              borderRadius: 8,
             }}
           >
             {getStatus(intervention)}
@@ -78,7 +79,7 @@ export const InterventionCard: React.FC<InterventionCardProps> = ({
                 })}
               </Text>
             ) : (
-              <Text style={styles.footerDate}>Date inconnue</Text>
+              <View style={styles.footerDate}></View>
             )}
             <Feather
               name="calendar"
@@ -87,9 +88,6 @@ export const InterventionCard: React.FC<InterventionCardProps> = ({
               style={styles.icon}
             />
           </View>
-          {intervention.status && (
-            <Text style={styles.status}>{getStatus(intervention.status)}</Text>
-          )}
         </View>
       </View>
     </Pressable>

@@ -100,11 +100,6 @@ const AdminInterventionsPage = () => {
                 onEditPress={() =>
                   router.push(`/admin/interventions/${intervention.id}`)
                 }
-                onAddTaskPress={() =>
-                  router.push(
-                    `/admin/interventions/${intervention.id}?step=tasks`
-                  )
-                }
               />
             ))}
       </ScrollView>

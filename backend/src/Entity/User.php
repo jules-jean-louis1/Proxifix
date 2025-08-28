@@ -65,12 +65,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details', 'intervention:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\Email]
-    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details', 'intervention:details'])]
     private ?string $email = null;
 
     /**
@@ -106,20 +106,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 255)]
-    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details', 'intervention:details'])]
     private ?string $first_name = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 2, max: 255)]
-    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details', 'intervention:details'])]
     private ?string $last_name = null;
 
     #[ORM\Column]
-    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details', 'intervention:details'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details'])]
+    #[Groups(['user:customer:read', 'user:customer:edit-profile', 'user:details', 'intervention:details'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'users')]

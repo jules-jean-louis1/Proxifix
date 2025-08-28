@@ -17,6 +17,8 @@ import { router } from 'expo-router';
 import { EquipmentModalForm } from '@/app/components/customer/equipment/EquipmentModalForm';
 import { FAB } from 'react-native-paper';
 import { ToolBarCustomer } from '@/app/components/customer/navigation/ToolBarCustomer';
+import { EquipmentCardHome } from '@/app/components/customer/equipment/EquipmentCardHome';
+import CustomerEquipmentCard from '@/app/components/customer/equipment/CustomerEquipmentCard';
 
 const EquipmentsPage = () => {
   const [equipments, setEquipments] = useState<any[]>([]);
@@ -61,12 +63,7 @@ const EquipmentsPage = () => {
   if (loading) {
     return (
       <View style={{ flex: 1 }}>
-        <ToolBarCustomer
-          title={'Mes équipements'}
-          bottomBar
-          showBack
-          onBackPress={() => router.push('/customer')}
-        />
+        <ToolBarCustomer title={'Mes équipements'} bottomBar />
         <View style={styles.container}>
           <Text style={styles.loadingText}>Loading...</Text>
         </View>
@@ -77,12 +74,7 @@ const EquipmentsPage = () => {
   if (error) {
     return (
       <View style={{ flex: 1 }}>
-        <ToolBarCustomer
-          title={'Mes équipements'}
-          bottomBar
-          showBack
-          onBackPress={() => router.push('/customer')}
-        />
+        <ToolBarCustomer title={'Mes équipements'} bottomBar />
         <View style={styles.container}>
           <Text style={styles.errorText}>{error}</Text>
         </View>
@@ -92,12 +84,7 @@ const EquipmentsPage = () => {
   if (equipments.length === 0) {
     return (
       <View style={{ flex: 1 }}>
-        <ToolBarCustomer
-          title={'Mes équipements'}
-          bottomBar
-          showBack
-          onBackPress={() => router.push('/customer')}
-        />
+        <ToolBarCustomer title={'Mes équipements'} bottomBar />
         <ScrollView style={styles.container}>
           <Text style={styles.loadingText}>Aucun équipement trouvé.</Text>
         </ScrollView>
@@ -124,37 +111,11 @@ const EquipmentsPage = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ToolBarCustomer
-        title={'Mes équipements'}
-        bottomBar
-      />
+      <ToolBarCustomer title={'Mes équipements'} bottomBar />
       <ScrollView style={styles.container}>
-        <FlatList
-          data={equipments}
-          keyExtractor={item => item.id!.toString()}
-          renderItem={({ item }) => (
-            <Pressable
-              style={styles.equipmentItem}
-              onPress={() => {
-                router.push(`/customer/equipment/${item.id}`);
-              }}
-            >
-              <Text style={styles.equipmentName}>{item.name}</Text>
-              <Text style={styles.equipmentBrand}>{item.brand?.name}</Text>
-              <Text style={styles.equipmentOS}>
-                {item.operating_system?.name}
-              </Text>
-              <Text style={styles.equipmentType}>
-                {item.type_equipment?.name}
-              </Text>
-              <Text style={styles.equipmentDate}>
-                {format(new Date(item.created_at!), 'dd MMMM yyyy à HH:mm', {
-                  locale: fr,
-                })}
-              </Text>
-            </Pressable>
-          )}
-        />
+        {equipments.map(item => (
+          <CustomerEquipmentCard key={item.id} equipment={item} />
+        ))}
       </ScrollView>
       <View pointerEvents="box-none" style={styles.fabContainer}>
         <EquipmentModalForm
@@ -164,7 +125,12 @@ const EquipmentsPage = () => {
           os={os}
           setEquipments={setEquipments}
           button={
-            <FAB icon="plus" style={styles.fab} label="Ajouter un équipement" />
+            <FAB
+              icon="plus"
+              color="white"
+              style={styles.fab}
+              label="Ajouter un équipement"
+            />
           }
         />
       </View>
@@ -184,6 +150,7 @@ const styles = StyleSheet.create({
   fab: {
     margin: 16,
     backgroundColor: '#F9556D',
+    color: '#FFF',
   },
   container: {
     flex: 1,

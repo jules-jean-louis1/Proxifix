@@ -8,6 +8,7 @@ import {
   getStatusColor,
   getStatusColorBackground,
 } from '@/app/utils/intervention';
+import { Feather } from '@expo/vector-icons';
 
 export const AppointmentCard: FC<{
   appointment: any;
@@ -22,7 +23,9 @@ export const AppointmentCard: FC<{
     year: 'numeric',
   });
 
-  const depositedDate = new Date(appointment.created_at || appointment.createdAt || date).toLocaleDateString('fr-FR', {
+  const depositedDate = new Date(
+    appointment.created_at || appointment.createdAt || date
+  ).toLocaleDateString('fr-FR', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -38,19 +41,35 @@ export const AppointmentCard: FC<{
             { backgroundColor: getStatusColorBackground(status) },
           ]}
         >
-          <Text style={{ fontSize: 12, fontWeight: '600', color: getStatusColor(status) }}>
+          <Text
+            style={{
+              fontSize: 12,
+              fontWeight: '600',
+              color: getStatusColor(status),
+            }}
+          >
             {getStatusAppointmentCard(status)}
           </Text>
         </View>
       </View>
 
       <View style={styles.companyContainer}>
-        <Icon source="office-building" size={20} color="#6B7280" />
+        <Feather
+          name="package"
+          size={25}
+          color="#000"
+          style={styles.iconLeft}
+        ></Feather>
         <Text style={styles.companyName}>{company.name}</Text>
       </View>
 
       <View style={styles.equipmentContainer}>
-        <Icon source="monitor" size={20} color="#6B7280" />
+        <Feather
+          name="monitor"
+          size={25}
+          color="#000"
+          style={styles.iconLeft}
+        ></Feather>
         <Text style={styles.equipmentName}>{appointment.equipment.name}</Text>
       </View>
 
@@ -174,5 +193,8 @@ const styles = StyleSheet.create({
     color: '#3B82F6',
     fontSize: 14,
     fontWeight: '600',
+  },
+  iconLeft: {
+    marginRight: 10,
   },
 });

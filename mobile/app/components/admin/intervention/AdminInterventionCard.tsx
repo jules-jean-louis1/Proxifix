@@ -26,6 +26,7 @@ interface AdminInterventionCardProps {
   onEditPress?: () => void;
   onAddTaskPress?: () => void;
   showActions?: boolean; // Pour afficher les boutons d'actions
+  startStep?: string; // Add this prop to match the usage in index.tsx
 }
 
 export const AdminInterventionCard: FC<AdminInterventionCardProps> = ({
@@ -35,6 +36,7 @@ export const AdminInterventionCard: FC<AdminInterventionCardProps> = ({
   onEditPress,
   onAddTaskPress,
   showActions = false,
+  startStep, // Keep this prop for future use
 }) => {
   // Formatter la date
   const formatDate = (dateString?: string) => {
@@ -129,10 +131,17 @@ export const AdminInterventionCard: FC<AdminInterventionCardProps> = ({
           )}
 
           {onAddTaskPress && (
-            <Pressable onPress={onAddTaskPress} style={styles.actionButton}>
+            <Pressable
+              onPress={() => {
+                if (startStep) {
+                  onAddTaskPress();
+                }
+              }}
+              style={styles.actionButton}
+            >
               <Feather name="plus" size={16} color="#28A745" />
               <Text style={[styles.actionText, { color: '#28A745' }]}>
-                Ajouter tâche
+                Tâches
               </Text>
             </Pressable>
           )}

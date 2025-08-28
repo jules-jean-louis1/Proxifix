@@ -43,6 +43,7 @@ const AdminAppointmentDetailsPage: FC = () => {
   const api = useApi();
 
   const [appointment, setAppointment] = useState<AppointmentData | null>(null);
+  const [typeIntervention, setTypeIntervention] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -55,14 +56,14 @@ const AdminAppointmentDetailsPage: FC = () => {
   const methods = useForm({
     defaultValues: {
       status: '',
+      type_intervention_id: null as number | null,
     },
   });
 
   const statusOptions = [
     { label: 'En attente', value: 'pending' },
-    { label: 'Planifié', value: 'scheduled' },
-    { label: 'Terminé', value: 'completed' },
-    { label: 'Annulé', value: 'cancelled' },
+    { label: 'Accepté', value: 'accepted' },
+    { label: 'Rejeté', value: 'rejected' },
   ];
 
   useEffect(() => {
@@ -73,6 +74,8 @@ const AdminAppointmentDetailsPage: FC = () => {
     try {
       setLoading(true);
       const response = await api.get(`/appointment?id=${id}`);
+      const typeIntervention = await api.get(`/type-intervention`);
+      setTypeIntervention(typeIntervention.data);
       if (response.data && response.data.length > 0) {
         const appointmentData = response.data[0];
         setAppointment(appointmentData);
@@ -100,8 +103,9 @@ const AdminAppointmentDetailsPage: FC = () => {
         status: formData.status,
         company_id: appointment.company?.id,
         date: appointment.date,
+        type_intervention_id: formData.type_intervention_id || null,
       };
-
+      console.log('Saving appointment with payload:', payload);
       await api.put(`/appointment/${id}`, payload);
 
       Alert.alert('Succès', 'Rendez-vous mis à jour avec succès', [
@@ -145,11 +149,11 @@ const AdminAppointmentDetailsPage: FC = () => {
     switch (statusValue) {
       case 'pending':
         return '#FF9800';
-      case 'scheduled':
+      case 'accepted':
         return '#2196F3';
       case 'completed':
         return '#4CAF50';
-      case 'cancelled':
+      case 'rejected':
         return '#F44336';
       default:
         return '#757575';
@@ -328,6 +332,21 @@ const AdminAppointmentDetailsPage: FC = () => {
             </View>
           )}
         </View>
+        {isEditing && typeIntervention.length > 0 && (
+          <View style={styles.fieldContainer}>
+            <FormProvider {...methods}>
+              <Text style={styles.fieldLabel}>Type d'intervention:</Text>
+              <AppSelectInput
+                nameField="type_intervention_id"
+                placeholder="Sélectionnez un type d'intervention"
+                options={typeIntervention.map(type => ({
+                  label: type.name,
+                  value: type.id,
+                }))}
+              />
+            </FormProvider>
+          </View>
+        )}
 
         {/* Boutons d'action */}
         {isEditing && (

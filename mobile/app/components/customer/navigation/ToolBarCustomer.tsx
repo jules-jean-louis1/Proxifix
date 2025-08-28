@@ -17,7 +17,7 @@ export const ToolBarCustomer: React.FC<ToolBarCustomerProps> = ({
   onBackPress,
   rightContent,
   bottomBar = false,
-  icon = "arrow-left"
+  icon = 'arrow-left',
 }) => {
   return (
     <View style={[bottomBar ? styles.container : styles.containerBarLess]}>
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 16,
     justifyContent: 'space-between',
     borderBottomWidth: 1,
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 16,
     justifyContent: 'space-between',
   },

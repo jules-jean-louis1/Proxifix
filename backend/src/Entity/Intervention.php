@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InterventionRepository::class)]
 #[ApiResource(
@@ -145,7 +146,18 @@ class Intervention
     #[Groups(['intervention:details'])]
     private ?Company $company = null;
 
-    #[ORM\Column(length : 255)]
+    #[ORM\Column(length: 255)]
+    #[Assert\Choice(
+        choices: [
+            self::PENDING,
+            self::ASSIGNED,
+            self::AWAITING_PICKUP,
+            self::IN_PROGRESS,
+            self::COMPLETED,
+            self::CANCELLED,
+        ],
+        message: 'Choose a valid status.'
+    )]
     #[Groups(['intervention:read', 'equipment:details', 'intervention:details', 'user:details'])]
     private ?string $status = null;
 

@@ -1,6 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { getStatus, getStatusColor, getStatusColorBackground } from '@/app/utils/intervention';
+import {
+  getStatus,
+  getStatusColor,
+  getStatusColorBackground,
+} from '@/app/utils/intervention';
 import { router } from 'expo-router';
 import { Icon } from 'react-native-paper';
 
@@ -31,28 +35,43 @@ export const EquipmentCardHome: React.FC<EquipmentCardHomeProps> = ({
                 ? getStatus(e.interventions[0])
                 : null;
             const statusColor = getStatusColor(e.interventions[0]?.status);
-            const statusBgColor = getStatusColorBackground(e.interventions[0]?.status);
-            
-            const createdDate = new Date(e.created_at || e.createdAt || Date.now()).toLocaleDateString('fr-FR', {
+            const statusBgColor = getStatusColorBackground(
+              e.interventions[0]?.status
+            );
+
+            const createdDate = new Date(
+              e.created_at || e.createdAt || Date.now()
+            ).toLocaleDateString('fr-FR', {
               day: '2-digit',
               month: '2-digit',
               year: 'numeric',
             });
 
-            const recoveryDate = e.interventions && e.interventions.length > 0 && e.interventions[0].completed_at 
-              ? new Date(e.interventions[0].completed_at).toLocaleDateString('fr-FR', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                })
-              : null;
+            const recoveryDate =
+              e.interventions &&
+              e.interventions.length > 0 &&
+              e.interventions[0].completed_at
+                ? new Date(e.interventions[0].completed_at).toLocaleDateString(
+                    'fr-FR',
+                    {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    }
+                  )
+                : null;
 
             return (
               <View style={styles.card} key={index}>
                 <View style={styles.cardHeader}>
                   <Text style={styles.name}>{e.name}</Text>
                   {status && (
-                    <View style={[styles.statusContainer, { backgroundColor: statusBgColor }]}>
+                    <View
+                      style={[
+                        styles.statusContainer,
+                        { backgroundColor: statusBgColor },
+                      ]}
+                    >
                       <Text style={[styles.status, { color: statusColor }]}>
                         {status}
                       </Text>
@@ -64,7 +83,9 @@ export const EquipmentCardHome: React.FC<EquipmentCardHomeProps> = ({
                 {e.operating_system && (
                   <View style={styles.infoRow}>
                     <Icon source="monitor" size={16} color="#6B7280" />
-                    <Text style={styles.infoText}>OS : {e.operating_system.name}</Text>
+                    <Text style={styles.infoText}>
+                      OS : {e.operating_system.name}
+                    </Text>
                   </View>
                 )}
 
@@ -72,7 +93,8 @@ export const EquipmentCardHome: React.FC<EquipmentCardHomeProps> = ({
                 <View style={styles.infoRow}>
                   <Icon source="laptop" size={16} color="#6B7280" />
                   <Text style={styles.infoText}>
-                    Modèle : {e.brand?.name || ''} {e.type_equipment?.name || e.name}
+                    Modèle : {e.brand?.name || ''}{' '}
+                    {e.type_equipment?.name || e.name}
                   </Text>
                 </View>
 
@@ -80,16 +102,22 @@ export const EquipmentCardHome: React.FC<EquipmentCardHomeProps> = ({
                 <View style={styles.datesContainer}>
                   <Text style={styles.dateText}>Déposé : {createdDate}</Text>
                   {recoveryDate && (
-                    <Text style={styles.dateText}>Récupéré : {recoveryDate}</Text>
+                    <Text style={styles.dateText}>
+                      Récupéré : {recoveryDate}
+                    </Text>
                   )}
                 </View>
 
                 {/* Action Button */}
                 {e.interventions && e.interventions.length > 0 && (
                   <View style={styles.actionContainer}>
-                    <Pressable 
+                    <Pressable
                       style={styles.detailButton}
-                      onPress={() => router.push(`/customer/appointment/${e.interventions[0].id}`)}
+                      onPress={() =>
+                        router.push(
+                          `/customer/intervention/${e.interventions[0].id}`
+                        )
+                      }
                     >
                       <Text style={styles.detailButtonText}>Voir détails</Text>
                       <Icon source="chevron-right" size={16} color="#E53953" />

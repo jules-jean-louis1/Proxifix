@@ -7,6 +7,7 @@ import { AppSelectInput } from '../../inputs/AppSelectInput';
 import { AppButton } from '../../buttons/AppButton';
 import { useSessionContext } from '@/app/context/useSessionContext';
 import { useApi } from '@/app/hooks/useApi';
+import { ScrollView } from 'react-native';
 
 interface EquipmentModalFormProps {
   type: 'create' | 'update' | 'delete';
@@ -36,7 +37,6 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
   const sessionData = sessionCtx?.session;
 
   const onSubmit = async (data: any) => {
-
     const strategies: Record<string, () => Promise<void>> = {
       update: async () => {
         const response = await api.put(`/equipment/${equipment?.id}`, {
@@ -52,7 +52,7 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
         onSuccess();
       },
       create: async () => {
-        const response = await api.post('/equipment/new', {
+        const response = await api.post('/equipment', {
           ...data,
           user_id: sessionData?.id,
         });
@@ -98,7 +98,7 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
           setModalVisible(!modalVisible);
         }}
       >
-        <View style={{ flex: 1, justifyContent: 'center' }}>
+        <View style={{ flex: 1, justifyContent: 'center', paddingBottom: 16 }}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <TouchableOpacity
@@ -112,7 +112,7 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
                 <Feather name="x" size={24} color={'#000'} />
               </TouchableOpacity>
             </View>
-            <View style={styles.modalContent}>
+            <ScrollView style={styles.modalContent}>
               <Text style={styles.title}>
                 {type === 'create'
                   ? 'Ajouter un équipement'
@@ -202,7 +202,7 @@ export const EquipmentModalForm: FC<EquipmentModalFormProps> = ({
                   />
                 )}
               </FormProvider>
-            </View>
+            </ScrollView>
           </View>
         </View>
       </Modal>

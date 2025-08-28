@@ -9,6 +9,7 @@
 ## Installation et Configuration
 
 ### Prérequis
+
 - PHP 8.1 ou supérieur
 - Composer
 - Symfony CLI
@@ -22,7 +23,9 @@ Si vous utilisez docker, vous pouvez démarrer le projet avec la commande suivan
 ```bash
 docker compose up -d
 ```
+
 Si vous n'utilisez pas Docker, suivez ces étapes :
+
 1. Clonez le dépôt :
    ```bash
    git clone
@@ -39,6 +42,7 @@ Si vous n'utilisez pas Docker, suivez ces étapes :
    ```bash
    cp .env .env.local
    ```
+
    Modifiez les variables d'environnement selon votre configuration (base de données, clés API, etc.).
 5. Créez la base de données :
    ```bash
@@ -55,17 +59,20 @@ Si vous n'utilisez pas Docker, suivez ces étapes :
 8. Démarrez le serveur Symfony :
    ```bash
    symfony server:start
-    ```
+   ```
 
 # BACKEND
 
 ### Exécution des tests
+
 Pour exécuter les tests, utilisez la commande suivante :
 
 Configurez votre fichier `.env.test` pour les tests unitaires :
-   ```bash
+
+```bash
    cp .env.example .env.test
-   ```
+```
+
 Modifiez les variables d'environnement selon votre configuration de test (base de données, clés API, etc.).
 
 Assurez-vous que les dépendances de test sont installées :
@@ -91,6 +98,7 @@ vendor/bin/phpstan analyze
 ```
 
 Cette commande analyse le code selon les règles définies dans `phpstan.neon` (niveau 6) et vérifie :
+
 - La sécurité des types
 - Les erreurs potentielles
 - Le respect des bonnes pratiques
@@ -128,6 +136,7 @@ vendor/bin/php-cs-fixer fix
 ```
 
 # FRONTEND
+
 ### Exécution des tests
 
 ```bash
@@ -145,6 +154,7 @@ Formate le code
 ```bash
 npm run format
 ```
+
 Type-check le code
 
 ```bash

@@ -72,18 +72,16 @@ interface CustomerAppointmentStepperProps {
   equipmentId?: number;
 }
 
-export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProps> = ({
-  mode,
-  id,
-  button,
-  onSuccess,
-  equipmentId,
-}) => {
+export const CustomerAppointmentStepper: React.FC<
+  CustomerAppointmentStepperProps
+> = ({ mode, id, button, onSuccess, equipmentId }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [activeStep, setActiveStep] = useState<StepName>('equipment');
   const [equipments, setEquipments] = useState<Equipment[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
-  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
+  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(
+    null
+  );
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -111,7 +109,7 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
   });
 
   const { handleSubmit } = methods;
-  const companySpecSelected = methods.watch("company_spec");
+  const companySpecSelected = methods.watch('company_spec');
 
   // Charger les équipements du client
   useEffect(() => {
@@ -197,7 +195,9 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
   const loadCompaniesBySpec = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get(`/company?specialization=${companySpecSelected}`);
+      const response = await api.get(
+        `/company?specialization=${companySpecSelected}`
+      );
       setCompanies(response.data || []);
     } catch (error) {
       console.error('Erreur lors du chargement des entreprises:', error);
@@ -228,12 +228,12 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
       Alert.alert('Erreur', 'Veuillez sélectionner un équipement');
       return;
     }
-    
+
     if (activeStep === 'company' && !selectedCompany) {
       Alert.alert('Erreur', 'Veuillez sélectionner une entreprise');
       return;
     }
-    
+
     if (activeStep === 'date') {
       const formValues = methods.getValues();
       if (!formValues.title || !formValues.description || !selectedDateTime) {
@@ -274,7 +274,7 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
   const handleFormSubmit = async (data: AppointmentData) => {
     try {
       setIsSubmitting(true);
-      
+
       const submitData = {
         ...data,
         date: selectedDateTime ? selectedDateTime.toISOString() : data.date,
@@ -290,14 +290,17 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
         await api.put(`/appointment/${id}`, submitData);
         setModalVisible(false);
         Alert.alert('Succès', 'Rendez-vous modifié avec succès');
-        
+
         if (onSuccess) {
           onSuccess();
         }
       }
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
-      Alert.alert('Erreur', 'Impossible de sauvegarder la demande d\'intervention');
+      Alert.alert(
+        'Erreur',
+        "Impossible de sauvegarder la demande d'intervention"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -329,11 +332,15 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
         <View style={styles.container}>
           {/* Header */}
           <ToolBarCustomer
-            title={mode === 'create' ? 'Nouvelle demande d\'intervention' : 'Modifier le rendez-vous'}
+            title={
+              mode === 'create'
+                ? "Nouvelle demande d'intervention"
+                : 'Modifier le rendez-vous'
+            }
             showBack
-            icon='x'
+            icon="x"
             onBackPress={() => setModalVisible(false)}
-            />
+          />
           <ScrollView style={styles.content}>
             {/* Mode édition simple sans stepper */}
             {mode === 'update' ? (
@@ -347,7 +354,7 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                       value: spec.id,
                     }))}
                   />
-                  
+
                   <AppSelectInput
                     nameField="company_id"
                     label="Entreprise"
@@ -359,7 +366,9 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                   />
 
                   <TimeSlotPicker
-                    companyId={appointment?.company?.id || methods.watch('company_id')}
+                    companyId={
+                      appointment?.company?.id || methods.watch('company_id')
+                    }
                     onSlotSelect={(date, startTime, endTime) => {
                       setSelectedDateTime(date);
                       setSelectedTimeSlot({ start: startTime, end: endTime });
@@ -405,7 +414,8 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                 <View style={styles.progressContainer}>
                   {STEPS.map((step, index) => {
                     const isActive = step.name === activeStep;
-                    const isCompleted = STEPS.findIndex(s => s.name === activeStep) > index;
+                    const isCompleted =
+                      STEPS.findIndex(s => s.name === activeStep) > index;
 
                     return (
                       <View key={step.name} style={styles.stepIndicator}>
@@ -455,7 +465,11 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                           <View
                             style={[
                               styles.connectionLine,
-                              { backgroundColor: isCompleted ? '#28A745' : '#E0E0E0' },
+                              {
+                                backgroundColor: isCompleted
+                                  ? '#28A745'
+                                  : '#E0E0E0',
+                              },
                             ]}
                           />
                         )}
@@ -468,56 +482,92 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                   {/* Étape 1: Sélection de l'équipement */}
                   {isStepActive('equipment') && (
                     <View style={styles.stepContent}>
-                      <PaperText variant="titleLarge" style={styles.stepHeading}>
+                      <PaperText
+                        variant="titleLarge"
+                        style={styles.stepHeading}
+                      >
                         Quel équipement voulez-vous faire réparer ?
                       </PaperText>
-                      <PaperText variant="bodyMedium" style={styles.stepDescription}>
-                        Sélectionnez l'équipement qui nécessite une intervention parmi ceux que vous avez enregistrés.
+                      <PaperText
+                        variant="bodyMedium"
+                        style={styles.stepDescription}
+                      >
+                        Sélectionnez l'équipement qui nécessite une intervention
+                        parmi ceux que vous avez enregistrés.
                       </PaperText>
 
                       {isLoading ? (
                         <View style={styles.loadingContainer}>
                           <ActivityIndicator size="large" color="#007AFF" />
-                          <Text style={styles.loadingText}>Chargement de vos équipements...</Text>
+                          <Text style={styles.loadingText}>
+                            Chargement de vos équipements...
+                          </Text>
                         </View>
                       ) : (
                         <>
                           <View style={styles.equipmentSection}>
                             <View style={styles.equipmentHeader}>
-                              <Text style={styles.sectionTitle}>Vos équipements</Text>
+                              <Text style={styles.sectionTitle}>
+                                Vos équipements
+                              </Text>
                               <CreateEquipmentModal
                                 trigger={
-                                  <TouchableOpacity style={styles.addEquipmentButton}>
-                                    <Feather name="plus" size={16} color="#007AFF" />
-                                    <Text style={styles.addEquipmentText}>Nouveau</Text>
+                                  <TouchableOpacity
+                                    style={styles.addEquipmentButton}
+                                  >
+                                    <Feather
+                                      name="plus"
+                                      size={16}
+                                      color="#007AFF"
+                                    />
+                                    <Text style={styles.addEquipmentText}>
+                                      Nouveau
+                                    </Text>
                                   </TouchableOpacity>
                                 }
                                 onSuccess={newEquipment => {
-                                  setEquipments(prev => [...prev, newEquipment]);
+                                  setEquipments(prev => [
+                                    ...prev,
+                                    newEquipment,
+                                  ]);
                                   setSelectedEquipment(newEquipment);
-                                  methods.setValue('equipment_id', newEquipment.id);
+                                  methods.setValue(
+                                    'equipment_id',
+                                    newEquipment.id
+                                  );
                                 }}
                               />
                             </View>
 
                             {equipments.length > 0 ? (
                               <View style={styles.equipmentList}>
-                                {equipments.map((equipment) => (
+                                {equipments.map(equipment => (
                                   <Pressable
                                     key={equipment.id}
                                     style={[
                                       styles.equipmentCard,
-                                      selectedEquipment?.id === equipment.id && styles.selectedCard,
+                                      selectedEquipment?.id === equipment.id &&
+                                        styles.selectedCard,
                                     ]}
-                                    onPress={() => handleEquipmentSelect(equipment.id)}
+                                    onPress={() =>
+                                      handleEquipmentSelect(equipment.id)
+                                    }
                                   >
                                     <View style={styles.equipmentIcon}>
-                                      <Feather name="monitor" size={24} color="#007AFF" />
+                                      <Feather
+                                        name="monitor"
+                                        size={24}
+                                        color="#007AFF"
+                                      />
                                     </View>
                                     <View style={styles.equipmentInfo}>
-                                      <Text style={styles.equipmentName}>{equipment.name}</Text>
+                                      <Text style={styles.equipmentName}>
+                                        {equipment.name}
+                                      </Text>
                                       <Text style={styles.equipmentDetails}>
-                                        {equipment.brand?.name ? `${equipment.brand.name} • ` : ''}
+                                        {equipment.brand?.name
+                                          ? `${equipment.brand.name} • `
+                                          : ''}
                                         {equipment.type_equipment?.name || ''}
                                       </Text>
                                       {equipment.operating_system?.name && (
@@ -527,17 +577,28 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                                       )}
                                     </View>
                                     {selectedEquipment?.id === equipment.id && (
-                                      <Feather name="check-circle" size={24} color="#28A745" />
+                                      <Feather
+                                        name="check-circle"
+                                        size={24}
+                                        color="#28A745"
+                                      />
                                     )}
                                   </Pressable>
                                 ))}
                               </View>
                             ) : (
                               <View style={styles.emptyState}>
-                                <Feather name="monitor" size={48} color="#ccc" />
-                                <Text style={styles.emptyText}>Aucun équipement enregistré</Text>
+                                <Feather
+                                  name="monitor"
+                                  size={48}
+                                  color="#ccc"
+                                />
+                                <Text style={styles.emptyText}>
+                                  Aucun équipement enregistré
+                                </Text>
                                 <Text style={styles.emptySubtext}>
-                                  Créez votre premier équipement pour pouvoir demander une intervention.
+                                  Créez votre premier équipement pour pouvoir
+                                  demander une intervention.
                                 </Text>
                               </View>
                             )}
@@ -559,11 +620,18 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                   {/* Étape 2: Sélection de l'entreprise */}
                   {isStepActive('company') && (
                     <View style={styles.stepContent}>
-                      <PaperText variant="titleLarge" style={styles.stepHeading}>
+                      <PaperText
+                        variant="titleLarge"
+                        style={styles.stepHeading}
+                      >
                         Choisissez une entreprise
                       </PaperText>
-                      <PaperText variant="bodyMedium" style={styles.stepDescription}>
-                        Sélectionnez d'abord une spécialisation, puis l'entreprise qui effectuera la réparation.
+                      <PaperText
+                        variant="bodyMedium"
+                        style={styles.stepDescription}
+                      >
+                        Sélectionnez d'abord une spécialisation, puis
+                        l'entreprise qui effectuera la réparation.
                       </PaperText>
 
                       <AppSelectInput
@@ -573,7 +641,9 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                           label: spec.label,
                           value: spec.id,
                         }))}
-                        rules={{ required: 'Veuillez sélectionner une spécialisation' }}
+                        rules={{
+                          required: 'Veuillez sélectionner une spécialisation',
+                        }}
                       />
 
                       {companySpecSelected && (
@@ -581,37 +651,55 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                           {isLoading ? (
                             <View style={styles.loadingContainer}>
                               <ActivityIndicator size="large" color="#007AFF" />
-                              <Text style={styles.loadingText}>Chargement des entreprises...</Text>
+                              <Text style={styles.loadingText}>
+                                Chargement des entreprises...
+                              </Text>
                             </View>
                           ) : (
                             <>
                               {companies.length > 0 ? (
                                 <View style={styles.companyList}>
-                                  {companies.map((company) => (
+                                  {companies.map(company => (
                                     <Pressable
                                       key={company.id}
                                       style={[
                                         styles.companyCard,
-                                        selectedCompany?.id === company.id && styles.selectedCard,
+                                        selectedCompany?.id === company.id &&
+                                          styles.selectedCard,
                                       ]}
-                                      onPress={() => handleCompanySelect(company.id)}
+                                      onPress={() =>
+                                        handleCompanySelect(company.id)
+                                      }
                                     >
                                       <View style={styles.companyHeader}>
                                         <View style={styles.companyIcon}>
-                                          <Feather name="briefcase" size={20} color="#007AFF" />
+                                          <Feather
+                                            name="briefcase"
+                                            size={20}
+                                            color="#007AFF"
+                                          />
                                         </View>
                                         <View style={styles.companyInfo}>
-                                          <Text style={styles.companyName}>{company.name}</Text>
+                                          <Text style={styles.companyName}>
+                                            {company.name}
+                                          </Text>
                                           <Text style={styles.companyLocation}>
                                             {company.city}
                                           </Text>
                                         </View>
                                         {selectedCompany?.id === company.id && (
-                                          <Feather name="check-circle" size={24} color="#28A745" />
+                                          <Feather
+                                            name="check-circle"
+                                            size={24}
+                                            color="#28A745"
+                                          />
                                         )}
                                       </View>
-                                      
-                                      <Text style={styles.companyDescription} numberOfLines={2}>
+
+                                      <Text
+                                        style={styles.companyDescription}
+                                        numberOfLines={2}
+                                      >
                                         {company.about}
                                       </Text>
                                     </Pressable>
@@ -619,10 +707,17 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                                 </View>
                               ) : (
                                 <View style={styles.emptyState}>
-                                  <Feather name="briefcase" size={48} color="#ccc" />
-                                  <Text style={styles.emptyText}>Aucune entreprise disponible</Text>
+                                  <Feather
+                                    name="briefcase"
+                                    size={48}
+                                    color="#ccc"
+                                  />
+                                  <Text style={styles.emptyText}>
+                                    Aucune entreprise disponible
+                                  </Text>
                                   <Text style={styles.emptySubtext}>
-                                    Aucune entreprise n'est disponible pour cette spécialisation.
+                                    Aucune entreprise n'est disponible pour
+                                    cette spécialisation.
                                   </Text>
                                 </View>
                               )}
@@ -650,18 +745,30 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                   {/* Étape 3: Date et détails */}
                   {isStepActive('date') && (
                     <View style={styles.stepContent}>
-                      <PaperText variant="titleLarge" style={styles.stepHeading}>
+                      <PaperText
+                        variant="titleLarge"
+                        style={styles.stepHeading}
+                      >
                         Détails de l'intervention
                       </PaperText>
-                      <PaperText variant="bodyMedium" style={styles.stepDescription}>
-                        Précisez la date souhaitée et décrivez le problème rencontré.
+                      <PaperText
+                        variant="bodyMedium"
+                        style={styles.stepDescription}
+                      >
+                        Précisez la date souhaitée et décrivez le problème
+                        rencontré.
                       </PaperText>
 
                       <TimeSlotPicker
-                        companyId={selectedCompany?.id || methods.watch('company_id')}
+                        companyId={
+                          selectedCompany?.id || methods.watch('company_id')
+                        }
                         onSlotSelect={(date, startTime, endTime) => {
                           setSelectedDateTime(date);
-                          setSelectedTimeSlot({ start: startTime, end: endTime });
+                          setSelectedTimeSlot({
+                            start: startTime,
+                            end: endTime,
+                          });
                           methods.setValue('date', date.toISOString());
                         }}
                         selectedDate={selectedDateTime || undefined}
@@ -696,11 +803,17 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                             // Validation avant de passer à l'étape suivante
                             const formValues = methods.getValues();
                             if (!formValues.title || !formValues.description) {
-                              Alert.alert('Erreur', 'Veuillez remplir le titre et la description');
+                              Alert.alert(
+                                'Erreur',
+                                'Veuillez remplir le titre et la description'
+                              );
                               return;
                             }
                             if (!selectedDateTime) {
-                              Alert.alert('Erreur', 'Veuillez sélectionner une date et heure');
+                              Alert.alert(
+                                'Erreur',
+                                'Veuillez sélectionner une date et heure'
+                              );
                               return;
                             }
                             nextStep();
@@ -714,10 +827,16 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                   {/* Étape 4: Récapitulatif */}
                   {isStepActive('summary') && (
                     <View style={styles.stepContent}>
-                      <PaperText variant="titleLarge" style={styles.stepHeading}>
+                      <PaperText
+                        variant="titleLarge"
+                        style={styles.stepHeading}
+                      >
                         Récapitulatif de votre demande
                       </PaperText>
-                      <PaperText variant="bodyMedium" style={styles.stepDescription}>
+                      <PaperText
+                        variant="bodyMedium"
+                        style={styles.stepDescription}
+                      >
                         Vérifiez les informations avant d'envoyer votre demande.
                       </PaperText>
 
@@ -725,9 +844,13 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                       <View style={styles.summarySection}>
                         <Text style={styles.summaryTitle}>🔧 Équipement</Text>
                         <View style={styles.summaryCard}>
-                          <Text style={styles.summaryLabel}>{selectedEquipment?.name || 'Non sélectionné'}</Text>
+                          <Text style={styles.summaryLabel}>
+                            {selectedEquipment?.name || 'Non sélectionné'}
+                          </Text>
                           <Text style={styles.summaryValue}>
-                            {selectedEquipment?.brand?.name ? `${selectedEquipment.brand.name} • ` : ''}
+                            {selectedEquipment?.brand?.name
+                              ? `${selectedEquipment.brand.name} • `
+                              : ''}
                             {selectedEquipment?.type_equipment?.name || ''}
                           </Text>
                         </View>
@@ -737,8 +860,12 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                       <View style={styles.summarySection}>
                         <Text style={styles.summaryTitle}>🏢 Entreprise</Text>
                         <View style={styles.summaryCard}>
-                          <Text style={styles.summaryLabel}>{selectedCompany?.name || 'Non sélectionnée'}</Text>
-                          <Text style={styles.summaryValue}>{selectedCompany?.city || ''}</Text>
+                          <Text style={styles.summaryLabel}>
+                            {selectedCompany?.name || 'Non sélectionnée'}
+                          </Text>
+                          <Text style={styles.summaryValue}>
+                            {selectedCompany?.city || ''}
+                          </Text>
                         </View>
                       </View>
 
@@ -747,14 +874,22 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                         <Text style={styles.summaryTitle}>📋 Détails</Text>
                         <View style={styles.summaryCard}>
                           <Text style={styles.summaryLabel}>Titre</Text>
-                          <Text style={styles.summaryValue}>{methods.getValues('title')}</Text>
-                          
-                          <Text style={styles.summaryLabel}>Description</Text>
-                          <Text style={styles.summaryValue}>{methods.getValues('description')}</Text>
-                          
-                          <Text style={styles.summaryLabel}>Date souhaitée</Text>
                           <Text style={styles.summaryValue}>
-                            {selectedDateTime ? selectedDateTime.toLocaleDateString('fr-FR') : 'Non définie'}
+                            {methods.getValues('title')}
+                          </Text>
+
+                          <Text style={styles.summaryLabel}>Description</Text>
+                          <Text style={styles.summaryValue}>
+                            {methods.getValues('description')}
+                          </Text>
+
+                          <Text style={styles.summaryLabel}>
+                            Date souhaitée
+                          </Text>
+                          <Text style={styles.summaryValue}>
+                            {selectedDateTime
+                              ? selectedDateTime.toLocaleDateString('fr-FR')
+                              : 'Non définie'}
                           </Text>
                         </View>
                       </View>
@@ -779,27 +914,46 @@ export const CustomerAppointmentStepper: React.FC<CustomerAppointmentStepperProp
                   {isStepActive('confirmation') && (
                     <View style={styles.confirmationContent}>
                       <View style={styles.successIcon}>
-                        <Feather name="check-circle" size={64} color="#28A745" />
+                        <Feather
+                          name="check-circle"
+                          size={64}
+                          color="#28A745"
+                        />
                       </View>
 
-                      <PaperText variant="titleLarge" style={styles.confirmationTitle}>
+                      <PaperText
+                        variant="titleLarge"
+                        style={styles.confirmationTitle}
+                      >
                         Demande envoyée avec succès !
                       </PaperText>
 
-                      <PaperText variant="bodyMedium" style={styles.confirmationText}>
-                        Votre demande d'intervention a été transmise à <Text style={styles.companyNameHighlight}>{selectedCompany?.name || 'l\'entreprise'}</Text>.
+                      <PaperText
+                        variant="bodyMedium"
+                        style={styles.confirmationText}
+                      >
+                        Votre demande d'intervention a été transmise à{' '}
+                        <Text style={styles.companyNameHighlight}>
+                          {selectedCompany?.name || "l'entreprise"}
+                        </Text>
+                        .
                       </PaperText>
 
                       <View style={styles.waitingInfo}>
                         <Feather name="clock" size={20} color="#FF9800" />
                         <Text style={styles.waitingText}>
-                          Vous devez maintenant attendre que l'entreprise valide la prise en charge de votre équipement.
+                          Vous devez maintenant attendre que l'entreprise valide
+                          la prise en charge de votre équipement.
                         </Text>
                       </View>
 
-                      <PaperText variant="bodySmall" style={styles.nextStepsText}>
-                        Vous recevrez une notification dès que l'entreprise aura accepté ou refusé votre demande.
-                        Vous pourrez suivre l'avancement dans la section "Mes interventions".
+                      <PaperText
+                        variant="bodySmall"
+                        style={styles.nextStepsText}
+                      >
+                        Vous recevrez une notification dès que l'entreprise aura
+                        accepté ou refusé votre demande. Vous pourrez suivre
+                        l'avancement dans la section "Mes interventions".
                       </PaperText>
 
                       <View style={styles.buttonContainer}>

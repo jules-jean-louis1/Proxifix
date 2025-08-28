@@ -119,7 +119,9 @@ export const TimeSlotPicker: FC<TimeSlotPickerProps> = ({
               >
                 {format(day, 'd')}
               </Text>
-              {isToday && !isSelected && <Text style={styles.todayLabel}>Aujourd'hui</Text>}
+              {isToday && !isSelected && (
+                <Text style={styles.todayLabel}>Aujourd'hui</Text>
+              )}
             </TouchableOpacity>
           );
         })}

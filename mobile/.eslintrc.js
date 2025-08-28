@@ -1,9 +1,6 @@
 module.exports = {
   root: true,
-  extends: [
-    'expo',
-    'prettier',
-  ],
+  extends: ['expo', 'prettier'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
@@ -12,15 +9,13 @@ module.exports = {
     ecmaVersion: 2022,
     sourceType: 'module',
   },
-  plugins: [
-    'prettier',
-  ],
+  plugins: ['prettier'],
   rules: {
     // Prettier rules
     'prettier/prettier': 'error',
-    
+
     // General best practices
-    'no-console': 'warn',
+    'no-console': 'off', // Disable no-console rule
     'no-debugger': 'error',
     'prefer-const': 'error',
     'no-var': 'error',
@@ -32,8 +27,10 @@ module.exports = {
     jest: true,
   },
   settings: {
-    react: {
-      version: 'detect',
+    'import/resolver': {
+      typescript: {
+        project: './tsconfig.json',
+      },
     },
   },
   ignorePatterns: [

@@ -96,7 +96,9 @@ export default function InterventionsPage() {
               <AppointmentCard
                 key={appointment.id}
                 appointment={appointment}
-                onPress={()=> router.push(`/customer/appointment/${appointment.id}`)}
+                onPress={() =>
+                  router.push(`/customer/appointment/${appointment.id}`)
+                }
                 onSuccess={() => setFetchData(!fetchData)}
               />
             ))}
@@ -112,6 +114,7 @@ export default function InterventionsPage() {
           button={
             <FAB
               icon="plus"
+              color="white"
               style={styles.fab}
               label="Ajouter un rendez-vous"
             />
@@ -201,6 +204,6 @@ const styles = StyleSheet.create({
   fab: {
     margin: 16,
     backgroundColor: '#F9556D',
-    color: '#fff'
+    color: '#fff',
   },
 });

@@ -41,11 +41,11 @@ export const AdminAppointmentCard: React.FC<AdminAppointmentCardProps> = ({
     switch (status) {
       case 'pending':
         return '#FF9800';
-      case 'scheduled':
+      case 'accepted':
         return '#2196F3';
       case 'completed':
         return '#4CAF50';
-      case 'cancelled':
+      case 'rejected':
         return '#F44336';
       default:
         return '#757575';
@@ -56,12 +56,12 @@ export const AdminAppointmentCard: React.FC<AdminAppointmentCardProps> = ({
     switch (status) {
       case 'pending':
         return 'En attente';
-      case 'scheduled':
-        return 'Planifié';
+      case 'accepted':
+        return 'Accepté';
       case 'completed':
         return 'Terminé';
-      case 'cancelled':
-        return 'Annulé';
+      case 'rejected':
+        return 'Rejeté';
       default:
         return status;
     }

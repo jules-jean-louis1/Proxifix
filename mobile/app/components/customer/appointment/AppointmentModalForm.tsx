@@ -51,14 +51,14 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
       title: '',
       description: '',
       date: '',
-      company_spec: ''
+      company_spec: '',
     },
   });
   const { handleSubmit } = methods;
   const sessionCtx = useSessionContext();
   const api = useApi();
   const sessionData = sessionCtx?.session;
-  const companySpecSelected = methods.watch("company_spec");
+  const companySpecSelected = methods.watch('company_spec');
 
   useEffect(() => {
     (async () => {
@@ -87,11 +87,13 @@ export const AppointmentModalForm: FC<AppointmentModalFormProps> = ({
     if (companySpecSelected) {
       (async () => {
         try {
-          console.log(companySpecSelected)
-          const companiesResponse = await api.get(`/company?specialization=${companySpecSelected}`);
+          console.log(companySpecSelected);
+          const companiesResponse = await api.get(
+            `/company?specialization=${companySpecSelected}`
+          );
           setCompanies(companiesResponse.data);
         } catch (e) {
-          console.log("", e);
+          console.log('', e);
         }
       })();
     }

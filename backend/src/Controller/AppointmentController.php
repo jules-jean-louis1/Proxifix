@@ -156,102 +156,126 @@ final class AppointmentController extends AbstractController
             $em->beginTransaction();
             $payload = $request->toArray();
 
-            if (AppointmentRequest::REJECTED === $status) {
-                $appointment->setStatus(AppointmentRequest::REJECTED);
-                $appointment->setUpdatedAt(new \DateTimeImmutable());
-                $em->persist($appointment);
-                $em->flush();
-                $em->commit();
+            switch ($status) {
+                case AppointmentRequest::REJECTED:
+                    $this->updateAppointmentStatus($appointment, AppointmentRequest::REJECTED, $em);
+                    $em->commit();
+                    return $this->json(['success' => true, 'message' => 'Appointment rejected'], Response::HTTP_OK);
 
-                return $this->json(['success' => true, 'message' => 'Appointment rejected'], Response::HTTP_OK);
-            }
-            if (AppointmentRequest::CONFIRMED === $status) {
-                $appointment->setStatus(AppointmentRequest::CONFIRMED);
-                $appointment->setUpdatedAt(new \DateTimeImmutable());
-                $em->persist($appointment);
-                $em->flush();
-                $em->commit();
+                case AppointmentRequest::ACCEPTED:
+                    if ($appointment->getIntervention() !== null) {
+                        $this->updateAppointmentStatus($appointment, AppointmentRequest::ACCEPTED, $em);
+                        $em->commit();
+                        return $this->json([
+                            'success' => true,
+                            'message' => 'Appointment already accepted, no new intervention created.',
+                            'appointment' => [
+                                'id' => $appointment->getId(),
+                                'status' => $appointment->getStatus(),
+                            ],
+                        ], Response::HTTP_OK);
+                    }
 
-                return $this->json(['success' => true, 'message' => 'Appointment confirmed'], Response::HTTP_OK);
-            }
-            if (AppointmentRequest::SCHEDULED === $status) {
-                // Si déjà accepté ET intervention déjà créée, on ne recrée pas d'intervention
-                if (AppointmentRequest::SCHEDULED === $appointment->getStatus() && null !== $appointment->getIntervention()) {
-                    // Ici tu peux mettre à jour l'intervention existante si besoin
-                    $appointment->setUpdatedAt(new \DateTimeImmutable());
-                    $em->persist($appointment);
-                    $em->flush();
+                    if (!isset($payload['type_intervention_id']) && $appointment->getTypeIntervention() === null) {
+                        return $this->json(['error' => 'Missing type_intervention_id'], Response::HTTP_BAD_REQUEST);
+                    }
+
+                    $typeIntervention = $this->getTypeIntervention($payload, $appointment, $em);
+                    $startDate = $this->getStartDate($payload, $appointment);
+                    $endDate = $this->getEndDate($payload, $startDate);
+
+                    if (!$interventionRepository->isSlotsAvailable($appointment->getCompany()->getId(), $startDate, $endDate)) {
+                        return $this->json(['error' => 'Slot already taken'], Response::HTTP_CONFLICT);
+                    }
+
+                    $intervention = $this->createIntervention($appointment, $payload, $typeIntervention, $startDate, $endDate, $em);
+                    $this->updateAppointmentStatus($appointment, AppointmentRequest::ACCEPTED, $em);
+                    $appointment->setIntervention($intervention);
+
                     $em->commit();
 
                     return $this->json([
                         'success' => true,
-                        'message' => 'Appointment already accepted, no new intervention created.',
+                        'message' => 'Appointment successfully validated.',
                         'appointment' => [
                             'id' => $appointment->getId(),
                             'status' => $appointment->getStatus(),
                         ],
+                        'intervention' => [
+                            'id' => $intervention->getId(),
+                            'title' => $intervention->getTitle(),
+                            'description' => $intervention->getDescription(),
+                        ],
                     ], Response::HTTP_OK);
-                }
 
-                // Sinon, on accepte et on crée l'intervention
-                if (! isset($payload['type_intervention_id']) && null === $appointment->getTypeIntervention()) {
-                    return $this->json(['error' => 'Missing type_intervention_id'], Response::HTTP_BAD_REQUEST);
-                }
-                $typeIntervention = $payload['type_intervention_id']
-                ? $em->getRepository(TypeIntervention::class)->find($payload['type_intervention_id'])
-                : $appointment->getTypeIntervention();
-                $startDate = isset($payload['new_start_date']) ? new \DateTimeImmutable($payload['new_start_date']) : ($appointment->getDate() ? new \DateTimeImmutable($appointment->getDate()->format('Y-m-d H:i:s')) : new \DateTimeImmutable());
-                $endDate = isset($payload['end_date'])
-                ? new \DateTimeImmutable($payload['end_date'])
-                : (new \DateTimeImmutable($startDate->format('Y-m-d H:i:s')))->add(new \DateInterval('PT1H'));
-
-                if (! $interventionRepository->isSlotsAvailable($appointment->getCompany()->getId(), $startDate, $endDate)) {
-                    return $this->json(['error' => 'Slot already taken'], Response::HTTP_CONFLICT);
-                }
-
-                $appointment->setStatus(AppointmentRequest::SCHEDULED);
-                $appointment->setUpdatedAt(new \DateTimeImmutable());
-                $em->persist($appointment);
-
-                $intervention = new Intervention();
-                $intervention->setCompany($appointment->getCompany());
-                $intervention->setDescription($payload['description'] ?? $appointment->getDescription());
-                $intervention->setTitle($payload['title'] ?? $appointment->getTitle());
-                $intervention->setStatus($payload['status'] ?? Intervention::PENDING);
-                $intervention->setTypeIntervention($typeIntervention);
-                $intervention->setCustomer($appointment->getUser());
-                $intervention->setCreatedAt(new \DateTimeImmutable());
-                $intervention->setUpdatedAt(new \DateTimeImmutable());
-                $intervention->setEquipment($appointment->getEquipment());
-
-                // Associe l'intervention à l'appointment
-                $appointment->setIntervention($intervention);
-
-                $em->persist($intervention);
-                $em->flush();
-                $em->commit();
-
-                return $this->json([
-                    'success' => true,
-                    'message' => 'Appointment successfully validated.',
-                    'appointment' => [
-                        'id' => $appointment->getId(),
-                        'status' => $appointment->getStatus(),
-                    ],
-                    'intervention' => [
-                        'id' => $intervention->getId(),
-                        'title' => $intervention->getTitle(),
-                        'description' => $intervention->getDescription(),
-                    ],
-                ], Response::HTTP_OK);
+                default:
+                    return $this->json(['error' => 'Invalid status'], Response::HTTP_BAD_REQUEST);
             }
-
-            return $this->json(['error' => 'Invalid status'], Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
             $em->rollback();
-
             return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private function updateAppointmentStatus(AppointmentRequest $appointment, string $status, EntityManagerInterface $em): void
+    {
+        $appointment->setStatus($status);
+        $appointment->setUpdatedAt(new \DateTimeImmutable());
+        $em->persist($appointment);
+        $em->flush();
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    private function getTypeIntervention(array $payload, AppointmentRequest $appointment, EntityManagerInterface $em): ?TypeIntervention
+    {
+        return isset($payload['type_intervention_id'])
+            ? $em->getRepository(TypeIntervention::class)->find($payload['type_intervention_id'])
+            : $appointment->getTypeIntervention();
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    private function getStartDate(array $payload, AppointmentRequest $appointment): \DateTimeImmutable
+    {
+        return isset($payload['new_start_date'])
+            ? new \DateTimeImmutable($payload['new_start_date'])
+            : ($appointment->getDate() ? new \DateTimeImmutable($appointment->getDate()->format('Y-m-d H:i:s')) : new \DateTimeImmutable());
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    private function getEndDate(array $payload, \DateTimeImmutable $startDate): \DateTimeImmutable
+    {
+        return isset($payload['end_date'])
+            ? new \DateTimeImmutable($payload['end_date'])
+            : (new \DateTimeImmutable($startDate->format('Y-m-d H:i:s')))->add(new \DateInterval('PT1H'));
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    private function createIntervention(AppointmentRequest $appointment, array $payload, ?TypeIntervention $typeIntervention, \DateTimeImmutable $startDate, \DateTimeImmutable $endDate, EntityManagerInterface $em): Intervention
+    {
+        $intervention = new Intervention();
+        $intervention->setCompany($appointment->getCompany());
+        $intervention->setDescription($payload['description'] ?? $appointment->getDescription());
+        $intervention->setTitle($payload['title'] ?? $appointment->getTitle());
+        $intervention->setStatus($payload['status'] ?? Intervention::PENDING);
+        $intervention->setTypeIntervention($typeIntervention);
+        $intervention->setCustomer($appointment->getUser());
+        $intervention->setCreatedAt(new \DateTimeImmutable());
+        $intervention->setUpdatedAt(new \DateTimeImmutable());
+        $intervention->setEquipment($appointment->getEquipment());
+        $intervention->setAppointmentRequest($appointment);
+
+        $em->persist($intervention);
+        $em->flush();
+
+        return $intervention;
     }
 
     #[Route('/appointment/{id}', name: 'edit_appointment_for_customer', methods: ['PUT'])]
@@ -263,7 +287,7 @@ final class AppointmentController extends AbstractController
             return $this->json(['error' => 'Appointment not found'], Response::HTTP_NOT_FOUND);
         }
 
-        if (AppointmentRequest::SCHEDULED === $appointment->getStatus()) {
+        if (AppointmentRequest::ACCEPTED === $appointment->getStatus()) {
             return $this->json(['error' => "Cannot edit an appointment who's has been accepted"]);
         }
         $payload = $request->toArray();

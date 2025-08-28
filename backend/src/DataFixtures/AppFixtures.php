@@ -210,7 +210,7 @@ class AppFixtures extends Fixture
         $appointment1->setUser($customer1);
         $appointment1->setCompany($company);
         $appointment1->setEquipment($equipment1);
-        $appointment1->setStatus(AppointmentRequest::CONFIRMED);
+        $appointment1->setStatus(AppointmentRequest::ACCEPTED);
         $appointment1->setCreatedAt(new \DateTimeImmutable('-7 days'));
         $appointment1->setUpdatedAt(new \DateTimeImmutable('-7 days'));
         $appointment1->setDate(new \DateTimeImmutable('+2 days'));
