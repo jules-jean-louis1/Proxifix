@@ -13,9 +13,11 @@ module.exports = {
   rules: {
     // Prettier rules
     'prettier/prettier': 'error',
+    // Vscode import errors
+    'import/no-unresolved': 'off',
 
     // General best practices
-    'no-console': 'off', // Disable no-console rule
+    'no-console': 'warn',
     'no-debugger': 'error',
     'prefer-const': 'error',
     'no-var': 'error',
@@ -30,6 +32,10 @@ module.exports = {
     'import/resolver': {
       typescript: {
         project: './tsconfig.json',
+      },
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        moduleDirectory: ['node_modules', './'],
       },
     },
   },

@@ -1,33 +1,34 @@
 import { useSessionContext } from '@/app/context/useSessionContext';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Image, Pressable, ScrollView } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 import { useApi } from '@/app/hooks/useApi';
 import { Feather } from '@expo/vector-icons';
 import { EquipmentCardHome } from '@/app/components/customer/equipment/EquipmentCardHome';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { ToolBarCustomer } from '@/app/components/customer/navigation/ToolBarCustomer';
 
 export const CustomerHome = () => {
   const sessionCtx = useSessionContext();
   const sessionData = sessionCtx?.session;
-  const [equipment, setEquipment] = useState<any>();
+  const [equipment, setEquipment] = useState<any[]>([]);
   const api = useApi();
 
-  useEffect(() => {
+  const fetchData = async () => {
     if (!sessionData) return;
-    (async () => {
-      try {
-        const resp = await api.get(`/equipment?user_id=${sessionData.id}`);
-        setEquipment(resp.data);
-      } catch (error) {
-        console.error(
-          'Erreur lors de la récupération des équipements :',
-          error
-        );
-      }
-    })();
-  }, []);
+    try {
+      const resp = await api.get(`/equipment?user_id=${sessionData.id}`);
+      setEquipment(resp.data);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des équipements :', error);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [sessionData])
+  );
 
   return (
     <View style={{ flex: 1, backgroundColor: '#FFF' }}>
@@ -116,7 +117,15 @@ export const CustomerHome = () => {
               </Text>
             </Pressable>
           </View>
-          <EquipmentCardHome equipment={equipment} />
+          <View style={styles.equipmentSectionHeader}>
+            <Text style={styles.titleSide}>Vos équipements</Text>
+            <Pressable onPress={() => router.push('/customer/equipments')}>
+              <Text>Voir plus</Text>
+            </Pressable>
+          </View>
+          {equipment.map(item => (
+            <EquipmentCardHome key={item.id} equipment={item} />
+          ))}
         </View>
       </ScrollView>
     </View>
@@ -259,6 +268,13 @@ const styles = StyleSheet.create({
     height: '80%',
     backgroundColor: '#000',
     marginHorizontal: 8,
+  },
+  equipmentSectionHeader: {
+    width: '90%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
   },
 });
 

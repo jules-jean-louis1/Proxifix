@@ -9,147 +9,110 @@ import { router } from 'expo-router';
 import { Icon } from 'react-native-paper';
 
 interface EquipmentCardHomeProps {
-  equipment: any[];
+  equipment: any;
 }
 
 export const EquipmentCardHome: React.FC<EquipmentCardHomeProps> = ({
   equipment,
 }) => {
-  if (!equipment || equipment.length === 0) {
+  if (!equipment) {
     return null;
   }
 
+  const status =
+    equipment.interventions && equipment.interventions.length > 0
+      ? getStatus(equipment.interventions[0])
+      : null;
+  const statusColor = getStatusColor(equipment.interventions[0]?.status);
+  const statusBgColor = getStatusColorBackground(
+    equipment.interventions[0]?.status
+  );
+
+  const createdDate = new Date(
+    equipment.created_at || equipment.createdAt || Date.now()
+  ).toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+
+  const recoveryDate =
+    equipment.interventions &&
+    equipment.interventions.length > 0 &&
+    equipment.interventions[0].completed_at
+      ? new Date(equipment.interventions[0].completed_at).toLocaleDateString(
+          'fr-FR',
+          {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          }
+        )
+      : null;
+
   return (
-    <View style={{ width: '100%', alignItems: 'center', marginTop: 20 }}>
-      <View style={styles.header}>
-        <Text style={styles.titleSide}>Vos équipements</Text>
-        <Pressable onPress={() => router.push('/customer/equipments')}>
-          <Text>Voir plus</Text>
-        </Pressable>
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.name}>{equipment.name}</Text>
+        {status && (
+          <View
+            style={[styles.statusContainer, { backgroundColor: statusBgColor }]}
+          >
+            <Text style={[styles.status, { color: statusColor }]}>
+              {status}
+            </Text>
+          </View>
+        )}
       </View>
-      <View style={styles.equipmentCard}>
-        <View style={styles.equipmentCardContainer}>
-          {equipment.slice(0, 4).map((e: any, index: number) => {
-            const status =
-              e.interventions && e.interventions.length > 0
-                ? getStatus(e.interventions[0])
-                : null;
-            const statusColor = getStatusColor(e.interventions[0]?.status);
-            const statusBgColor = getStatusColorBackground(
-              e.interventions[0]?.status
-            );
 
-            const createdDate = new Date(
-              e.created_at || e.createdAt || Date.now()
-            ).toLocaleDateString('fr-FR', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-            });
-
-            const recoveryDate =
-              e.interventions &&
-              e.interventions.length > 0 &&
-              e.interventions[0].completed_at
-                ? new Date(e.interventions[0].completed_at).toLocaleDateString(
-                    'fr-FR',
-                    {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                    }
-                  )
-                : null;
-
-            return (
-              <View style={styles.card} key={index}>
-                <View style={styles.cardHeader}>
-                  <Text style={styles.name}>{e.name}</Text>
-                  {status && (
-                    <View
-                      style={[
-                        styles.statusContainer,
-                        { backgroundColor: statusBgColor },
-                      ]}
-                    >
-                      <Text style={[styles.status, { color: statusColor }]}>
-                        {status}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-
-                {/* OS Information */}
-                {e.operating_system && (
-                  <View style={styles.infoRow}>
-                    <Icon source="monitor" size={16} color="#6B7280" />
-                    <Text style={styles.infoText}>
-                      OS : {e.operating_system.name}
-                    </Text>
-                  </View>
-                )}
-
-                {/* Model Information */}
-                <View style={styles.infoRow}>
-                  <Icon source="laptop" size={16} color="#6B7280" />
-                  <Text style={styles.infoText}>
-                    Modèle : {e.brand?.name || ''}{' '}
-                    {e.type_equipment?.name || e.name}
-                  </Text>
-                </View>
-
-                {/* Dates */}
-                <View style={styles.datesContainer}>
-                  <Text style={styles.dateText}>Déposé : {createdDate}</Text>
-                  {recoveryDate && (
-                    <Text style={styles.dateText}>
-                      Récupéré : {recoveryDate}
-                    </Text>
-                  )}
-                </View>
-
-                {/* Action Button */}
-                {e.interventions && e.interventions.length > 0 && (
-                  <View style={styles.actionContainer}>
-                    <Pressable
-                      style={styles.detailButton}
-                      onPress={() =>
-                        router.push(
-                          `/customer/intervention/${e.interventions[0].id}`
-                        )
-                      }
-                    >
-                      <Text style={styles.detailButtonText}>Voir détails</Text>
-                      <Icon source="chevron-right" size={16} color="#E53953" />
-                    </Pressable>
-                  </View>
-                )}
-              </View>
-            );
-          })}
+      {/* OS Information */}
+      {equipment.operating_system && (
+        <View style={styles.infoRow}>
+          <Icon source="monitor" size={16} color="#6B7280" />
+          <Text style={styles.infoText}>
+            OS : {equipment.operating_system.name}
+          </Text>
         </View>
+      )}
+
+      {/* Model Information */}
+      <View style={styles.infoRow}>
+        <Icon source="laptop" size={16} color="#6B7280" />
+        <Text style={styles.infoText}>
+          Modèle : {equipment.brand?.name || ''}{' '}
+          {equipment.type_equipment?.name || equipment.name}
+        </Text>
       </View>
+
+      {/* Dates */}
+      <View style={styles.datesContainer}>
+        <Text style={styles.dateText}>Déposé : {createdDate}</Text>
+        {recoveryDate && (
+          <Text style={styles.dateText}>Récupéré : {recoveryDate}</Text>
+        )}
+      </View>
+
+      {/* Action Button */}
+      {equipment.interventions && equipment.interventions.length > 0 && (
+        <View style={styles.actionContainer}>
+          <Pressable
+            style={styles.detailButton}
+            onPress={() =>
+              router.push(
+                `/customer/intervention/${equipment.interventions[0].id}`
+              )
+            }
+          >
+            <Text style={styles.detailButtonText}>Voir détails</Text>
+            <Icon source="chevron-right" size={16} color="#E53953" />
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  header: {
-    width: '90%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  equipmentCard: {
-    borderRadius: 20,
-    marginBottom: 20,
-    width: '90%',
-    alignSelf: 'center',
-  },
-  equipmentCardContainer: {
-    width: '100%',
-  },
   card: {
     backgroundColor: '#ffffff',
     borderRadius: 16,
@@ -160,18 +123,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
+    width: '90%',
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 16,
-  },
-  titleSide: {
-    color: '#637381',
-    fontWeight: 'bold',
-    fontSize: 12,
-    textTransform: 'uppercase',
   },
   name: {
     fontSize: 18,
@@ -215,10 +173,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#9CA3AF',
     fontWeight: '500',
-  },
-  noIntervention: {
-    fontSize: 14,
-    color: '#999',
   },
   actionContainer: {
     marginTop: 16,

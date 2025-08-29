@@ -18,24 +18,11 @@ export const InterventionCard: React.FC<InterventionCardProps> = ({
   intervention,
   onPress,
 }) => {
-  console.log('Intervention data:', intervention);
   return (
     <Pressable onPress={onPress}>
       <View style={styles.interventionItem}>
         <View style={styles.titleFlex}>
           <Text style={styles.interventionTitle}>{intervention.title}</Text>
-          <Text
-            style={{
-              fontSize: 12,
-              fontWeight: '600',
-              color: getStatusColor(intervention.status),
-              backgroundColor: getStatusColorBackground(intervention.status),
-              padding: 8,
-              borderRadius: 8,
-            }}
-          >
-            {getStatus(intervention)}
-          </Text>
         </View>
 
         <View style={styles.containerInformation}>
@@ -72,14 +59,12 @@ export const InterventionCard: React.FC<InterventionCardProps> = ({
 
         <View style={styles.footerContainer}>
           <View style={styles.dateContainer}>
-            {intervention.created_at ? (
+            {intervention.created_at && (
               <Text style={styles.footerDate}>
                 {format(new Date(intervention.created_at), 'dd MMMM yyyy', {
                   locale: fr,
                 })}
               </Text>
-            ) : (
-              <View style={styles.footerDate}></View>
             )}
             <Feather
               name="calendar"
@@ -88,6 +73,18 @@ export const InterventionCard: React.FC<InterventionCardProps> = ({
               style={styles.icon}
             />
           </View>
+          <Text
+            style={{
+              fontSize: 12,
+              fontWeight: '600',
+              color: getStatusColor(intervention.status),
+              backgroundColor: getStatusColorBackground(intervention.status),
+              padding: 8,
+              borderRadius: 8,
+            }}
+          >
+            {getStatus(intervention)}
+          </Text>
         </View>
       </View>
     </Pressable>
@@ -139,7 +136,6 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     marginRight: 8,
-    justifyContent: 'flex-start',
   },
   dateText: {
     fontSize: 13,
@@ -165,7 +161,6 @@ const styles = StyleSheet.create({
   footerDate: {
     fontSize: 14,
     color: '#5B6880',
-    flex: 1,
     textAlign: 'right',
   },
   titleFlex: {

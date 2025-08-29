@@ -3,7 +3,6 @@ import React from 'react';
 import { useSession } from '@/app/context/authContext';
 import { FormProvider, useForm } from 'react-hook-form';
 import { AppTextField } from '../inputs/AppTextField';
-import { Snackbar } from 'react-native-paper';
 
 interface LoginFormProps {
   success: boolean | null;
@@ -50,18 +49,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         children={'Connexion'}
         type="primary"
         onPress={handleSubmit(data => {
+          console.log(data);
           onSubmit(data);
         })}
         disabled={false}
         icon="login"
       />
-      <Snackbar
-        visible={success !== null}
-        onDismiss={() => setSuccess(false)}
-        duration={3000}
-      >
-        {success ? 'Connexion réussie !' : 'Échec de la connexion.'}
-      </Snackbar>
     </FormProvider>
   );
 };

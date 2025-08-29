@@ -12,7 +12,7 @@ import { CustomerAppointmentStepper } from '@/app/components/customer/appointmen
 import { AppointmentCard } from '@/app/components/customer/appointment/AppointmentCard';
 import { InterventionCard } from '@/app/components/customer/intervention/InterventionCard';
 import { FAB, MD2Colors } from 'react-native-paper';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { ToolBarCustomer } from '@/app/components/customer/navigation/ToolBarCustomer';
 
 export default function InterventionsPage() {
@@ -26,27 +26,34 @@ export default function InterventionsPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      getData();
+    }, [])
+  );
+
+  const getData = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get(
+        `/intervention?user_id=${sessionData?.id}`
+      );
+      const appointmentsResponse = await api.get(
+        `/appointment?user_id=${sessionData?.id}`
+      );
+      setInterventions(response.data);
+      setAppointments(appointmentsResponse.data);
+      setFetchData(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setError('Impossible de récupérer les données.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await api.get(
-          `/intervention?user_id=${sessionData?.id}`
-        );
-        const appointmentsResponse = await api.get(
-          `/appointment?user_id=${sessionData?.id}`
-        );
-        setInterventions(response.data);
-        setAppointments(appointmentsResponse.data);
-        setFetchData(false);
-      } catch (error) {
-        console.error('Error fetching interventions:', error);
-        setError('Impossible de récupérer les interventions.');
-      } finally {
-        setLoading(false);
-      }
-    })();
+    getData();
   }, [fetchData]);
 
   if (loading) {

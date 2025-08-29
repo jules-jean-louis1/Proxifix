@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controller;
 
 use App\Entity\AppointmentRequest;
@@ -12,6 +11,7 @@ use App\Entity\TypeIntervention;
 use App\Entity\User;
 use App\Repository\InterventionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +21,12 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api')]
 class InterventionController extends AbstractController
 {
+    private LoggerInterface $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
     #[Route('/intervention', name: 'app_intervention_new', methods: ['POST'])]
     public function create(
         Request $request,
@@ -56,7 +62,7 @@ class InterventionController extends AbstractController
                 $role = $technician->getRole();
                 if ('ROLE_TECHNICIAN' !== $role && 'ROLE_ADMIN' !== $role) {
                     return $this->json(['error' => 'User is not a technician or admin'], 400);
-                }                $intervention->setTechnician($technician);
+                }$intervention->setTechnician($technician);
                 $intervention->setStatus(Intervention::ASSIGNED);
             }
 
@@ -139,8 +145,8 @@ class InterventionController extends AbstractController
 
             return new JsonResponse(
                 [
-                    'id' => $intervention->getId(),
-                    'title' => $intervention->getTitle(),
+                    'id'          => $intervention->getId(),
+                    'title'       => $intervention->getTitle(),
                     'description' => $intervention->getDescription(),
                 ],
                 201
@@ -173,6 +179,36 @@ class InterventionController extends AbstractController
 
             if (! $intervention) {
                 return $this->json(['error' => 'Intervention not found'], 404);
+            }
+
+            $currentUser = $this->getUser();
+            if (! $currentUser instanceof User) {
+                return $this->json(['error' => 'Invalid user'], Response::HTTP_UNAUTHORIZED);
+            }
+
+            if ($intervention->getCustomer()->getId() !== $currentUser->getId()) {
+                $userRoles = $currentUser->getRoles();
+
+                // Check if the user is a technician and matches the technician_id
+                if (in_array('ROLE_TECHNICIAN', $userRoles)) {
+                    if ($intervention->getTechnician()?->getId() !== $currentUser->getId()) {
+                        return $this->json(['error' => 'You do not have permission to modify this intervention'], Response::HTTP_FORBIDDEN);
+                    }
+                }
+                // Check if the user is an admin and belongs to the same company
+                elseif (in_array('ROLE_ADMIN', $userRoles)) {
+                    if ($intervention->getCompany()?->getId() !== $currentUser->getCompany()?->getId()) {
+                        return $this->json(['error' => 'You do not have permission to modify this intervention'], Response::HTTP_FORBIDDEN);
+                    }
+                }
+                // Deny access for customers
+                elseif (in_array('ROLE_CUSTOMER', $userRoles)) {
+                    return $this->json(['error' => 'Customers are not allowed to modify interventions'], Response::HTTP_FORBIDDEN);
+                }
+                // Deny access for other roles
+                else {
+                    return $this->json(['error' => 'You do not have permission to modify this intervention'], Response::HTTP_FORBIDDEN);
+                }
             }
 
             if (isset($payload['title'])) {
@@ -223,53 +259,51 @@ class InterventionController extends AbstractController
                 $intervention->setEquipment($equipment);
             }
 
-            // Mise à jour des tâches
-            if (isset($payload['task'])) {
-                $currentTasks = $entityManager
-                    ->getRepository(TaskIntervention::class)
-                    ->findBy(['intervention' => $intervention]);
+            $currentTasks = $entityManager
+                ->getRepository(TaskIntervention::class)
+                ->findBy(['intervention' => $intervention]);
 
-                $currentTaskIds = array_map(
-                    fn ($taskIntervention) => $taskIntervention->getTask()->getId(),
-                    $currentTasks
-                );
+            $currentTaskIds = array_map(
+                fn($taskIntervention) => $taskIntervention->getTask()->getId(),
+                $currentTasks
+            );
 
-                $newTaskIds = array_map(
-                    fn ($task) => $task['id'],
-                    $payload['task']
-                );
+            $newTaskIds = array_map(
+                fn($task) => $task['id'],
+                $payload['task']
+            );
 
-                // Supprimer les tâches qui ne sont plus dans le payload
-                foreach ($currentTasks as $taskIntervention) {
-                    if (! in_array($taskIntervention->getTask()->getId(), $newTaskIds)) {
-                        $entityManager->remove($taskIntervention);
-                    }
+            // Supprimer les tâches qui ne sont plus dans le payload
+            foreach ($currentTasks as $taskIntervention) {
+                if (! in_array($taskIntervention->getTask()->getId(), $newTaskIds)) {
+                    $entityManager->remove($taskIntervention);
                 }
+            }
 
-                // Ajouter les nouvelles tâches
-                foreach ($newTaskIds as $taskId) {
-                    if (! in_array($taskId, $currentTaskIds)) {
-                        $task = $entityManager->getRepository(Task::class)->find($taskId);
-                        if (! $task) {
-                            return $this->json(['error' => "Task with ID $taskId not found"], 400);
-                        }
-
-                        $taskIntervention = new TaskIntervention();
-                        $taskIntervention->setTask($task);
-                        $taskIntervention->setIntervention($intervention);
-                        $entityManager->persist($taskIntervention);
+            // Ajouter les nouvelles tâches
+            foreach ($newTaskIds as $taskId) {
+                if (! in_array($taskId, $currentTaskIds)) {
+                    $task = $entityManager->getRepository(Task::class)->find($taskId);
+                    if (! $task) {
+                        return $this->json(['error' => "Task with ID $taskId not found"], 400);
                     }
+
+                    $taskIntervention = new TaskIntervention();
+                    $taskIntervention->setTask($task);
+                    $taskIntervention->setIntervention($intervention);
+                    $entityManager->persist($taskIntervention);
                 }
             }
 
             $intervention->setUpdatedAt(new \DateTimeImmutable());
 
             $entityManager->flush();
+            $entityManager->commit();
 
             return $this->json([
-                'id' => $intervention->getId(),
-                'title' => $intervention->getTitle(),
-                'description' => $intervention->getDescription(),
+                'id'                     => $intervention->getId(),
+                'title'                  => $intervention->getTitle(),
+                'description'            => $intervention->getDescription(),
                 'appointment_request_id' => $intervention->getAppointmentRequest()?->getId(),
             ], 200);
         } catch (\Exception $e) {
@@ -309,15 +343,15 @@ class InterventionController extends AbstractController
     #[Route('/intervention', name: 'app_intervention_get', methods: ['GET'])]
     public function get(Request $request, InterventionRepository $interventionRepository): JsonResponse
     {
-        $reqId = $request->query->get('id');
-        $reqPage = $request->query->get('page');
-        $reqSize = $request->query->get('size');
-        $reqOrder = $request->query->get('order');
-        $reqStatus = $request->query->get('status');
-        $reqUserId = $request->query->get('user_id');
-        $reqTechnicianId = $request->query->get('technician_id');
+        $reqId                 = $request->query->get('id');
+        $reqPage               = $request->query->get('page');
+        $reqSize               = $request->query->get('size');
+        $reqOrder              = $request->query->get('order');
+        $reqStatus             = $request->query->get('status');
+        $reqUserId             = $request->query->get('user_id');
+        $reqTechnicianId       = $request->query->get('technician_id');
         $reqTypeInterventionId = $request->query->get('type_intervention_id');
-        $reqCompanyId = $request->query->get('company_id');
+        $reqCompanyId          = $request->query->get('company_id');
 
         $interventions = $interventionRepository->getInterventions(
             $reqId ? (int) $reqId : null,
@@ -389,10 +423,10 @@ class InterventionController extends AbstractController
             $entityManager->flush();
 
             return $this->json([
-                'success' => 'Technician assigned successfully',
+                'success'         => 'Technician assigned successfully',
                 'intervention_id' => $intervention->getId(),
-                'technician_id' => $technician->getId(),
-                'status' => $intervention->getStatus(),
+                'technician_id'   => $technician->getId(),
+                'status'          => $intervention->getStatus(),
             ], 200);
         } catch (\Exception $e) {
             return $this->json(['error' => $e->getMessage()], 400);
@@ -458,7 +492,7 @@ class InterventionController extends AbstractController
                 ->getRepository(TaskIntervention::class)
                 ->findOneBy([
                     'intervention' => $intervention,
-                    'task' => $task,
+                    'task'         => $task,
                 ]);
 
             if ($existingTaskIntervention) {
@@ -476,9 +510,9 @@ class InterventionController extends AbstractController
             $entityManager->flush();
 
             return $this->json([
-                'success' => 'Task added to intervention successfully',
-                'intervention_id' => $intervention->getId(),
-                'task_id' => $task->getId(),
+                'success'              => 'Task added to intervention successfully',
+                'intervention_id'      => $intervention->getId(),
+                'task_id'              => $task->getId(),
                 'task_intervention_id' => $taskIntervention->getId(),
             ], 201);
         } catch (\Exception $e) {
@@ -508,7 +542,7 @@ class InterventionController extends AbstractController
                 ->getRepository(TaskIntervention::class)
                 ->findOneBy([
                     'intervention' => $intervention,
-                    'task' => $task,
+                    'task'         => $task,
                 ]);
 
             if (! $taskIntervention) {
@@ -522,9 +556,9 @@ class InterventionController extends AbstractController
             $entityManager->flush();
 
             return $this->json([
-                'success' => 'Task removed from intervention successfully',
+                'success'         => 'Task removed from intervention successfully',
                 'intervention_id' => $intervention->getId(),
-                'task_id' => $task->getId(),
+                'task_id'         => $task->getId(),
             ], 200);
         } catch (\Exception $e) {
             return $this->json(['error' => $e->getMessage()], 400);
