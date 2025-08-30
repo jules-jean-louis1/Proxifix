@@ -1,4 +1,11 @@
-# 🛠️ Gestion d'Interventions Techniques
+<p align="center">
+  <span>
+    <img src="docs/logo-proxifix.svg" alt="Proxifix Logo" width="40" height="57" style="vertical-align:middle;"/>
+    <span style="font-size:2em;vertical-align:middle;"><b>Proxifix</b></span>
+  </span>
+</p>
+
+# Gestion d'interventions d'équipements informatiques
 
 Application complète de gestion d'interventions techniques pour les entreprises. Permet de gérer les clients, équipements, techniciens et interventions avec un workflow complet.
 
@@ -143,13 +150,8 @@ npx expo start
 
 ## 📚 Documentation
 
-### 🔧 Développement
-
-- **[📖 Guide d&#39;Installation](./docs/developpment.md)** - Setup complet du projet
+- 👉 [Guide de Développement &amp; Utilisation avancée](./docs/developpment.md)
 - **[🧪 Tests](./docs/test.md)** - Guide des tests unitaires et d'intégration
-
-### 🏗️ Architecture
-
 - **[🧠 Logique Métier](./docs/business-logic.md)** - Règles de gestion et workflows
 - **[🔌 API Documentation](./docs/api-documentation.md)** - Documentation complète des endpoints
 
@@ -280,87 +282,5 @@ sudo lsof -i :5432  # Vérifier qui utilise le port 5432
 ./docker/docker.sh logs php  # Logs PHP
 ./docker/docker.sh logs db   # Logs PostgreSQL
 ```
-
-## 🏃‍♂️ Commandes Utiles (Développement Local)
-
-### Backend (si vous n'utilisez pas Docker)
-
-```bash
-cd backend
-
-# Démarrer le serveur de développement
-symfony server:start
-
-# Exécuter les migrations
-php bin/console doctrine:migrations:migrate
-
-# Lancer les tests
-php bin/phpunit
-
-# Charger des données de test
-php bin/console doctrine:fixtures:load
-```
-
-### Mobile
-
-```bash
-cd mobile
-
-# Démarrer l'app en développement
-npx expo start
-
-# Build pour production
-npx expo build:android
-npx expo build:ios
-```
-
-## 🤝 Contribution
-
-1. **Fork** le projet
-2. Créer une **branch feature** (`git checkout -b feature/nouvelle-fonctionnalite`)
-3. **Commit** les changes (`git commit -am 'Ajouter nouvelle fonctionnalité'`)
-4. **Push** vers la branch (`git push origin feature/nouvelle-fonctionnalite`)
-5. Créer une **Pull Request**
-
-## 🤝 Contribution
-
-1. **Fork** le projet
-2. Créer une **branch feature** (`git checkout -b feature/nouvelle-fonctionnalite`)
-3. **Commit** les changes (`git commit -am 'Ajouter nouvelle fonctionnalité'`)
-4. **Push** vers la branch (`git push origin feature/nouvelle-fonctionnalite`)
-5. Créer une **Pull Request**
-
-## 📝 Structure du Projet
-
-```
-proxifix/
-├── backend/           # API Symfony
-│   ├── src/
-│   ├── config/
-│   ├── migrations/
-│   └── tests/
-├── mobile/            # App React Native
-│   ├── app/
-│   ├── components/
-│   └── assets/
-├── docker/            # Configuration Docker
-│   ├── docker-compose.yaml
-│   ├── docker.sh
-│   ├── .env.tpl
-│   ├── nginx/
-│   └── php/
-├── docs/              # Documentation
-│   ├── business-logic.md
-│   ├── api-documentation.md
-│   ├── developpment.md
-│   └── test.md
-└── README.md
-```
-
-## 📄 Licence
-
-Ce projet est sous licence [MIT](LICENSE).
-
----
 
 **Made with ❤️ by Jules**
