@@ -11,6 +11,7 @@ services:
 
   database:
     image: postgres:${POSTGRES_VERSION:-15}-alpine
+    restart: always
     environment:
       POSTGRES_DB: ${DB_DEV_NAME}
       POSTGRES_PASSWORD: ${DB_DEV_PASSWORD}
@@ -29,6 +30,7 @@ services:
 
   database_test:
     image: postgres:${POSTGRES_VERSION:-15}-alpine
+    restart: always
     environment:
       POSTGRES_DB: ${DB_TEST_NAME}
       POSTGRES_PASSWORD: ${DB_TEST_PASSWORD}
@@ -52,23 +54,15 @@ services:
     networks:
       - symfony
     environment:
-      # Symfony Configuration
-      APP_ENV: ${APP_ENV}
       KERNEL_CLASS: ${KERNEL_CLASS}
       APP_SECRET: ${APP_SECRET}
       SYMFONY_DEPRECATIONS_HELPER: ${SYMFONY_DEPRECATIONS_HELPER}
       PANTHER_APP_ENV: ${PANTHER_APP_ENV}
       PANTHER_ERROR_SCREENSHOT_DIR: ${PANTHER_ERROR_SCREENSHOT_DIR}
-      
-      # Database URLs
-      DATABASE_URL: "postgresql://${DB_DEV_USER}:${DB_DEV_PASSWORD}@${DB_DEV_HOST}:5432/${DB_DEV_NAME}?serverVersion=${POSTGRES_VERSION}&charset=utf8"
-      DATABASE_TEST_URL: "postgresql://${DB_TEST_USER}:${DB_TEST_PASSWORD}@${DB_TEST_HOST}:5432/${DB_TEST_NAME}?serverVersion=${POSTGRES_VERSION}&charset=utf8"
-      
       # JWT Configuration
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       JWT_PASSPHRASE: ${JWT_PASSPHRASE}
-      
     depends_on:
       database:
         condition: service_healthy

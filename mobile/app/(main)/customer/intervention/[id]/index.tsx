@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useApi } from '@/app/hooks/useApi';
 import { ToolBarCustomer } from '@/app/components/customer/navigation/ToolBarCustomer';
+import { getStatus } from '@/app/utils/intervention';
 
 export default function InterventionDetailPage() {
   const { id } = useLocalSearchParams();
@@ -29,6 +30,7 @@ export default function InterventionDetailPage() {
   if (!intervention) {
     return <Text style={styles.loading}>Chargement...</Text>;
   }
+  console.log(intervention);
 
   return (
     <View style={{ flex: 1 }}>
@@ -40,38 +42,72 @@ export default function InterventionDetailPage() {
       />
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>{intervention.title}</Text>
-        <Text style={styles.label}>Description :</Text>
-        <Text style={styles.value}>{intervention.description}</Text>
+        <Text style={styles.status}>{getStatus(intervention)}</Text>
 
-        <Text style={styles.label}>Entreprise :</Text>
-        <Text style={styles.value}>{intervention.company?.name}</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Informations</Text>
+          <Text style={styles.info}>
+            Entreprise: {intervention.company?.name}
+          </Text>
+          <Text style={styles.info}>
+            Equipements: {intervention.equipment?.name}
+          </Text>
+        </View>
 
-        <Text style={styles.label}>Type d'intervention :</Text>
-        <Text style={styles.value}>{intervention.typeIntervention?.name}</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Chronologie</Text>
+          <Text style={styles.info}>Déposé le: {intervention.created_at}</Text>
+          <Text style={styles.info}>
+            Démarrer le: {intervention.start_date}
+          </Text>
+          <Text style={styles.info}>
+            Terminer le: {intervention.end_date || 'TBD'}
+          </Text>
+          <Text style={styles.info}>Récupérer le: TBD</Text>
+        </View>
 
-        <Text style={styles.label}>Statut :</Text>
-        <Text style={styles.value}>{intervention.status?.name}</Text>
-
-        <Text style={styles.label}>Équipement :</Text>
-        <Text style={styles.value}>{intervention.equipment?.name}</Text>
-
-        <Text style={styles.label}>Date de début :</Text>
-        <Text style={styles.value}>{intervention.start_date}</Text>
-
-        <Text style={styles.label}>Date de fin :</Text>
-        <Text style={styles.value}>{intervention.end_date}</Text>
-
-        <Text style={styles.label}>Créée le :</Text>
-        <Text style={styles.value}>{intervention.created_at}</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Tâches</Text>
+          {intervention.taskInterventions.map(
+            (taskIntervention: any, index: number) => (
+              <Text key={index} style={styles.info}>
+                {taskIntervention.task.name}
+              </Text>
+            )
+          )}
+        </View>
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20 },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 16 },
-  label: { fontWeight: 'bold', marginTop: 12 },
-  value: { marginLeft: 8, marginTop: 2 },
+  container: {
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#d32f2f',
+    marginBottom: 10,
+  },
+  status: {
+    fontSize: 16,
+    color: '#90caf9',
+    marginBottom: 20,
+  },
+  section: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  info: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
   loading: { marginTop: 40, textAlign: 'center' },
 });

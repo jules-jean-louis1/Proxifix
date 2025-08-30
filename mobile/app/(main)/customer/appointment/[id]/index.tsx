@@ -97,7 +97,7 @@ export default function AppointmentDetailScreen() {
         onBackPress={() => router.back()}
         showBack
         bottomBar
-        title="Détail de l'intervention"
+        title="Détail de la demande"
       />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -141,6 +141,15 @@ export default function AppointmentDetailScreen() {
           </View>
         </View>
 
+        {/* Description Section */}
+        {appointment.description && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Description</Text>
+            <View style={styles.descriptionCard}>
+              <Text style={styles.description}>{appointment.description}</Text>
+            </View>
+          </View>
+        )}
         {/* Timeline Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Chronologie</Text>
@@ -151,47 +160,23 @@ export default function AppointmentDetailScreen() {
                 style={[styles.timelineDot, { backgroundColor: '#10B981' }]}
               />
               <Text style={styles.timelineText}>
-                Déposé le :{' '}
+                Créé le :{' '}
                 {formatDateTime(appointment.created_at || appointment.date)}
               </Text>
             </View>
 
-            {appointment.accepted_at && (
+            {appointment.date && (
               <View style={styles.timelineItem}>
                 <View
                   style={[styles.timelineDot, { backgroundColor: '#10B981' }]}
                 />
                 <Text style={styles.timelineText}>
-                  Démarré le : {formatDateTime(appointment.accepted_at)}
+                  Accepter le : {formatDateTime(appointment.date)}
                 </Text>
               </View>
             )}
-
-            <View style={styles.timelineItem}>
-              <View
-                style={[styles.timelineDot, { backgroundColor: '#EF4444' }]}
-              />
-              <Text style={styles.timelineText}>Terminer le : TBD</Text>
-            </View>
-
-            <View style={styles.timelineItem}>
-              <View
-                style={[styles.timelineDot, { backgroundColor: '#EC4899' }]}
-              />
-              <Text style={styles.timelineText}>Récupérer le : TBD</Text>
-            </View>
           </View>
         </View>
-
-        {/* Description Section */}
-        {appointment.description && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Description</Text>
-            <View style={styles.descriptionCard}>
-              <Text style={styles.description}>{appointment.description}</Text>
-            </View>
-          </View>
-        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -228,6 +213,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 20,
+    marginBottom: 60,
   },
   loadingContainer: {
     flex: 1,
